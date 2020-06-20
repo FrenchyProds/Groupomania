@@ -1,12 +1,13 @@
 var express = require("express")
-var cors = require ("cors")
+// var cors = require ("cors")
 var bodyParser = require("body-parser")
 var app = express()
-var helmet = require("helmet")
+// var helmet = require("helmet")
 
 const userRoutes = require('./routes/user');
+const redditRoutes = require('./routes/reddit')
 
-app.use(helmet())
+// app.use(helmet())
 
 app.use((req, res, next) => {  // We declare all the headers to allow :
     res.setHeader('Access-Control-Allow-Origin', '*'); // Connection from any origin
@@ -16,11 +17,12 @@ app.use((req, res, next) => {  // We declare all the headers to allow :
   });
 
 app.use(bodyParser.json())
-app.use(cors())
+// app.use(cors())
 app.use(
     bodyParser.urlencoded({ extended : false })
 )
 
-app.use('/user', userRoutes);
+app.use('/', userRoutes);
+app.use('/', redditRoutes);
 
 module.exports = app;
