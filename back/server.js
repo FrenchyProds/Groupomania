@@ -1,56 +1,86 @@
-const http = require('http');
-const app = require('./app');
+var app = require('./app');
+var debug = require('debug')('express-sequelize');
+var http = require('http');
+var models = require('./models');
 
-const normalizePort = val => {  // This function will allow us to find a valid port, in number OR string format
-    const port = parseInt(val, 10);
-  
-    if (isNaN(port)) {
-      return val;
-    }
-    if (port >= 0) {
-      return port;
-    }
-    return false;
-  };
-  const port = normalizePort(process.env.PORT || '3000');
-  app.set('port', port);
-  
-  const errorHandler = error => {  // We're going to need some form of error handling, in case something doesn't work as intended
-    if (error.syscall !== 'listen') {
-      throw error;
-    }
-    const address = server.address();
-    const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
-    switch (error.code) {
-      case 'EACCES':
-        console.error(bind + ' requires elevated privileges.');
-        process.exit(1);
-        break;
-      case 'EADDRINUSE':
-        console.error(bind + ' is already in use.');
-        process.exit(1);
-        break;
-      default:
-        throw error;
-    }
-  };
-  
-  const server = http.createServer(app);  // We use our app.js import to specify all our applications' information
-  
-  server.on('error', errorHandler);  // If there's an error when trying to start our server, we'll be blocked here
-  server.on('listening', () => {  // However if all goes well, then this chunk of code will be executed
-    const address = server.address();
-    const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;  // We bind the port on which the server will run
-    console.log('Listening on ' + bind);   // And give console confirmation that the server launched successfully 
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+  /**
+   * Create HTTP server.
+   */
+var server = http.createServer(app);
+
+models.sequelize.sync().then(function() {
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+  server.listen(port, function() {
+    debug('Express server listening on port ' + server.address().port);
   });
-  
-  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+});
 
-  // async function getUser() {
-  //   const res = await fetch('http://localhost:3000/user');
-  //   const data = await res.json();
-  //   this.data = data;
-  //   console.log("Passé par ici");
-  // }
-  // getUser();
-  
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

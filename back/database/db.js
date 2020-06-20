@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const db = {}
+var database = require('../models');
 const sequelize = new Sequelize("groupomania", "root", "", {
     host: "localhost",
     dialect: "mysql",
@@ -14,10 +15,10 @@ const sequelize = new Sequelize("groupomania", "root", "", {
 db.sequelize = sequelize
 db.Sequelize = Sequelize
 
-sequelize
+database.sequelize
   .authenticate()
   .then(() => {
-    console.log('Connection to MySQL Database established successfully !');
+    console.log('Nice ! This seems to work just fine');
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err);
