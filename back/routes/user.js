@@ -1,6 +1,7 @@
 var models  = require('../models');
 var express = require('express');
 var router  = express.Router();
+const bcrypt = require('bcrypt')
 
 router.get('/user', function(req, res) {
   models.User.findAll({
@@ -11,5 +12,19 @@ router.get('/user', function(req, res) {
     });
   });
 });
+
+router.post('/user/register', function(req, res) {
+  // bcrypt.hash(req.body.password, 10)
+  // .then(hash => {
+    const user = models.User.create({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      password: req.body.password
+    })
+    return res.send(res).status(201).json({ message: 'User created !'})
+    .catch(error => res.status(400).json({ error }));
+    // })
+})
 
 module.exports = router;

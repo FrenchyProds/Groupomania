@@ -52,56 +52,7 @@
                     
                 </div>
             </div>
-            <router-link to="./groupodiscute/post"><v-card-title background-color="lightgrey">Title of the post</v-card-title>
-            <v-divider></v-divider>
-            <v-card-text>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat commodi aspernatur unde fugit assumenda ducimus neque reiciendis aliquid dignissimos cumque quia eligendi harum sit autem temporibus, id eos impedit illo.
-            </v-card-text></router-link>
-            
-            <v-divider></v-divider>
-            <v-card-text>
-                Created by <router-link to="./profile/username"><span font-weight="500">insertNameHere</span></router-link> - 2 hours ago
-            </v-card-text>
-            <v-card d-flex>
-                <v-card-text class="text-truncate" background-color="grey">
-
-                <div class="likes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
-                    </template>
-                    <span>J'aime !</span>
-                    </v-tooltip>
-                </div>
-
-                <div class="dislikes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                    </template>
-                    <span>J'aime pas !</span>
-                    </v-tooltip>
-                </div>
-
-                <div class="comments">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                    8</v-btn>
-                    </template>
-                    <span>Laisser un commentaire</span>
-                    </v-tooltip>
-                </div>
-
-                <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                </template>
-                <span>Signaler du contenu</span>
-                </v-tooltip>
-
-                </v-card-text>
-            </v-card>
+        
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -121,6 +72,7 @@
                 <span>Créer ma publication GroupoGag !</span>    
             </v-tooltip>
         </v-card>
+        <div class="clear"></div>
         <foot/>
     </v-container>
 </template>
@@ -130,6 +82,7 @@ import foot from './foot'
 import mainhead from './mainhead'
 
 const apiUrl = 'http://localhost:3000/reddit/post';
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
 export default {
     data () {
@@ -143,6 +96,10 @@ export default {
                 this.posts = res.data.reddit
           })
         },
+    headers: {
+    Authorization:
+      'Bearer' + tokenFetch,
+  },
     name: 'groupodiscute',
     components: {
         foot,
@@ -172,6 +129,7 @@ export default {
 }
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
    bottom: 100px;
-   right: 43%
+   right: 47%
 }
+.clear { clear: both; height: 150px; }
 </style>

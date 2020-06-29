@@ -26,11 +26,18 @@
 import foot from './foot'
 import mainhead from './mainhead'
 
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+localStorage.clear;
+
 export default {
     data: () => ({
         items: ['Dernières publications', 'Le plus de likes']
     }),
     name: 'mainPage',
+    headers: {
+    Authorization:
+      'Bearer' + tokenFetch,
+  },
     components: {
         foot,
         mainhead

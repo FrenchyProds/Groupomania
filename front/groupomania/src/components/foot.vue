@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container max-height="400px">
     <v-card>
         <v-footer fixed>
             <v-tabs grow class="elevation-2" background-color="white">
@@ -29,8 +29,8 @@
 
                 <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                icon to="/_id/profile" v-bind="attrs"
+                <v-btn v-if="!profil()"
+                icon to="/myprofile" v-bind="attrs"
                     v-on="on">
                     <div class="btn-flex">
                     <v-icon size="24px" color="white">mdi-account</v-icon>
@@ -68,7 +68,7 @@
                 </div>
                 </v-btn>
                     </template>
-                <v-btn to="/"><v-icon left>mdi-close-circle</v-icon>Se déconnecter</v-btn>
+                <v-btn @click="logoff"><v-icon left>mdi-close-circle</v-icon>Se déconnecter</v-btn>
             </v-menu>
             </v-card-text>    
             </v-card>
@@ -94,11 +94,22 @@ export default {
     },
     methods: {
       mainPage() {
-      if(this.$route.path == "/" || this.$route.path == "/mainPage" ) {
+      if(this.$route.path == "/mainPage") {
           return true
         } else {
           return false
         }
+      },
+      profil() {
+      if(this.$route.path == "/myprofile") {
+          return true
+        } else {
+          return false
+        }
+      },
+      logoff() {
+          localStorage.clear('token');
+          this.$router.push('/');
       }
     },
     name: 'foot'

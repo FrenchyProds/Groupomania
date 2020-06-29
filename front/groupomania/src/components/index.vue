@@ -6,13 +6,13 @@
           <v-tab to="/">Connexion</v-tab>
           <v-tab to="./register">Inscription</v-tab>
         </v-tabs>
-        <v-form>
+        <v-form ref="form" @submit="formSubmit">
           <v-container>
             <v-col>
               <v-row>
                 <v-text-field
                 v-model="email"
-              :rules="emailRules"
+                :rules="emailRules"
                   label="Adresse Email"
                   name="Email"
                   prepend-icon="email"
@@ -24,7 +24,7 @@
               <v-row>
                 <v-text-field
                 v-model="password"
-              :rules="passwordRules"
+                :rules="passwordRules"
                   label="Mot de Passe"
                   name="password"
                   class="ma-2"
@@ -34,7 +34,7 @@
                 ></v-text-field>
               </v-row>
               <v-row justify="center">
-                <v-btn class="mt-4" outlined color="green" to="/mainPage">Se connecter</v-btn>
+                <v-btn class="mt-4" outlined color="green" type="submit" value="Submit">Se connecter</v-btn>
               </v-row>
             </v-col>
           </v-container>
@@ -44,11 +44,9 @@
       <div class="mt-8">
       <v-btn text color="error" to="./recover">Impossible de se connecter ?</v-btn>
       </div>
-      </v-row> 
+      </v-row>
   </v-container>
   
-
-        
 </template>
 
 <script>
@@ -66,16 +64,29 @@ import indexhead from './indexhead'
         v => !!v || 'Mot de passe requis !',
       ],
     }),
-     methods: {
+    methods: {
+    formSubmit(e) {
+    e.preventDefault();
+    this.axios.post('http://localhost:1337/auth/local', {
+    identifier: this.email,
+    password: this.password,
+  })
+  .then(response => {
+    // Handle success.
+    localStorage.setItem('jwt', JSON.stringify(response.data.jwt))
+    this.$router.push('/mainPage')
+  })
+  .catch(error => {
+    // Handle error.
+    console.log('An error occurred:', error.response);
+  })
+},
       validate () {
         this.$refs.form.validate()
       },
     },
     components: {
       indexhead
-    },
-    props: {
-      source: String
     },
     name: 'index',
   }

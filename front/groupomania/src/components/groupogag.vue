@@ -3,7 +3,60 @@
         <mainhead/>
         <v-select :items="items" label="Trier par :" filled>
         </v-select>
-        <v-card class="text-center">
+            <div>
+                <div class="content" v-for="post in posts" :key="post.id">
+                    <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
+                    <v-divider></v-divider>
+                    <v-img
+                    :src="(post.content.url)"
+                    aspect-ratio="1.5"
+                    max-height="500"
+                    contain/>
+                    <v-card-text>Created by {{ post.user.username }} - {{ post.created_at | moment("from") }}</v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-text class="text-truncate" background-color="grey">
+
+                <div class="likes">
+                    <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                    </template>
+                    <span>J'aime !</span>
+                    </v-tooltip>
+                </div>
+
+                <div class="dislikes">
+                    <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                    </template>
+                    <span>J'aime pas !</span>
+                    </v-tooltip>
+                </div>
+
+                <div class="comments">
+                    <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                    8</v-btn>
+                    </template>
+                    <span>Laisser un commentaire</span>
+                    </v-tooltip>
+                </div>
+
+                <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                </template>
+                <span>Signaler du contenu</span>
+                </v-tooltip>
+                </v-card-text>
+                <v-divider></v-divider>
+                    
+                </div>
+            </div>
+
+        <!-- <v-card class="text-center">
             <router-link to="./groupogag/post"><v-card-title background-color="lightgrey">Title of the post</v-card-title>
             <v-img src="https://picsum.photos/300/200?random" aspect-ratio="1.7"></v-img>
             </router-link>
@@ -50,7 +103,7 @@
                 </v-tooltip>
 
                 </v-card-text>
-            </v-card>
+            </v-card> -->
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -69,9 +122,9 @@
                 </template>
                 <span>Créer ma publication GroupoGag !</span>    
             </v-tooltip>
-        </v-card>
+        <!-- </v-card> -->
 
-        <v-card height="50vh"></v-card>
+        <div class="clear"></div>
             
         <foot/>
     </v-container>
@@ -81,18 +134,25 @@
 import foot from './foot'
 import mainhead from './mainhead'
 
+const apiUrl = 'http://localhost:1337/gags';
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+
 export default {
     data: () => ({
         items: ['Dernières publications', 'Le plus de likes'],
-         method: {
-             async getUser() {
-                 const res = await fetch('http://localhost:3000/user');
-                 const data = await res.json();
-                 this.data = data;
-                 console.log('hello');
-             }
-         }
-    }),
+        posts: [],
+        url: [],
+    }),      
+     mounted() {
+          this.axios.get(apiUrl).then(res => {
+                this.posts = res.data
+                console.log(res.data)
+          })
+        },
+    headers: {
+    Authorization:
+      'Bearer' + tokenFetch,
+  },
     name: 'groupogag',
     components: {
         foot,
@@ -122,6 +182,7 @@ export default {
 }
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
    bottom: 100px;
-   right: 43%
+   right: 47%
 }
+.clear { clear: both; height: 150px; }
 </style>
