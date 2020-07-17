@@ -21,7 +21,10 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id' },
             allowNull: true
         }
-    },
-);
+    });
+    redditComment.associate = (models) => {
+    redditComment.hasMany(models.commentReaction, { foreignKey: 'redditCommentId', sourceKey: 'id' }),
+    redditComment.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' })
+};
     return redditComment
 }

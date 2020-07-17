@@ -212,8 +212,8 @@
 
 import foot from '../foot'
 const userMe = 'http://localhost:1337/users/me';
-let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
-console.log(tokenFetch)
+// let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
+// console.log(tokenFetch)
 
 export default {
     data() {
@@ -229,9 +229,9 @@ export default {
     },
     mounted() {
           this.axios.get(userMe,  {
-            headers: {
-            Authorization: `Bearer ${tokenFetch}`,
-            },
+            // headers: {
+            // Authorization: `Bearer ${tokenFetch}`,
+            // },
         }).then(res => {
                 this.user = res.data
                 this.url = res.data.avatar.content.url
@@ -245,9 +245,9 @@ export default {
             e.preventDefault();
             this.axios.put(userMe, {
             departement: this.departement,
-            headers: {
-            Authorization: `Bearer ${tokenFetch}`,
-            },
+            // headers: {
+            // Authorization: `Bearer ${tokenFetch}`,
+            // },
         })
         .then(response => {
             // Handle success.
@@ -260,8 +260,8 @@ export default {
         }
         },
     headers: {
-    Authorization:
-      'Bearer' + tokenFetch,
+    // Authorization:
+    //   'Bearer' + tokenFetch,
   },
     name: 'profil',
     components: {

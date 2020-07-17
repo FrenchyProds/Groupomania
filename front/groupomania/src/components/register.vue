@@ -55,7 +55,7 @@
 import indexhead from './indexhead'
 import swal from 'sweetalert'
 
-const registerUrl = 'http://localhost:1337/auth/local/register'
+const registerUrl = 'http://localhost:3000/register'
 
   export default {
     name: 'register',

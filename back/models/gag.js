@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     },  
 });
   Gag.associate = (models) => {
-    Gag.hasMany(models.gagComment, { foreignKey: 'gagId', sourceKey: 'id' })
+    Gag.hasMany(models.gagComment, { foreignKey: 'gagId', sourceKey: 'id' }),
+    Gag.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' })
     // hasMany association: foreign key (textId) stored on target model (redditComment)
 };
   return Gag;

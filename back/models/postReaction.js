@@ -9,20 +9,24 @@ module.exports = (sequelize, DataTypes) => {
         },like: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-        },postId: {
+        },redditId: {
             type: DataTypes.INTEGER,
-            // references: { 
-            //     model: db.reddit,
-            //     key: 'id' },
-            allowNull: false
+            references: { 
+                model: db.reddit,
+                key: 'id' },
+            allowNull: true,
         },userId: {
             type: DataTypes.INTEGER,
-            // references: {
-            //      model: db.user, 
-            //      key: 'id' },
-            allowNull: false
+            references: {
+                 model: db.user, 
+                 key: 'id' },
+            allowNull: true,
         },
     },
 );
+    postReaction.associate = (models) => {
+    postReaction.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' }),
+    postReaction.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' })
+    };
     return postReaction
 }

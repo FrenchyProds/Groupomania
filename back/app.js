@@ -1,10 +1,10 @@
 var express = require("express")
-// var cors = require ("cors")
+var cors = require ("cors")
 var bodyParser = require("body-parser")
 var app = express()
 // var helmet = require("helmet")
 
-const userRoutes = require('./routes/user');
+const userRoutes = require('./controllers/Users');
 const redditRoutes = require('./routes/reddit')
 
 // app.use(helmet())

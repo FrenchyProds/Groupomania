@@ -26,7 +26,7 @@
 import foot from './foot'
 import mainhead from './mainhead'
 
-let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+// let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 localStorage.clear;
 
 export default {
@@ -35,8 +35,8 @@ export default {
     }),
     name: 'mainPage',
     headers: {
-    Authorization:
-      'Bearer' + tokenFetch,
+    // Authorization:
+    //   'Bearer' + tokenFetch,
   },
     components: {
         foot,

@@ -82,7 +82,7 @@ import foot from './foot'
 import mainhead from './mainhead'
 
 const apiUrl = 'http://localhost:3000/reddit/post';
-let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+// let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
 export default {
     data () {
@@ -97,8 +97,8 @@ export default {
           })
         },
     headers: {
-    Authorization:
-      'Bearer' + tokenFetch,
+    // Authorization:
+    //   'Bearer' + tokenFetch,
   },
     name: 'groupodiscute',
     components: {

@@ -17,8 +17,7 @@ router.post('/user/register', function(req, res) {
   // bcrypt.hash(req.body.password, 10)
   // .then(hash => {
     const user = models.User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      username: req.body.username,
       email: req.body.email,
       password: req.body.password
     })

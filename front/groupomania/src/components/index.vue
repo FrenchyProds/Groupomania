@@ -67,13 +67,14 @@ import indexhead from './indexhead'
     methods: {
     formSubmit(e) {
     e.preventDefault();
-    this.axios.post('http://localhost:1337/auth/local', {
+    this.axios.post('http://localhost:3000/login', {
     identifier: this.email,
     password: this.password,
   })
   .then(response => {
     // Handle success.
     localStorage.setItem('jwt', JSON.stringify(response.data.jwt))
+    console.log(response.data.jwt)
     this.$router.push('/mainPage')
   })
   .catch(error => {
