@@ -51,6 +51,7 @@
 
 <script>
 import indexhead from './indexhead'
+import swal from 'sweetalert'
 
   export default {
     data: () => ({
@@ -68,18 +69,20 @@ import indexhead from './indexhead'
     formSubmit(e) {
     e.preventDefault();
     this.axios.post('http://localhost:3000/login', {
-    identifier: this.email,
+    email: this.email,
     password: this.password,
   })
   .then(response => {
     // Handle success.
-    localStorage.setItem('jwt', JSON.stringify(response.data.jwt))
-    console.log(response.data.jwt)
+    localStorage.setItem('jwt', JSON.stringify(response.data.data))
+    console.log(localStorage)
+    console.log(response)
     this.$router.push('/mainPage')
   })
   .catch(error => {
     // Handle error.
     console.log('An error occurred:', error.response);
+    swal('Adresse email ou mot de passe incorrect !', "", "error")
   })
 },
       validate () {

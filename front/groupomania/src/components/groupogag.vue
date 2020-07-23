@@ -8,11 +8,11 @@
                     <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                     <v-divider></v-divider>
                     <v-img
-                    :src="(post.content.url)"
+                    :src="(post.content)"
                     aspect-ratio="1.5"
                     max-height="500"
                     contain/>
-                    <v-card-text>Created by {{ post.user.username }} - {{ post.created_at | moment("from") }}</v-card-text>
+                    <v-card-text>Created by {{ post.User.username }} - {{ post.created_at | moment("from") }}</v-card-text>
                     <v-divider></v-divider>
                     <v-card-text class="text-truncate" background-color="grey">
 
@@ -115,10 +115,11 @@
                     class="hoverTime"
                     v-bind="attrs"
                     v-on="on"
-                    to="./groupogag/create-post"
+                    @click="gagpost = true"
                     >
                         <v-icon color="white">mdi-pencil</v-icon>
                     </v-btn>
+                    <gagpost v-model="gagpost" />
                 </template>
                 <span>Créer ma publication GroupoGag !</span>    
             </v-tooltip>
@@ -133,31 +134,37 @@
 <script>
 import foot from './foot'
 import mainhead from './mainhead'
+import gagpost from './gagpost'
 
-const apiUrl = 'http://localhost:1337/gags';
-// let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+const apiUrl = 'http://localhost:3000/gag';
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
 export default {
-    data: () => ({
+    data () {
+        return {
         items: ['Dernières publications', 'Le plus de likes'],
         posts: [],
         url: [],
-    }),      
+        gagpost: false,
+        title: ''
+
+    }},      
      mounted() {
           this.axios.get(apiUrl).then(res => {
-                this.posts = res.data
-                console.log(res.data)
+                this.posts = res.data.data
+                console.log(res.data.data)
           })
         },
     headers: {
-    // Authorization:
-    //   'Bearer' + tokenFetch,
+    Authorization:
+      'Bearer' + tokenFetch,
   },
     name: 'groupogag',
     components: {
         foot,
-        mainhead
-    }
+        mainhead,
+        gagpost
+    },
 }
 </script>
 

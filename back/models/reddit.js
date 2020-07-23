@@ -1,8 +1,15 @@
 var db = require('../models');
+const { Sequelize } = require('sequelize')
 
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Reddit = sequelize.define('Reddit', {
+    id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      primaryKey: true,
+      defaultValue: Sequelize.UUIDV4,
+    },
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     userId: {
@@ -14,10 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     },  
   });
   Reddit.associate = (models) => {
-    Reddit.hasMany(models.redditComment, { foreignKey: 'redditId', sourceKey: 'id' }),
+    Reddit.hasMany(models.Comment, { foreignKey: 'commentId', sourceKey: 'id' }),
     Reddit.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' }),
-    Reddit.hasMany(models.postReaction, { foreignKey: 'redditId', sourceKey: 'id' })
-    // hasMany association: foreign key (textId) stored on target model (redditComment)
+    Reddit.hasMany(models.Reaction, { foreignKey: 'reactionId', sourceKey: 'id' })
 };
   return Reddit;
 }

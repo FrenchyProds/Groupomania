@@ -108,7 +108,7 @@ export default {
         }
       },
       logoff() {
-          localStorage.clear('token');
+          localStorage.clear();
           this.$router.push('/');
       }
     },

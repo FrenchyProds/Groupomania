@@ -1,9 +1,15 @@
-// var db = require('../models')
+const { Sequelize } = require('sequelize')
 
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
   var User = sequelize.define('User', {
+        id: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: Sequelize.UUIDV4,
+        },
         firstName : DataTypes.STRING,
         lastName : DataTypes.STRING,
         email : { 
@@ -22,14 +28,18 @@ module.exports = (sequelize, DataTypes) => {
         },
         avatar : DataTypes.STRING,
         department : DataTypes.STRING,
-        darkMode: DataTypes.BOOLEAN,
+        isAdmin: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
   });
   User.associate = (models) => {
     // hasMany association: foreign key (userId) stored on target model (Text)
     User.hasMany(models.Reddit, { foreignKey: 'userId', sourceKey: 'id' });
     User.hasMany(models.Gag, { foreignKey: 'userId', sourceKey: 'id' });
-    User.hasMany(models.redditComment, { foreignKey: 'userId', sourceKey: 'id' });
-    User.hasMany(models.gagComment, { foreignKey: 'userId', sourceKey: 'id' })
+    User.hasMany(models.Comment, { foreignKey: 'userId', sourceKey: 'id' });
+    User.hasMany(models.Reaction, { foreignKey: 'userId', sourceKey: 'id' })
 };
   return User;
 };

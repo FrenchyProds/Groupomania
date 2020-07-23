@@ -9,7 +9,7 @@
                     <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                     <v-divider></v-divider>
                     <v-card-text>{{ post.content }}</v-card-text>
-                    <v-card-text>Created by "insertNameHere" - {{ post.createdAt | moment("from") }}</v-card-text>
+                    <v-card-text>Created by {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
                     <v-divider></v-divider>
                     <v-card-text class="text-truncate" background-color="grey">
 
@@ -64,12 +64,13 @@
                     class="hoverTime"
                     v-bind="attrs"
                     v-on="on"
-                    to="./groupodiscute/create-post"
+                    @click="discute = true"
                     >
                         <v-icon color="white">mdi-pencil</v-icon>
                     </v-btn>
+                    <discute v-model="discute" />
                 </template>
-                <span>Créer ma publication GroupoGag !</span>    
+                <span>Créer ma publication GroupoDiscute!</span>    
             </v-tooltip>
         </v-card>
         <div class="clear"></div>
@@ -80,30 +81,34 @@
 <script>
 import foot from './foot'
 import mainhead from './mainhead'
+import discute from './discutepost'
 
-const apiUrl = 'http://localhost:3000/reddit/post';
-// let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+const apiUrl = 'http://localhost:3000/reddit';
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
 export default {
     data () {
     return {
       items: ['Dernières publications', 'Le plus de likes'],
       posts: [],
+      discute: false,
     }
   },
   mounted() {
           this.axios.get(apiUrl).then(res => {
-                this.posts = res.data.reddit
+                this.posts = res.data.data
+                console.log(res.data)
           })
         },
     headers: {
-    // Authorization:
-    //   'Bearer' + tokenFetch,
+    Authorization:
+      'Bearer' + tokenFetch,
   },
     name: 'groupodiscute',
     components: {
         foot,
-        mainhead
+        mainhead,
+        discute
     }
 }
 </script>

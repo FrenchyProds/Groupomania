@@ -2,12 +2,12 @@
     <v-container>
         <v-list-item two-line>
             <v-list-item-avatar size="100px">
-                <v-img :src="(url) || 'https://picsum.photos/300/200?random'"
+                <v-img :src="(avatar) || 'https://picsum.photos/300/200?random'"
                 contain/>
             </v-list-item-avatar>
             <v-list-item-content class="text-center">
                 <v-list-item-subtitle class="headline mb-1 text-capitalize">{{user.username}}</v-list-item-subtitle>
-                <v-list-item-subtitle class="headline">{{profil.firstName || 'Prénom'}} {{profil.lastName || 'Nom'}}</v-list-item-subtitle>
+                <v-list-item-subtitle class="headline">{{user.firstName || 'Prénom'}} {{user.lastName || 'Nom'}}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
 
@@ -36,12 +36,12 @@
                 Département :
             </v-col>
             <v-col>
-                {{profil.departement}}
+                {{user.department}}
             </v-col>
         </v-row>
         <v-row no-gutters>
             <v-col cols="11">
-                <v-text-field placeholder="Modifier" input="text" v-model="departement">
+                <v-text-field placeholder="Modifier" input="text" v-model="department">
                 </v-text-field>
             </v-col>
         </v-row>
@@ -56,76 +56,121 @@
                 <v-tooltip top> 
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                        icon v-bind="attrs" v-on="on">
+                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
                         <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null" type="submit" value="Submit" color="green">mdi-checkbox-marked-circle</v-icon>
+                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
                             Confirmer
                         </div>
                         </v-btn>
                     </template>
                     <span>Confirmer</span>
                 </v-tooltip>
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on">
-                        <div class="btn-flex">
-                            <v-icon size="24px" color="red">mdi-close-circle</v-icon>
-                            Annuler
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Annuler</span>
-                </v-tooltip>
             </v-card-text>
          </v-card>
     </v-card>
     </v-form> 
 
-    <v-card class="d-flex my-2">
-        <v-row class="align-center mx-3">
-            <v-col cols="8">
-                Mode Sombre
-            </v-col>
+<v-form ref="form" @submit="nameSubmit">
+    <v-card class="my-2">
+        <v-row class="text-center ml-1">
             <v-col cols="4">
-                <v-tooltip top>
+                Prénom :
+            </v-col>
+            <v-col>
+                {{user.firstName}}
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="11">
+                <v-text-field placeholder="Modifier" input="text" v-model="firstName">
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="text-center ml-1">
+            <v-col cols="4">
+                Nom de famille :
+            </v-col>
+            <v-col>
+                {{user.lastName}}
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="11">
+                <v-text-field placeholder="Modifier" input="text" v-model="lastName">
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-card
+            flat
+            tile
+            width="100%"
+            class="white text-center">
+            <v-card-text class="d-flex justify-space-around">
+            
+
+                <v-tooltip top> 
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                        icon v-bind="attrs" v-on="on" v-if="!null" type="submit" value="Submit">
+                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
                         <div class="btn-flex">
-                            <v-icon size="24px" color="black">mdi-lightbulb</v-icon>
-                            Activer
+                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                            Confirmer
                         </div>
                         </v-btn>
                     </template>
-                    <span>Passer en mode sombre</span>
+                    <span>Confirmer</span>
                 </v-tooltip>
-            </v-col>
-        </v-row>
+            </v-card-text>
+         </v-card>
     </v-card>
+</v-form>
 
-    <v-card class="d-flex my-2">
-        <v-row class="align-center mx-3">
-            <v-col cols="8">
+    <v-card class="text-center my-2">
+        <v-row class="align-center">
+            <v-col>
+                <v-card-text class="title font-weight-regular">
                 Modifier mon avatar
+                </v-card-text>
             </v-col>
-            <v-col cols="4">
-                <v-tooltip top>
+        </v-row>
+        <div v-show="showProgress">
+            <progress-bar :options="options" :value="progress" />
+        </div>
+        <v-row class="align-center pb-3">
+            <v-col cols="12">
+                <v-form v-on:submit.prevent="upload" ref="form">
+                <v-row class="d-block pb-5">
+                <!-- allow the user to select an image file and when they have selected it call a function 
+                to handle this event-->
+                <label for="file-input"></label>
+                <input
+                    id="file-input"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    @change="handleFileChange($event)"
+                />
+                </v-row>
+                <!-- submit button is disabled until a file is selected -->
+                <v-btn type="submit" :disabled="filesSelected != 1" fill color="light-green" >Héberger</v-btn>
+                </v-form>
+            </v-col>
+        </v-row>
+        <v-tooltip top> 
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                        icon v-bind="attrs" v-on="on">
+                        icon v-bind="attrs" v-on="on" @click="imageSubmit()">
                         <div class="btn-flex">
-                            <v-icon size="24px" color="red">mdi-folder</v-icon>
-                            Modifier
+                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                            Confirmer
                         </div>
                         </v-btn>
                     </template>
-                    <span>Modifier mon avatar</span>
+                    <span>Confirmer</span>
                 </v-tooltip>
-            </v-col>
-        </v-row>
     </v-card>
 
+
+<v-form ref="form" @submit="passwordSubmit">
     <v-card class="my-2">
         <v-row class="text-center ml-1">
             <v-col cols="12">
@@ -134,13 +179,13 @@
         </v-row>
         <v-row no-gutters>
             <v-col cols="11">
-                <v-text-field placeholder="Nouveau mot de passe">
+                <v-text-field placeholder="Nouveau mot de passe" v-model="updatePass">
                 </v-text-field>
             </v-col>
         </v-row>
         <v-row no-gutters>
             <v-col cols="11">
-                <v-text-field placeholder="Confirmer le nouveau mot de passe">
+                <v-text-field placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
                 </v-text-field>
             </v-col>
         </v-row>
@@ -153,39 +198,28 @@
         <v-tooltip top> 
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                        icon v-bind="attrs" v-on="on">
+                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
                         <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null" type="submit" value="Submit" color="green">mdi-checkbox-marked-circle</v-icon>
+                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
                             Confirmer
                         </div>
                         </v-btn>
                     </template>
                     <span>Confirmer</span>
                 </v-tooltip>
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on">
-                        <div class="btn-flex">
-                            <v-icon size="24px" color="red">mdi-close-circle</v-icon>
-                            Annuler
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Annuler</span>
-                </v-tooltip>
             </v-card-text>
         </v-card>
     </v-card>
+</v-form>
 
     
 
-    <v-card class="d-flex my-2">
+    <v-card class="d-flex text-center my-2">
         <v-row class="align-center mx-3">
-            <v-col cols="8">
+            <v-col class="red--text" cols="12">
                 Supprimer mon compte
             </v-col>
-            <v-col cols="4">
+            <v-col cols="12">
                 <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -209,63 +243,305 @@
 </template>
 
 <script>
-
 import foot from '../foot'
-const userMe = 'http://localhost:1337/users/me';
-// let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
-// console.log(tokenFetch)
+import jwt_decode from 'jwt-decode'
+import axios from "axios";
+import swal from 'sweetalert';
+import ProgressBar from "vuejs-progress-bar";
+
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
+
+var decoded = jwt_decode(tokenFetch);
+console.log(decoded);
+const userId = decoded.id;
+
+let userMe = `http://localhost:3000/user/${userId}`;
 
 export default {
     data() {
+         const progressBarOptions = {
+      text: {
+        shadowColor: "black",
+        fontSize: 14,
+        fontFamily: "Helvetica",
+        dynamicPosition: true
+      },
+      progress: {
+        color: "#E8C401",
+        backgroundColor: "#000000"
+      },
+      layout: {
+        height: 35,
+        width: 140,
+        type: "line",
+        progressPadding: 0,
+        verticalTextAlign: 63
+      },
+    };
         return {
         user: [],
-        url: '',
-        profil: [],
-        departement: '',
+        id: '',
+        username: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        avatar: '',
+        department: '',
+        password: '',
+        updatePass: '',
+        confPass: '',
+        results: null,
+        errors: [],
+        file: null,
+        filesSelected: 0,
+        cloudName: "",
+        preset: "qqke5g5g",
+        tags: "browser-upload",
+        progress: 0,
+        showProgress: false,
+        options: progressBarOptions,
+        fileContents: null,
+        formData: null,
+        once: 1,
+        // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
         // passwordConf: '',
         }
     },
-    mounted() {
-          this.axios.get(userMe,  {
-            // headers: {
-            // Authorization: `Bearer ${tokenFetch}`,
-            // },
-        }).then(res => {
-                this.user = res.data
-                this.url = res.data.avatar.content.url
-                this.profil = res.data.profil
-                console.log(this.profil)
-                console.log(res.data)
-          });
+        beforeRouteEnter (to, from, next) {
+            const token = tokenFetch
+
+            return token ? next() : next('/index')
         },
-        methods: {
-            depSubmit(e) {
-            e.preventDefault();
-            this.axios.put(userMe, {
-            departement: this.departement,
-            // headers: {
-            // Authorization: `Bearer ${tokenFetch}`,
-            // },
-        })
-        .then(response => {
-            // Handle success.
-            console.log('username successfully updates !', response)
-        })
-        .catch(error => {
-            // Handle error.
-            console.log('An error occurred:', error.response);
-        })
+        mounted () {
+        },
+        created () {
+            this.fetchAuthenticatedUser()
+        },
+         methods: {
+            fetchAuthenticatedUser () {
+                const token = tokenFetch
+                console.log(token)
+                this.axios
+                    .get(userMe, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    })
+                    .then(response => {
+                        this.id = response.data.data.id
+                        this.username = response.data.data.username
+                        this.email = response.data.data.email
+                        this.firstName = response.data.data.firstName
+                        this.lastName = response.data.data.lastName
+                        this.department = response.data.data.department
+                        this.avatar = response.data.data.avatar
+                        this.password = response.data.data.password
+                        this.user = response.data.data
+                        console.log(this.user)
+                    })
+            },
+            // function to handle file info obtained from local
+            // file system and set the file state
+            handleFileChange: function(event) {
+            console.log("handlefilechange", event.target.files);
+            //returns an array of files even though multiple not used
+            this.file = event.target.files[0];
+            this.filesSelected = event.target.files.length;
+            },
+            prepareFormData: function() {
+            this.formData = new FormData();
+            this.formData.append("upload_preset", this.preset);
+            this.formData.append("file", this.fileContents);
+            },
+            // function to handle form submit
+            upload: function() {
+            //no need to look at selected files if there is no cloudname or preset
+            if (this.preset.length < 1 || this.cloudName.length != 0) {
+                this.errors.push("You must enter a cloud name and preset to upload");
+                return;
+            }
+            // clear errors
+            else {
+                this.errors = [];
+            }
+            console.log("upload", this.file.name);
+            let reader = new FileReader();
+            // attach listener to be called when data from file
+            reader.addEventListener(
+                "load",
+                function() {
+                this.fileContents = reader.result;
+                this.prepareFormData();
+                let cloudinaryUploadURL = `https://api.cloudinary.com/v1_1/groupogag/upload`;
+                let requestObj = {
+                    url: cloudinaryUploadURL,
+                    method: "POST",
+                    data: this.formData,
+                    onUploadProgress: function(progressEvent) {
+                    this.progress = Math.round(
+                        (progressEvent.loaded * 100.0) / progressEvent.total
+                    );
+                    //bind "this" to access vue state during callback
+                    }.bind(this)
+                };
+                //show progress bar at beginning of post
+                this.showProgress = true;
+                axios(requestObj)
+                    .then(response => {
+                    this.results = response.data;
+                    this.avatar = response.data.secure_url
+                    console.log("public_id", this.results.public_id);
+                    })
+                    .catch(error => {
+                    this.errors.push(error);
+                    console.log(this.error);
+                    })
+                    .finally(() => {
+                    setTimeout(
+                        function() {
+                        this.showProgress = false;
+                        }.bind(this),
+                        1000
+                    );
+                    });
+                }.bind(this),
+                false
+            );
+        // call for file read if there is a file
+        if (this.file && this.file.name) {
+            reader.readAsDataURL(this.file);
         }
         },
-    headers: {
-    // Authorization:
-    //   'Bearer' + tokenFetch,
-  },
+            depSubmit(e) {
+                e.preventDefault();
+                console.log(this.department)
+                const token = tokenFetch
+                this.axios
+                    .put(
+                        userMe,
+                        {
+                            department: this.department
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    )
+                    .then(response => {
+                        // display success notification
+                        this.notification = Object.assign({}, this.notification, {
+                          message: response.data.message,
+                          type: 'success'
+                        })     
+                        swal("Département mis à jour","","success")
+                        window.location.reload();                   
+                    })
+                    .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+            },
+            nameSubmit(e) {
+                e.preventDefault();
+                console.log(this.firstName)
+                console.log(this.lastName)
+                const token = tokenFetch
+                this.axios
+                    .put(
+                        userMe,
+                        {
+                            firstName: this.firstName,
+                            lastName: this.lastName
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    )
+                    .then(response => {
+                        // display success notification     
+                        this.notification = Object.assign({}, this.notification, {
+                          message: response.data.message,
+                          type: 'success'
+                        })
+                        swal("Noms mis à jour !","","success")
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+            },
+            imageSubmit() {
+                this.axios.put(userMe
+                ,{
+                avatar: this.avatar },
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }
+                    })
+                .then(response => {
+                    // Handle success.
+                    console.log(response)
+                    swal('Avatar modifié !', '', 'success')
+                    window.location.reload();
+                })
+                .catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                })
+                },
+                validate () {
+                this.$refs.form.validate()
+                },
+                passwordSubmit(e) {
+                e.preventDefault();
+                console.log(this.password)
+                const token = tokenFetch
+                this.axios
+                    .put(
+                        userMe,
+                        {
+                            password: this.updatePass
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    )
+                    .then(response => {
+                        // display success notification     
+                        this.notification = Object.assign({}, this.notification, {
+                          message: response.data.message,
+                          type: 'success'
+                        })
+                        swal("Mot de passe modifié !","","success")
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+                    },
+                },
+            headers: {
+            Authorization:
+              'Bearer' + tokenFetch,
+        },
     name: 'profil',
     components: {
         foot,
+        ProgressBar
     }
 }
 </script>
@@ -281,5 +557,11 @@ export default {
 }
 
 .clear { clear: both; height: 150px; }
+
+form input {
+  background: #fff;
+  border: 1px solid #9c9c9c;
+}
+
 
 </style>

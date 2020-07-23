@@ -1,29 +1,12 @@
-var models  = require('../models');
-var express = require('express');
-var router  = express.Router();
-const bcrypt = require('bcrypt')
+const express = require("express");
+const router = express.Router();
+const userCtrl = require("../controllers/Users");
+const auth = require("../middleware/auth");
 
-router.get('/user', function(req, res) {
-  models.User.findAll({
-  }).then(function(users) {
-    res.send({
-      title: 'Sequelize: Express Example',
-      users: users,
-    });
-  });
-});
-
-router.post('/user/register', function(req, res) {
-  // bcrypt.hash(req.body.password, 10)
-  // .then(hash => {
-    const user = models.User.create({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password
-    })
-    return res.send(res).status(201).json({ message: 'User created !'})
-    .catch(error => res.status(400).json({ error }));
-    // })
-})
+router.post('/register', userCtrl.register);
+router.post('/login', userCtrl.login);
+router.get('/home', userCtrl.home);
+router.get('/user/:id', auth.me, userCtrl.userMe);
+router.put('/user/:id', auth.me, userCtrl.updateMe);
 
 module.exports = router;

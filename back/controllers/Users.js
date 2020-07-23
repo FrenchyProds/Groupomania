@@ -1,47 +1,107 @@
-var express = require('express')
-var router = express.Router()
 var jwt = require('jsonwebtoken')
 var bcrypt = require('bcrypt')
-
 var db = require("../models");
+var asyncHandler = require('../middleware/asyncHandler')
+require('dotenv').config();
 
-   router.post('/register', (req, res) => {
-    bcrypt.hash(req.body.password, 10,)  // We hash and salt the password
-    .then(hash => {
-       db.User.create({
-         username: req.body.username,
-         email: req.body.email,
-         password: hash,
-       })
-        .then(() => res.status(201).json({ message: 'User created !'}))
-        .catch(error => res.status(400).json({ error }));
+
+exports.register = asyncHandler(async (req, res, next) => {
+  const user = await db.User.create(req.body);
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+  await user.save();
+
+  const payload = { id: user.id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '1d',
+  });
+
+  console.log(token)
+
+  res.status(200).json({ success: true, data: token });
+});
+
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await db.User.findOne({ where: { email } });
+
+  if (!user) {
+    return next({
+      message: "The email is not yet registered",
+      statusCode: 400,
+    });
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    return next({ message: "The password does not match", statusCode: 400 });
+  }
+
+  const payload = { id: user.id };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '1d',
+  });
+  res.status(200).json({ success: true, data: token });
+};
+
+
+     exports.home = (req, res, next) => {
+      db.Reddit.findAll({
+       include: {
+         model: db.User,
+         attributes: ["username"],
+       },
+     order: [["createdAt", "DESC"]],
+      }),
+      db.Gag.findAll({
+       include: {
+         model: db.User,
+         attributes: ["username"],
+       },
+     order: [["createdAt", "DESC"]],
       })
-   })
+      res.status(200).json({ data: Reddit, Gag })
+    };
 
-   router.post('/login', (req, res) => {
-     db.User.findOne({ email: req.body.email })
-     .then(user => {
-        if(!user) {
-          return res.status(401).json({ error: 'Email inconnue !'})
-        }
-        bcrypt.compare(req.body.password, user.password)  // If the email exists, we first compare the password in the DB to the one that was input
-                .then(valid => {
-                    if (!valid) { // If the passwords don't match, error !
-                        return res.status(401).json({ error: 'Wrong Password !'})
-                    }
-                    res.status(200).json({   // However if the passwords match, the user is logged in
-                        userId: user._id,
-                        token: jwt.sign(  // And a 24 hour token is generated, which will be compared throughout the connection
-                            { userId: user.id },
-                            'RANDOM_TOKEN_SECRET',
-                            { expiresIn: '24h' }
-                        )
-                    });
-                })
-                .catch(error => res.status(500).json({ error }))
-        })
-        .catch(error => res.status(500).json({ error }))
-     });
+
+      exports.userMe = async (req, res, next) => {
+        await db.User.findOne({ where: {  id: req.params.id } })
+        .then(user => {
+           if(!user) {
+             
+             console.log(req.params.id)
+             return res.status(404).json({ error: 'Utilisateur inconnu !'})
+           } else {
+           res.status(200).json({ data: user })
+           return user;
+           }
+         })
+       };
+
+      exports.updateMe = async (req, res) => {
+        await db.User.update(req.body, {
+          where: { id: req.params.id }
+        });
+        const user = await db.User.findByPk(req.params.id, {
+          attributes: [
+            "id",
+            "email",
+            "firstName",
+            "lastName",
+            "username",
+            "avatar",
+            "department",
+            "password"
+          ]
+        });
+        console.log(req.params.id)
+        res.status(200).json({ data: user });
+        console.log(user)
+        return user;
+      };
 
     //  router.post('/postReddit', (req, res) => {
       
@@ -68,6 +128,3 @@ var db = require("../models");
 
       // }
     // })
-
-
-  module.exports = router;

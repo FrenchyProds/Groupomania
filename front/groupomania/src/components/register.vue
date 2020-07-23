@@ -74,14 +74,16 @@ const registerUrl = 'http://localhost:3000/register'
            password: this.password })
           .then(response => {
             // Handle success.
-            localStorage.setItem('jwt', JSON.stringify(response.data.jwt))
+            localStorage.setItem('jwt', JSON.stringify(response.data.data))
+            console.log(response)
+            console.log(localStorage)
             swal('Compte crée !', 'Bienvenue sur le réseau social Groupomania', 'success')
             this.$router.push('/')
           })
           .catch(error => {
             // Handle error.
             console.log('An error occurred:', error.response);
-            swal('Oops !', "Quelque chose n'a pas fonctionné", "alert")
+            swal("Quelque chose n'a pas fonctionné", "", "error")
           })
           },
           validate () {
