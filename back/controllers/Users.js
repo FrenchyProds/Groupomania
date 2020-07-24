@@ -12,18 +12,12 @@ exports.register = asyncHandler(async (req, res, next) => {
   user.password = await bcrypt.hash(user.password, salt);
   await user.save();
 
-  const payload = { id: user.id };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '1d',
-  });
-
-  console.log(token)
-
-  res.status(200).json({ success: true, data: token });
+  res.status(200).json({ success : true });
 });
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.headers)
 
   const user = await db.User.findOne({ where: { email } });
 
@@ -40,15 +34,18 @@ exports.login = async (req, res, next) => {
     return next({ message: "The password does not match", statusCode: 400 });
   }
 
-  const payload = { id: user.id };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '1d',
-  });
-  res.status(200).json({ success: true, data: token });
+  res.status(200).json({ 
+    token: jwt.sign(  // And a 24 hour token is generated, which will be compared throughout the connection
+    { userId: user.id },
+    process.env.JWT_SECRET,
+    { expiresIn: '24h' }
+) 
+});
 };
 
 
      exports.home = (req, res, next) => {
+       console.log(req.headers)
       db.Reddit.findAll({
        include: {
          model: db.User,
@@ -68,14 +65,15 @@ exports.login = async (req, res, next) => {
 
 
       exports.userMe = async (req, res, next) => {
+        console.log(req.headers)
         await db.User.findOne({ where: {  id: req.params.id } })
         .then(user => {
            if(!user) {
-             
-             console.log(req.params.id)
              return res.status(404).json({ error: 'Utilisateur inconnu !'})
            } else {
+            console.log(req.params.id)
            res.status(200).json({ data: user })
+
            return user;
            }
          })
@@ -102,6 +100,18 @@ exports.login = async (req, res, next) => {
         console.log(user)
         return user;
       };
+
+      exports.deleteMe = async (req, res) => {
+        await db.User.destroy( {
+          where : { id : req.params.id }
+        }).then(user => {
+          if(!user) {
+            return res.status(404).json({ error: 'Utilisateur inconnu !'})
+          } else {
+          res.status(200).json({ success : true })
+      }
+    })
+  }
 
     //  router.post('/postReddit', (req, res) => {
       

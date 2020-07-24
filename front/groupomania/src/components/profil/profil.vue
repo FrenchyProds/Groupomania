@@ -224,7 +224,7 @@
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
                         icon v-bind="attrs" v-on="on">
-                        <div class="btn-flex">
+                        <div class="btn-flex" @click="deleteAccount()">
                             <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
                             Supprimer
                         </div>
@@ -244,16 +244,13 @@
 
 <script>
 import foot from '../foot'
-import jwt_decode from 'jwt-decode'
 import axios from "axios";
 import swal from 'sweetalert';
 import ProgressBar from "vuejs-progress-bar";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-var decoded = jwt_decode(tokenFetch);
-console.log(decoded);
-const userId = decoded.id;
+let userId = JSON.parse(sessionStorage.getItem('id'));
 
 let userMe = `http://localhost:3000/user/${userId}`;
 
@@ -310,23 +307,19 @@ export default {
         }
     },
         beforeRouteEnter (to, from, next) {
-            const token = tokenFetch
-
-            return token ? next() : next('/index')
+            return tokenFetch ? next() : next('/')
         },
-        mounted () {
+        beforeMount () {
         },
         created () {
             this.fetchAuthenticatedUser()
         },
          methods: {
             fetchAuthenticatedUser () {
-                const token = tokenFetch
-                console.log(token)
                 this.axios
                     .get(userMe, {
                         headers: {
-                            Authorization: `Bearer ${token}`
+                            Authorization: `Bearer ${tokenFetch}`
                         }
                     })
                     .then(response => {
@@ -417,7 +410,6 @@ export default {
             depSubmit(e) {
                 e.preventDefault();
                 console.log(this.department)
-                const token = tokenFetch
                 this.axios
                     .put(
                         userMe,
@@ -426,7 +418,7 @@ export default {
                         },
                         {
                             headers: {
-                                Authorization: `Bearer ${token}`
+                                Authorization: `Bearer ${tokenFetch}`
                             }
                         }
                     )
@@ -449,7 +441,6 @@ export default {
                 e.preventDefault();
                 console.log(this.firstName)
                 console.log(this.lastName)
-                const token = tokenFetch
                 this.axios
                     .put(
                         userMe,
@@ -459,7 +450,7 @@ export default {
                         },
                         {
                             headers: {
-                                Authorization: `Bearer ${token}`
+                                Authorization: `Bearer ${tokenFetch}`
                             }
                         }
                     )
@@ -505,7 +496,6 @@ export default {
                 passwordSubmit(e) {
                 e.preventDefault();
                 console.log(this.password)
-                const token = tokenFetch
                 this.axios
                     .put(
                         userMe,
@@ -514,7 +504,7 @@ export default {
                         },
                         {
                             headers: {
-                                Authorization: `Bearer ${token}`
+                                Authorization: `Bearer ${tokenFetch}`
                             }
                         }
                     )
@@ -533,6 +523,42 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
                     },
+                    deleteAccount() {
+                        swal({
+                        title: "Voulez-vous vraiment supprimer votre compte ?",
+                        text: "Une fois supprimé, vous ne pourrez pas le récupérer",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Votre compte a été supprimé avec succes", {
+                            icon: "success",
+                            })
+                        this.axios.delete(userMe
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            this.$router.push('/')
+                        } else {
+                            swal("Suppresion de compte annulée");
+                        }
+                        })
+                
+                .catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+                    }
                 },
             headers: {
             Authorization:

@@ -1,6 +1,9 @@
 var express = require('express')
 var router = express.Router()
 
+const token = require('../middleware/getUserIdByToken');
+
+
 var db = require("../models");
 
 router.post('/reddit/post', async (req, res) => {
@@ -11,7 +14,7 @@ router.post('/reddit/post', async (req, res) => {
         },
         title: req.body.title,
         content: req.body.content,
-        userId: req.User.id,
+        userId: token.getUserIdByToken(req)
       });
       res.status(200).json({ data: Reddit })
       .catch(error => res.status(500).json({ error }))
@@ -25,7 +28,7 @@ router.get('/reddit', async (req, res) => {
           },
         order: [["createdAt", "DESC"]],
        })
-    //    console.log(Reddit)
+       console.log(req.headers)
        res.status(200).json({ data: Reddit })
        return Reddit;
 });
@@ -38,9 +41,10 @@ router.post('/gag/post', async (req, res) => {
         },
         title: req.body.title,
         content: req.body.content,
-        userId: req.user.id,
+        userId: token.getUserIdByToken(req)
       });
-      res.status(200).json({ data: Gag });
+      res.status(200).json({ data: Gag })
+      .catch(error => res.status(500).json({ error }))
       return Gag;
 });
 

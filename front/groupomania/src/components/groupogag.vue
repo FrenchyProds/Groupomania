@@ -12,7 +12,7 @@
                     aspect-ratio="1.5"
                     max-height="500"
                     contain/>
-                    <v-card-text>Created by {{ post.User.username }} - {{ post.created_at | moment("from") }}</v-card-text>
+                    <v-card-text>Created by {{ post.User.username || 'Utilisateur Supprimé' }} - {{ post.createdAt | moment("from") }}</v-card-text>
                     <v-divider></v-divider>
                     <v-card-text class="text-truncate" background-color="grey">
 
@@ -150,15 +150,16 @@ export default {
 
     }},      
      mounted() {
-          this.axios.get(apiUrl).then(res => {
+          this.axios.get(apiUrl,
+           {
+                headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                    }).then(res => {
                 this.posts = res.data.data
                 console.log(res.data.data)
           })
         },
-    headers: {
-    Authorization:
-      'Bearer' + tokenFetch,
-  },
     name: 'groupogag',
     components: {
         foot,

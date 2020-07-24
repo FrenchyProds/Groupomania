@@ -109,6 +109,7 @@ export default {
       },
       logoff() {
           localStorage.clear();
+          sessionStorage.clear();
           this.$router.push('/');
       }
     },

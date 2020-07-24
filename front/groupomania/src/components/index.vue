@@ -53,6 +53,7 @@
 import indexhead from './indexhead'
 import swal from 'sweetalert'
 
+
   export default {
     data: () => ({
       email: '',
@@ -74,7 +75,7 @@ import swal from 'sweetalert'
   })
   .then(response => {
     // Handle success.
-    localStorage.setItem('jwt', JSON.stringify(response.data.data))
+    localStorage.setItem('jwt', JSON.stringify(response.data.token))
     console.log(localStorage)
     console.log(response)
     this.$router.push('/mainPage')

@@ -60,6 +60,9 @@
 <script>
 import foot from './foot'
 import mainhead from './mainhead'
+import jwt_decode from 'jwt-decode'
+
+
 
 const redditURL = 'http://localhost:3000/reddit';
 const gagURL = 'http://localhost:3000/gag'
@@ -67,6 +70,13 @@ const gagURL = 'http://localhost:3000/gag'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 console.log(localStorage)
+
+var decoded = jwt_decode(tokenFetch);
+console.log(decoded);
+
+sessionStorage.setItem('id', JSON.stringify(decoded.userId))
+console.log(sessionStorage)
+
 
 export default {
     data: () => ({
@@ -77,7 +87,7 @@ export default {
     mounted() {
             this.axios.all([
                 this.axios.get(redditURL),
-                this.axios.get(gagURL)
+                this.axios.get(gagURL),
                ]).then(res => {
                    for (let i= 0; i < res.length; i++) {
                     this.posts.push(res[i].data.data)
@@ -91,8 +101,7 @@ export default {
         },
     name: 'mainPage',
     headers: {
-        Authorization:
-       'Bearer' + tokenFetch,
+        Authorization: `Bearer ${tokenFetch}`
   },
     components: {
         foot,

@@ -95,15 +95,16 @@ export default {
     }
   },
   mounted() {
-          this.axios.get(apiUrl).then(res => {
+          this.axios.get(apiUrl,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
                 this.posts = res.data.data
                 console.log(res.data)
           })
         },
-    headers: {
-    Authorization:
-      'Bearer' + tokenFetch,
-  },
     name: 'groupodiscute',
     components: {
         foot,

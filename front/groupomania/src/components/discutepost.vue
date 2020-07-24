@@ -41,6 +41,10 @@ import swal from 'sweetalert'
 
 const redditURL = 'http://localhost:3000/reddit/post'
 
+let userId = JSON.parse(sessionStorage.getItem('id'));
+
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+
 export default {
   props: {
      value: Boolean,
@@ -53,15 +57,23 @@ export default {
           formSubmit(e) {
           e.preventDefault();
           this.axios.post(redditURL
-          ,{
+          , 
+          {
            title: this.title,
-           content: this.imageURL, })
+           content: this.content,
+           userId: userId },
+           {
+                headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                    })
           .then(response => {
             // Handle success.
             console.log(response)
             console.log(this.title)
+            console.log(this.content)
             swal('Discute publié !', 'Votre publication a été mise en ligne', 'success')
-            this.$router.push('/groupodiscute');
+            window.location.reload();
           })
           .catch(error => {
             // Handle error.

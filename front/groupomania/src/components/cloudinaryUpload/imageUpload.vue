@@ -8,17 +8,19 @@
     <!-- create a form that will not submit to a server but will prevent submit and
     use the upload function as a handle-->
     <form v-on:submit.prevent="upload">
-      <!-- allow the user to select an image file and when they have selected it call a function 
-      to handle this event-->
-      <label for="file-input">Mettre l'image en ligne</label>
-      <input
-        id="file-input"
-        type="file"
-        accept="image/png, image/jpeg"
-        @change="handleFileChange($event)"
-      />
-      <!-- submit button is disabled until a file is selected -->
-      <button type="submit" :disabled="filesSelected != 1">Héberger</button>
+       <v-row class="d-block pb-5">
+                <!-- allow the user to select an image file and when they have selected it call a function 
+                to handle this event-->
+                <label for="file-input"></label>
+                <input
+                    id="file-input"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    @change="handleFileChange($event)"
+                />
+                </v-row>
+                <!-- submit button is disabled until a file is selected -->
+                <v-btn type="submit" :disabled="filesSelected != 1" fill color="light-green" >Héberger</v-btn>
     </form>
 
     <!-- display uploaded image if successful -->
