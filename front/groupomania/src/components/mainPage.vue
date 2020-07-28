@@ -1,15 +1,42 @@
 <template>
     <v-container>
         <mainhead/>
-        <v-select :items="items" label="Trier par :" filled>
-        </v-select>
+        <div class="text-center">
+        <v-card class="introText font-weight-bold margin-auto pb-5">
+            Bienvenue sur le reséau social by Groupomania !
+        </v-card>
+        <v-divider />
+        <v-card-title class="welcomeText">
+            <!-- <v-card-title class="mainText Zero">
+                Ce réseau social a pour but de vous permettre d'échanger, de partager et surtout de vous rapprocher les uns des autres
+            </v-card-title> -->
+            <router-link to="./règlement"><v-card class="mainText One">
+            <v-icon color="red"></v-icon>Merci de bien vouloir vous référer à notre règlement interieur avant de commencer à poster en cliquant sur cet encadré.
+            </v-card></router-link>
+            <v-card-title class="mainText Two">
+            Vous pouvez mettre votre profil à jour via l'onglet "PROFIL" en bas de page et en renseignant vos informations personnelles.
+            </v-card-title>
+            <v-card-title class="mainText Three">
+            Nous vous rappelons que tout comportement en non-adéquation avec les valeurs de l'entreprise entraînera des sanctions tant sur le réseau qu'au travail
+            </v-card-title>
+            <v-card class="mainText Four">
+            Les dernières publications de nos internautes :
+            </v-card>
+        </v-card-title> 
+        </div>
         <v-card class="text-center">
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
-                    <v-card-title background-color="lightgrey">{{ post[0].title }}</v-card-title>
+                    <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
                     <v-divider></v-divider>
-                    <v-card-text>{{ post[0].content }}</v-card-text>
-                    <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                    <v-card-text v-if="post[0].type === 'reddit'">{{ post[0].content }}</v-card-text>
+                    <v-img
+                    v-else
+                    :src="(post[0].content)"
+                    aspect-ratio="1.5"
+                    max-height="500"
+                    contain/>
+                    <v-card-text>Created by {{ post[0].User.username || 'Utilisateur supprimé' }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
                     <v-divider></v-divider>
                     <v-card-text class="text-truncate" background-color="grey">
 
@@ -83,17 +110,24 @@ export default {
         items: ['Dernières publications', 'Le plus de likes'],
         // test: [],
         posts: [],
+        reddit: '',
+        gag: '',
     }),
     mounted() {
             this.axios.all([
-                this.axios.get(redditURL),
-                this.axios.get(gagURL),
+                this.axios.get(redditURL,
+                { headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }}),
+                this.axios.get(gagURL,
+                { headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }}),
                ]).then(res => {
                    for (let i= 0; i < res.length; i++) {
                     this.posts.push(res[i].data.data)
-                    // for (let j = 0; j < res[j].data.data.length; j++) {
-                    //     this.posts.push(this.posts[j]);
-                    // }
+                    this.reddit = this.posts.type
+                    this.gag = this.posts.type
                    }
                    console.log(res)
                    console.log(this.posts)
@@ -111,6 +145,56 @@ export default {
 </script>
 
 <style scoped>
+.v-responsive {
+    border: 2px groove;
+}
 
+.introText {
+    text-align: center !important;
+    margin: auto;
+    font-size: 1.8rem;
+    box-shadow: none;
+}
+
+.mainText {
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
+.Four {
+    margin-top: 2rem !important;
+    text-decoration: underline;
+    margin: auto;
+    box-shadow: none;
+}
+
+.content {
+    padding-bottom: 2rem;
+}
+
+.v-card__title {
+    word-break: normal;
+}
+
+.content:last-child {
+    padding-bottom: 6rem;
+}
+
+.text-truncate {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+.hoverTime:hover:before {
+    color: darkred;
+}
+
+.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
+   bottom: 100px;
+   right: 47%
+}
+.clear { clear: both; height: 150px; }
 
 </style>

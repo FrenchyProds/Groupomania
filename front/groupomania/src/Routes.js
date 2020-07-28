@@ -7,6 +7,9 @@ import mainPage from './components/mainPage'
 import groupogag from './components/groupogag'
 import groupodiscute from './components/groupodiscute'
 import profil from './components/profil/profil'
+import discute from './components/discutepost'
+import voirgag from './components/voirgag'
+import voirdiscute from './components/voirdiscute'
 
 export default [
     {
@@ -72,9 +75,51 @@ export default [
         } 
     },
     {
+        path: '/groupogag/post/:id',
+        name: 'voirgag',
+        component: voirgag,
+        requiresAuth: true,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('jwt') == null) {
+                next ({ name: 'index' })
+                swal('ACCES INTERDIT', "Merci de vous authentifier avant de tenter d'accéder à cette page", 'error')
+            } else {
+                next()
+            } next()
+        } 
+    },
+    {
         path: '/groupodiscute',
         name: 'groupodiscute',
         component: groupodiscute,
+        requiresAuth: true,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('jwt') == null) {
+                next ({ name: 'index' })
+                swal('ACCES INTERDIT', "Merci de vous authentifier avant de tenter d'accéder à cette page", 'error')
+            } else {
+                next()
+            } next()
+        } 
+    },
+    {
+        path: '/groupodiscute/post/:id',
+        name: 'voirdiscute',
+        component: voirdiscute,
+        requiresAuth: true,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('jwt') == null) {
+                next ({ name: 'index' })
+                swal('ACCES INTERDIT', "Merci de vous authentifier avant de tenter d'accéder à cette page", 'error')
+            } else {
+                next()
+            } next()
+        } 
+    },
+    {
+        path: '/groupodiscute/post',
+        name: 'discute',
+        component: discute,
         requiresAuth: true,
         beforeEnter: (to, from, next) => {
             if (localStorage.getItem('jwt') == null) {

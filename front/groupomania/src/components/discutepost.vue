@@ -36,7 +36,6 @@
 </template>
 
 <script>
-
 import swal from 'sweetalert'
 
 const redditURL = 'http://localhost:3000/reddit/post'

@@ -33,6 +33,26 @@ router.get('/reddit', async (req, res) => {
        return Reddit;
 });
 
+router.get('/reddit/:id', async (req, res) => {
+    const Reddit = await db.Reddit.findOne({ where: { id: req.params.id },
+        include: 
+          {
+            model: db.User,
+            attributes: ["id", "username"],
+          },
+      })
+    .then(reddit => {
+        if(!reddit) {
+            console.log(req.params.id)
+            return res.status(404).json({ error: 'Publication inconnue !'})
+          } else {
+           console.log(req.params.id)
+          res.status(200).json({ data: reddit })
+          return reddit;
+          }
+    })
+});
+
 router.post('/gag/post', async (req, res) => {
     const Gag = await db.Gag.create({
         include: {
@@ -59,6 +79,26 @@ router.get('/gag', async (req, res) => {
     //    console.log(Gag)
        res.status(200).json({ data: Gag })
        return Gag;
+});
+
+router.get('/gag/:id', async (req, res) => {
+    const Gag = await db.Gag.findOne({ where: { id: req.params.id },
+        include: 
+          {
+            model: db.User,
+            attributes: ["id", "username"],
+          },
+      })
+    .then(gag => {
+        if(!gag) {
+            console.log(req.params.id)
+            return res.status(404).json({ error: 'Publication inconnue !'})
+          } else {
+           console.log(req.params.id)
+          res.status(200).json({ data: gag })
+          return gag;
+          }
+    })
 });
 
 module.exports = router;

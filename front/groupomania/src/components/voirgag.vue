@@ -1,11 +1,7 @@
 <template>
     <v-container>
         <mainhead/>
-        <v-select :items="items" label="Trier par :" filled>
-        </v-select>
             <div>
-                <div class="content" v-for="post in posts" :key="post.id">
-                    <div @click="goToPost(post.id)">
                     <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                     <v-divider></v-divider>
                     <v-img
@@ -13,11 +9,10 @@
                     aspect-ratio="1.5"
                     max-height="500"
                     contain/>
-                    <v-card-text>Crée par {{ post.User.username || 'Utilisateur Supprimé' }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                    <v-card-text>Crée par {{ user.username || 'Utilisateur Supprimé' }} - {{ post.createdAt | moment("from") }}</v-card-text>
                     <v-divider></v-divider>
-                    </div>
                     <v-card-text class="text-truncate" background-color="grey">
-                    
+
                 <div class="likes">
                     <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
@@ -56,74 +51,51 @@
                 <v-divider></v-divider>
                     
                 </div>
-            </div>
-
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    fixed
-                    dark
-                    fab
-                    justify-center
-                    color="red"
-                    class="hoverTime"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="gagpost = true"
-                    >
-                        <v-icon color="white">mdi-pencil</v-icon>
-                    </v-btn>
-                    <gagpost v-model="gagpost" />
-                </template>
-                <span>Créer ma publication GroupoGag !</span>    
-            </v-tooltip>
 
         <div class="clear"></div>
             
-        <foot/>
+        <modifiedfoot/>
     </v-container>
 </template>
 
 <script>
-import foot from './foot'
+import modifiedfoot from './modifiedfoot'
 import mainhead from './mainhead'
-import gagpost from './gagpost'
 
-const apiUrl = 'http://localhost:3000/gag';
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
 export default {
     data () {
         return {
         items: ['Dernières publications', 'Le plus de likes'],
-        posts: [],
+        post: [],
+        user: [],
         url: [],
         gagpost: false,
         title: '',
-        id: ''
-
     }},      
      mounted() {
-          this.axios.get(apiUrl,
-           {
+         this.asyncData();
+        },
+        methods: {
+            async asyncData() {
+                 await this.axios.get('http://localhost:3000/gag/' + this.$route.params.id,
+                {
                 headers: {
                     Authorization: `Bearer ${tokenFetch}`
                         }
                     }).then(res => {
-                this.posts = res.data.data
+                this.post = res.data.data
+                this.user = this.post.User
                 console.log(res.data.data)
           })
+            }
+
         },
-        methods: {
-        goToPost(postId) {
-            this.$router.push({name:'voirgag',params:{id:postId}})
-        }
-    },
-    name: 'groupogag',
+    name: 'voirgag',
     components: {
-        foot,
         mainhead,
-        gagpost
+        modifiedfoot,
     },
 }
 </script>

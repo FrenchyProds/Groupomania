@@ -45,7 +45,6 @@ exports.login = async (req, res, next) => {
 
 
      exports.home = (req, res, next) => {
-       console.log(req.headers)
       db.Reddit.findAll({
        include: {
          model: db.User,
@@ -65,15 +64,12 @@ exports.login = async (req, res, next) => {
 
 
       exports.userMe = async (req, res, next) => {
-        console.log(req.headers)
         await db.User.findOne({ where: {  id: req.params.id } })
         .then(user => {
            if(!user) {
              return res.status(404).json({ error: 'Utilisateur inconnu !'})
            } else {
-            console.log(req.params.id)
            res.status(200).json({ data: user })
-
            return user;
            }
          })
