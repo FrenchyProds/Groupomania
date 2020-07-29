@@ -10,6 +10,7 @@ import profil from './components/profil/profil'
 import discute from './components/discutepost'
 import voirgag from './components/voirgag'
 import voirdiscute from './components/voirdiscute'
+import rules from './components/rules'
 
 export default [
     {
@@ -131,9 +132,23 @@ export default [
         } 
     },
     {
-        path: '/myprofile',
+        path: '/myprofile/:id',
         name: 'profil',
         component: profil,
+        requiresAuth: true,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('jwt') == null) {
+                next ({ name: 'index' })
+                swal('ACCES INTERDIT', "Merci de vous authentifier avant de tenter d'accéder à cette page", 'error')
+            } else {
+                next()
+            } next()
+        } 
+    },
+    {
+        path: '/règlement',
+        name: 'rules',
+        component: rules,
         requiresAuth: true,
         beforeEnter: (to, from, next) => {
             if (localStorage.getItem('jwt') == null) {

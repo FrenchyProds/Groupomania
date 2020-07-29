@@ -3,11 +3,17 @@
         <mainhead/>
             <div>
                 <div class="content">
-                    <div v-if="post.User !== null">
+                   
                         <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text>{{ post.content }}</v-card-text>
+                         <div v-if="post.User !== null">
                         <v-card-text>Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                         </div>
+                        <div v-else>
+                        <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
+                        </div>
+                         </div>
                         <v-divider></v-divider>
                         <v-card-text class="text-truncate" background-color="grey">
 
@@ -38,47 +44,7 @@
                     </v-tooltip>
                     </v-card-text>
                     <v-divider></v-divider>
-
-                    </div>
-                    <div v-else>
-                        <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
-                        <v-divider></v-divider>
-                        <v-card-text>{{ post.content }}</v-card-text>
-                        <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
-                        <v-divider></v-divider>
-                        <v-card-text class="text-truncate" background-color="grey">
-
-
-                        <div class="likes">
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
-                            </template>
-                            <span>J'aime !</span>
-                            </v-tooltip>
-                        </div>
-
-                        <div class="dislikes">
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                            </template>
-                            <span>J'aime pas !</span>
-                            </v-tooltip>
-                        </div>
-
-                        <v-tooltip top>
-                        <template v-slot:activator="{ on, attrs }">
-                        <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                        </template>
-                        <span>Signaler du contenu</span>
-                        </v-tooltip>
-                        </v-card-text>
-                        <v-divider></v-divider>
-                    </div>
-                </div>
             </div>
-
         <div class="clear"></div>
             
         <modifiedfoot/>

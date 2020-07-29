@@ -30,7 +30,7 @@
                 <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                 <v-btn v-if="!profil()"
-                icon to="/myprofile" v-bind="attrs"
+                icon @click="goToProfile()" v-bind="attrs"
                     v-on="on">
                     <div class="btn-flex">
                     <v-icon size="24px" color="white">mdi-account</v-icon>
@@ -79,6 +79,7 @@
 
 <script>
 
+let userId = JSON.parse(localStorage.getItem('id'))
 
 
 export default {
@@ -88,6 +89,7 @@ export default {
         'mdi-home',
         'mdi-comment',
       ],
+      id: userId,
       closeOnContentClick: true,
     }),
     components: {
@@ -96,21 +98,20 @@ export default {
       mainPage() {
       if(this.$route.path == "/mainPage") {
           return true
-        } else {
-          return false
         }
       },
       profil() {
-      if(this.$route.path == "/myprofile") {
+      if(this.$route.path == "/myprofile/") {
           return true
-        } else {
-          return false
         }
       },
       logoff() {
           localStorage.clear();
           sessionStorage.clear();
           this.$router.push('/');
+      },
+      goToProfile() {
+          this.$router.push({name: 'profil', params: {id:userId}})
       }
     },
     name: 'foot'

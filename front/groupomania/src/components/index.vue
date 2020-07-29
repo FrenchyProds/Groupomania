@@ -52,6 +52,7 @@
 <script>
 import indexhead from './indexhead'
 import swal from 'sweetalert'
+import jwt_decode from 'jwt-decode'
 
 
   export default {
@@ -76,6 +77,11 @@ import swal from 'sweetalert'
   .then(response => {
     // Handle success.
     localStorage.setItem('jwt', JSON.stringify(response.data.token))
+    let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+    var decoded = jwt_decode(tokenFetch);
+    console.log(decoded);
+
+    localStorage.setItem('id', JSON.stringify(decoded.userId))
     console.log(localStorage)
     console.log(response)
     this.$router.push('/mainPage')

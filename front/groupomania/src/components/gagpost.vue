@@ -206,7 +206,7 @@ export default {
             // Handle success.
             console.log(response)
             swal('Gag publié !', 'Votre publication a été mise en ligne', 'success')
-            window.location.reload();
+            // window.location.reload();
           })
           .catch(error => {
             // Handle error.

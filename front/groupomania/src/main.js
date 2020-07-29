@@ -7,6 +7,7 @@ import Vuelidate from 'vuelidate';
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import underscore from 'vue-underscore'
+import VueSmoothScroll from 'vue2-smooth-scroll'
 
 Vue.config.productionTip = false
 
@@ -16,6 +17,8 @@ const moment = require('moment')
 require('moment/locale/fr')
 
 Vue.use(underscore)
+
+Vue.use(VueSmoothScroll)
  
 Vue.use(require('vue-moment'), {
     moment

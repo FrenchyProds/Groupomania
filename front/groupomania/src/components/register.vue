@@ -75,7 +75,6 @@ const registerUrl = 'http://localhost:3000/register'
           .then(response => {
             // Handle success.
             console.log(response)
-            console.log(localStorage)
             swal('Compte crée !', 'Bienvenue sur le réseau social Groupomania', 'success')
             this.$router.push('/')
           })

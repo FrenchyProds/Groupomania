@@ -7,9 +7,6 @@
         </v-card>
         <v-divider />
         <v-card-title class="welcomeText">
-            <!-- <v-card-title class="mainText Zero">
-                Ce réseau social a pour but de vous permettre d'échanger, de partager et surtout de vous rapprocher les uns des autres
-            </v-card-title> -->
             <router-link to="./règlement"><v-card class="mainText One">
             <v-icon color="red"></v-icon>Merci de bien vouloir vous référer à notre règlement interieur avant de commencer à poster en cliquant sur cet encadré.
             </v-card></router-link>
@@ -27,59 +24,116 @@
         <v-card class="text-center">
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
-                    <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
-                    <v-divider></v-divider>
-                    <v-card-text v-if="post[0].type === 'reddit'">{{ post[0].content }}</v-card-text>
-                    <v-img
-                    v-else
-                    :src="(post[0].content)"
-                    aspect-ratio="1.5"
-                    max-height="500"
-                    contain/>
-                    <v-card-text>Created by {{ post[0].User.username || 'Utilisateur supprimé' }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
-                    <v-divider></v-divider>
-                    <v-card-text class="text-truncate" background-color="grey">
+                            <div v-if="post[0].type === 'reddit'"> <!-- TEMPLATE REDDIT --> 
+                                <div @click="goToReddit(post[0].id)">
+                                <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
+                                <v-divider></v-divider>
+                                <v-card-text>{{ post[0].content }}</v-card-text>
+                                <div v-if="post[0].User !== null">
+                                    <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                </div>
+                                <div v-else>
+                                    <v-card-text>Utilisateur Supprimé- {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                </div>
+                                <v-divider></v-divider>
+                                </div>
+                            
+                            <v-card-text class="text-truncate" background-color="grey">
+                            <div class="likes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                </template>
+                                <span>J'aime !</span>
+                                </v-tooltip>
+                            </div>
+                            <div class="dislikes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                </template>
+                                <span>J'aime pas !</span>
+                                </v-tooltip>
+                            </div>
+                            <div class="comments">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                                8</v-btn>
+                                </template>
+                                <span>Laisser un commentaire</span>
+                                </v-tooltip>
+                            </div>
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            </template>
+                            <span>Signaler du contenu</span>
+                            </v-tooltip>
+                            </v-card-text>
+                            <v-divider></v-divider>
+                            </div>     <!-- FIN DU TEMPLATE REDDIT --> 
 
-                <div class="likes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
-                    </template>
-                    <span>J'aime !</span>
-                    </v-tooltip>
-                </div>
+                            <div v-else> 
+                            <div @click="goToGag(post[0].id)"> <!-- TEMPLATE GAG --> 
+                                <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
+                                <v-divider></v-divider>
+                                <v-img
+                                :src="(post[0].content)"
+                                aspect-ratio="1.5"
+                                max-height="500"
+                                contain/>
+                                <div v-if="post[0].User !== null"> 
+                                    <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                </div>
+                                <div v-else>
+                                    <v-card-text>Utilisateur Supprimé - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                </div>
+                                <v-divider></v-divider>
+                            </div>
+                            
+                            <v-card-text class="text-truncate" background-color="grey">
 
-                <div class="dislikes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                    </template>
-                    <span>J'aime pas !</span>
-                    </v-tooltip>
-                </div>
+                            <div class="likes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                </template>
+                                <span>J'aime !</span>
+                                </v-tooltip>
+                            </div>
 
-                <div class="comments">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                    8</v-btn>
-                    </template>
-                    <span>Laisser un commentaire</span>
-                    </v-tooltip>
-                </div>
+                            <div class="dislikes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                </template>
+                                <span>J'aime pas !</span>
+                                </v-tooltip>
+                            </div>
 
-                <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                </template>
-                <span>Signaler du contenu</span>
-                </v-tooltip>
-                </v-card-text>
-                <v-divider></v-divider>
-                    
+                            <div class="comments">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                                8</v-btn>
+                                </template>
+                                <span>Laisser un commentaire</span>
+                                </v-tooltip>
+                            </div>
+
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            </template>
+                            <span>Signaler du contenu</span>
+                            </v-tooltip>
+                            </v-card-text>
+                            <v-divider></v-divider>
+                        </div> <!--FIN DU TEMPLATE GAG --> 
                 </div>
-            </div>
-            </v-card>
+           </div>
+        </v-card>
         <foot/>
     </v-container>
 </template>
@@ -87,9 +141,6 @@
 <script>
 import foot from './foot'
 import mainhead from './mainhead'
-import jwt_decode from 'jwt-decode'
-
-
 
 const redditURL = 'http://localhost:3000/reddit';
 const gagURL = 'http://localhost:3000/gag'
@@ -97,12 +148,6 @@ const gagURL = 'http://localhost:3000/gag'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 console.log(localStorage)
-
-var decoded = jwt_decode(tokenFetch);
-console.log(decoded);
-
-sessionStorage.setItem('id', JSON.stringify(decoded.userId))
-console.log(sessionStorage)
 
 
 export default {
@@ -133,6 +178,14 @@ export default {
                    console.log(this.posts)
           })
         },
+    methods: {
+        goToGag(postId) {
+            this.$router.push({name:'voirgag',params:{id:postId}})
+        },
+        goToReddit(postId) {
+            this.$router.push({name:'voirdiscute',params:{id:postId}})
+        }
+    },
     name: 'mainPage',
     headers: {
         Authorization: `Bearer ${tokenFetch}`

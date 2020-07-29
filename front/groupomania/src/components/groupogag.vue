@@ -5,56 +5,62 @@
         </v-select>
             <div>
                 <div class="content" v-for="post in posts" :key="post.id">
-                    <div @click="goToPost(post.id)">
-                    <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
-                    <v-divider></v-divider>
-                    <v-img
-                    :src="(post.content)"
-                    aspect-ratio="1.5"
-                    max-height="500"
-                    contain/>
-                    <v-card-text>Crée par {{ post.User.username || 'Utilisateur Supprimé' }} - {{ post.createdAt | moment("from") }}</v-card-text>
-                    <v-divider></v-divider>
-                    </div>
-                    <v-card-text class="text-truncate" background-color="grey">
                     
-                <div class="likes">
+                        <div @click="goToPost(post.id)">
+                        <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
+                        <v-divider></v-divider>
+                        <v-img
+                        :src="(post.content)"
+                        aspect-ratio="1.5"
+                        max-height="500"
+                        contain/>
+                        <div v-if="post.User !== null">
+                        <v-card-text>Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                        </div>
+                        <div v-else>
+                        <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
+                        </div>
+                        <v-divider></v-divider>
+                        </div>
+                        <v-card-text class="text-truncate" background-color="grey">
+                        
+                        <div class="likes">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                            </template>
+                            <span>J'aime !</span>
+                            </v-tooltip>
+                        </div>
+
+                        <div class="dislikes">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                            </template>
+                            <span>J'aime pas !</span>
+                            </v-tooltip>
+                        </div>
+
+                        <div class="comments">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                            8</v-btn>
+                            </template>
+                            <span>Laisser un commentaire</span>
+                            </v-tooltip>
+                        </div>
+
                     <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                    <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                     </template>
-                    <span>J'aime !</span>
+                    <span>Signaler du contenu</span>
                     </v-tooltip>
-                </div>
+                    </v-card-text>
+                    <v-divider></v-divider>
 
-                <div class="dislikes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                    </template>
-                    <span>J'aime pas !</span>
-                    </v-tooltip>
-                </div>
-
-                <div class="comments">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                    8</v-btn>
-                    </template>
-                    <span>Laisser un commentaire</span>
-                    </v-tooltip>
-                </div>
-
-                <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                </template>
-                <span>Signaler du contenu</span>
-                </v-tooltip>
-                </v-card-text>
-                <v-divider></v-divider>
-                    
                 </div>
             </div>
 

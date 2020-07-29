@@ -21,7 +21,7 @@
     <v-card>
         <v-row class="text-center">
             <v-col cols="4">
-                Email :
+                Email
             </v-col>
             <v-col>
                 {{user.email}}
@@ -33,7 +33,7 @@
     <v-card class="my-2">
         <v-row class="text-center ml-1">
             <v-col cols="4">
-                Département :
+                Département
             </v-col>
             <v-col>
                 {{user.department}}
@@ -74,7 +74,7 @@
     <v-card class="my-2">
         <v-row class="text-center ml-1">
             <v-col cols="4">
-                Prénom :
+                Prénom
             </v-col>
             <v-col>
                 {{user.firstName}}
@@ -88,7 +88,7 @@
         </v-row>
         <v-row class="text-center ml-1">
             <v-col cols="4">
-                Nom de famille :
+                Nom
             </v-col>
             <v-col>
                 {{user.lastName}}
@@ -243,16 +243,17 @@
 </template>
 
 <script>
-import foot from '../foot'
+import foot from '../modifiedfoot'
 import axios from "axios";
 import swal from 'sweetalert';
 import ProgressBar from "vuejs-progress-bar";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-let userId = JSON.parse(sessionStorage.getItem('id'));
+let userId = JSON.parse(localStorage.getItem('id'));
 
 let userMe = `http://localhost:3000/user/${userId}`;
+console.log(userMe)
 
 export default {
     data() {
@@ -299,7 +300,8 @@ export default {
         options: progressBarOptions,
         fileContents: null,
         formData: null,
-        once: 1,
+        componentKey: 0,
+        userMe: this.userMe
         // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
@@ -309,29 +311,27 @@ export default {
         beforeRouteEnter (to, from, next) {
             return tokenFetch ? next() : next('/')
         },
-        beforeMount () {
-        },
         created () {
             this.fetchAuthenticatedUser()
         },
          methods: {
-            fetchAuthenticatedUser () {
+            async fetchAuthenticatedUser () {
                 this.axios
-                    .get(userMe, {
+                    .get(await userMe, {
                         headers: {
                             Authorization: `Bearer ${tokenFetch}`
                         }
                     })
                     .then(response => {
-                        this.id = response.data.data.id
-                        this.username = response.data.data.username
-                        this.email = response.data.data.email
-                        this.firstName = response.data.data.firstName
-                        this.lastName = response.data.data.lastName
-                        this.department = response.data.data.department
-                        this.avatar = response.data.data.avatar
-                        this.password = response.data.data.password
-                        this.user = response.data.data
+                        this.user = response.data.user
+                        this.id = this.user.id
+                        this.username = this.user.username
+                        this.email = this.user.email
+                        this.firstName = this.user.firstName
+                        this.lastName = this.user.lastName
+                        this.department = this.user.department
+                        this.avatar = this.user.avatar
+                        this.password = this.user.password
                         console.log(this.user)
                     })
             },
