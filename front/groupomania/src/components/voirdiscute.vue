@@ -3,12 +3,57 @@
         <mainhead/>
             <div>
                 <div class="content">
-                   
+                    <div v-if="user">
+                        <div v-if="user.id === this.userIsMe">
+                            <v-row justify="center">
+                                <v-dialog v-model="modalDialog" max-width="600px">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                    color="white"
+                                    dark
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    >
+                                    Modifier ma publication
+                                    </v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-title>
+                                    <span class="headline" >Modifier ma publication</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                    <v-container>
+                                        <v-row>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field textarea label="Contenu de la publication" v-model="post.content"></v-text-field>
+                                        </v-col>
+                                        </v-row>
+                                    </v-container>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-row d-flex class="justify-content-space-between">
+                                    <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
+                                    <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
+                                    </v-row>
+                                    </v-card-actions>
+                                </v-card>
+                                </v-dialog>
+                            </v-row>
+                        </div>
+                    </div>
                         <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                         <v-divider></v-divider>
-                        <v-card-text>{{ post.content }}</v-card-text>
+                        <v-card-text class="content">{{ post.content }}</v-card-text>
                          <div v-if="post.User !== null">
-                        <v-card-text>Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                        <v-card-text class="flex-row">Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
+                            <div v-if="post.createdAt != post.updatedAt">
+                                Modifié {{ post.updatedAt | moment("from") }}
+                            </div>
+                        </v-card-text>
                          </div>
                         <div v-else>
                         <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
@@ -16,6 +61,8 @@
                          </div>
                         <v-divider></v-divider>
                         <v-card-text class="text-truncate" background-color="grey">
+
+                        
 
 
                         <div class="likes">
@@ -45,6 +92,22 @@
                     </v-card-text>
                     <v-divider></v-divider>
             </div>
+
+            <v-card-title>
+                Commentaires
+            </v-card-title>
+
+            <div v-if="!post.Comments || post.Comments.length === 0">
+                Aucun commentaire n'a été posté pour l'instant !
+            </div>
+            <div v-else>
+            <div class="comments" v-for="comment in comments" :key="comment.id">
+                <v-card-text>
+                    <p>{{comment.content}}</p>
+                </v-card-text>
+            </div>
+            </div>
+
         <div class="clear"></div>
             
         <modifiedfoot/>
@@ -54,8 +117,14 @@
 <script>
 import modifiedfoot from './modifiedfoot'
 import mainhead from './mainhead'
+import jwt_decode from 'jwt-decode'
+import swal from 'sweetalert'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+
+var decoded = jwt_decode(tokenFetch);
+
+let userId = decoded.userId
 
 export default {
     data () {
@@ -64,8 +133,12 @@ export default {
         post: [],
         user: [],
         url: [],
-        gagpost: false,
         title: '',
+        comments: [],
+        userIsMe: userId,
+        modalDialog: false,
+        updateTitle: '',
+        updateContent: ''
     }},      
      mounted() {
          this.asyncData();
@@ -80,10 +153,39 @@ export default {
                     }).then(res => {
                 this.post = res.data.data
                 this.user = this.post.User
+                this.comments = this.post.Comments
+                console.log(this.userIsMe)
+                console.log(this.comments)
                 console.log(res.data.data)
           })
-            }
-
+            },
+            updatePost() {
+                 this.axios.put('http://localhost:3000/reddit/' + this.$route.params.id, {
+                    title: this.post.title,
+                    content: this.post.content,
+                },
+                {
+                    headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                }
+                )
+                .then(response => {
+                        // display success notification
+                        this.notification = Object.assign({}, this.notification, {
+                          message: response.data.message,
+                          type: 'success'
+                        })
+                        this.modalDialog = false,
+                        swal("Publication mise à jour !","","success")
+                        window.location.reload();                   
+                    })
+                    .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+            },
         },
     name: 'voirdiscute',
     components: {
@@ -113,8 +215,12 @@ export default {
   font-weight: 500;
 }
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
-   bottom: 100px;
-   right: 47%
+   margin-top: 2rem;
+   color: red;
+}
+
+.content {
+    font-size: 1.1rem;
 }
 .clear { clear: both; height: 150px; }
 </style>

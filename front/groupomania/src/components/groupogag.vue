@@ -14,6 +14,7 @@
                         aspect-ratio="1.5"
                         max-height="500"
                         contain/>
+                        </div>
                         <div v-if="post.User !== null">
                         <v-card-text>Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
                         </div>
@@ -21,7 +22,7 @@
                         <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <v-divider></v-divider>
-                        </div>
+                        
                         <v-card-text class="text-truncate" background-color="grey">
                         
                         <div class="likes">

@@ -29,14 +29,15 @@
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
                                 <v-divider></v-divider>
                                 <v-card-text>{{ post[0].content }}</v-card-text>
-                                <div v-if="post[0].User !== null">
-                                    <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                </div>
+                                <div v-if="post[0].User !== null"> 
+                                    <v-card-text @click="goToUser(post[0].User.username)">Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
                                 <div v-else>
                                     <v-card-text>Utilisateur Supprimé- {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
                                 <v-divider></v-divider>
-                                </div>
+                                
                             
                             <v-card-text class="text-truncate" background-color="grey">
                             <div class="likes">
@@ -83,6 +84,7 @@
                                 aspect-ratio="1.5"
                                 max-height="500"
                                 contain/>
+                            </div>
                                 <div v-if="post[0].User !== null"> 
                                     <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
@@ -90,7 +92,7 @@
                                     <v-card-text>Utilisateur Supprimé - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
                                 <v-divider></v-divider>
-                            </div>
+                            
                             
                             <v-card-text class="text-truncate" background-color="grey">
 
@@ -184,6 +186,9 @@ export default {
         },
         goToReddit(postId) {
             this.$router.push({name:'voirdiscute',params:{id:postId}})
+        },
+        goToUser(username) {
+            this.$router.push({name:'user', params:{username:username}})
         }
     },
     name: 'mainPage',

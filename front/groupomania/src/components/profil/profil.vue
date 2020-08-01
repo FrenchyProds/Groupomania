@@ -314,6 +314,9 @@ export default {
         created () {
             this.fetchAuthenticatedUser()
         },
+        // computed () {
+            
+        // },
          methods: {
             async fetchAuthenticatedUser () {
                 this.axios

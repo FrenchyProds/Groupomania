@@ -109,28 +109,16 @@ exports.login = async (req, res, next) => {
     })
   }
 
-    //  router.post('/postReddit', (req, res) => {
-      
-    //  })
-
-    // router.post('/postGag', (req, res) => {
-      
-    // })
-
-    // router.put('/postReddit/id', (req, res) => {
-
-    // })
-
-    // router.put('/postGag/id', (req, res) => {
-      
-    // })
-
-    // router.delete('/postReddit/id', (req, res) => {
-
-    // })
-
-    // router.delete('/postGag/id', (req, res) => {
-      // if (userId = req.data.userId && this.post == postGag.id) {
-
-      // }
-    // })
+      exports.findUser = async (req, res) => {
+        await db.User.findOne( {
+          where: { username: req.params.username}
+          .then(user => {
+            if(!user) {
+              return res.status(404).json({ error: 'Utilisateur inconnu !'})
+            } else {
+            res.status(200).json({ user })
+            return user;
+            }
+          })
+        });
+      }

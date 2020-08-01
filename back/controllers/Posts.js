@@ -3,7 +3,6 @@ var router = express.Router()
 
 const token = require('../middleware/getUserIdByToken');
 
-
 var db = require("../models");
 
 router.post('/reddit/post', async (req, res) => {
@@ -36,10 +35,14 @@ router.get('/reddit', async (req, res) => {
 router.get('/reddit/:id', async (req, res) => {
     const Reddit = await db.Reddit.findOne({ where: { id: req.params.id },
         include: 
-          {
+          [{
             model: db.User,
             attributes: ["id", "username"],
           },
+        {
+            model: db.Comment,
+            attributes: ["id", "content", "createdAt", "updatedAt"]
+        }]
       })
     .then(reddit => {
         if(!reddit) {
@@ -52,6 +55,21 @@ router.get('/reddit/:id', async (req, res) => {
           }
     })
 });
+
+router.put('/reddit/:id', async (req, res) => {
+  await db.Reddit.update(req.body, {
+    where: { id: req.params.id }
+  });
+  const reddit = await db.Reddit.findByPk(req.params.id, {
+    attributes: [
+      "title",
+      "content",
+    ]
+  })
+        res.status(200).json({ data: reddit });
+        console.log(reddit)
+        return reddit;
+  })
 
 router.post('/gag/post', async (req, res) => {
     const Gag = await db.Gag.create({
@@ -80,6 +98,21 @@ router.get('/gag', async (req, res) => {
        res.status(200).json({ data: Gag })
        return Gag;
 });
+
+router.put('/gag/:id', async (req, res) => {
+  await db.Gag.update(req.body, {
+    where: { id: req.params.id }
+  });
+  const gag = await db.Gag.findByPk(req.params.id, {
+    attributes: [
+      "title",
+      "content",
+    ]
+  })
+        res.status(200).json({ data: gag });
+        console.log(gag)
+        return gag;
+  })
 
 router.get('/gag/:id', async (req, res) => {
     const Gag = await db.Gag.findOne({ where: { id: req.params.id },

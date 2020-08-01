@@ -45,7 +45,7 @@
                 <ul v-if="errors.length > 0">
                     <li v-for="(error,index) in errors" :key="index">{{error}}</li>
                 </ul>
-                </section>
+            </section>
         <v-tooltip top> 
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -206,7 +206,7 @@ export default {
             // Handle success.
             console.log(response)
             swal('Gag publié !', 'Votre publication a été mise en ligne', 'success')
-            // window.location.reload();
+            window.location.reload();
           })
           .catch(error => {
             // Handle error.

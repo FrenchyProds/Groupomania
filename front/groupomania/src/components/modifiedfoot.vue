@@ -86,7 +86,7 @@
 
 <script>
 
-
+let userId = JSON.parse(localStorage.getItem('id'));
 
 export default {
     data: () => ({
@@ -103,15 +103,11 @@ export default {
       mainPage() {
       if(this.$route.path == "/mainPage") {
           return true
-        } else {
-          return false
         }
       },
       profil() {
-      if(this.$route.path == "/myprofile") {
+      if(this.$route.path == "/myprofile/" + userId) {
           return true
-        } else {
-          return false
         }
       },
       logoff() {

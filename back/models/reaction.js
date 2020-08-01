@@ -10,26 +10,26 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },redditId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: { 
                 model: db.reddit,
                 key: 'id' },
             allowNull: true,
         },gagId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: { 
                 model: db.gag,
                 key: 'id' },
             allowNull: true,
         },commentId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: { 
                 model: db.comment,
                 key: 'id' },
             allowNull: true,
         },
         userId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
                  model: db.user, 
                  key: 'id' },

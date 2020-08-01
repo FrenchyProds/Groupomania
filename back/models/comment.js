@@ -15,14 +15,14 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notEmpty: true }
         },
         userId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: { 
                 model: db.User, 
                 key: 'id' },
             allowNull: true
         },
         redditId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: { 
                 model: db.Reddit, 
                 key: 'id' },
@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     });
     Comment.associate = (models) => {
-    Comment.hasMany(models.Reaction, { foreignKey: 'commentId', sourceKey: 'id' }),
+    Comment.hasMany(models.Reaction, { foreignKey: 'reactionId', sourceKey: 'id' }),
     Comment.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' }),
     Comment.belongsTo(models.Gag, { foreignKey: 'gagId', sourceKey:'id'})
 };
