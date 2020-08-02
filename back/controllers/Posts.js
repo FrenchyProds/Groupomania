@@ -71,6 +71,15 @@ router.put('/reddit/:id', async (req, res) => {
         return reddit;
   })
 
+  router.get('/reddit/byUser/:id', async (req, res) => {
+    const reddit = await db.Reddit.findAll({
+      where: { userId : req.params.id },
+      order: [["createdAt", "DESC"]],
+    })
+        res.status(200).json({ data: reddit });
+        return reddit;
+  })
+
 router.post('/gag/post', async (req, res) => {
     const Gag = await db.Gag.create({
         include: {
@@ -98,6 +107,15 @@ router.get('/gag', async (req, res) => {
        res.status(200).json({ data: Gag })
        return Gag;
 });
+
+router.get('/gag/byUser/:id', async (req, res) => {
+  const gag = await db.Gag.findAll({
+    where: { userId : req.params.id },
+    order: [["createdAt", "DESC"]],
+  })
+      res.status(200).json({ data: gag });
+      return gag;
+})
 
 router.put('/gag/:id', async (req, res) => {
   await db.Gag.update(req.body, {

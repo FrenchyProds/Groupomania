@@ -20,7 +20,7 @@ exports.admin = async (req, res, next) => {
 exports.me = async (req, res, next) => {
   const userId = token.getUserIdByToken(req);
 
-  if (req.params.id == userId) {
+  if (req.params.id === userId) {
     return next();
   }
 

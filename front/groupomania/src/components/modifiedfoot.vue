@@ -34,34 +34,7 @@
                 <span>Retourner à l'acceuil</span>
                 </v-tooltip>
 
-                <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                <v-btn v-if="!profil()"
-                icon to="/myprofile" v-bind="attrs"
-                    v-on="on">
-                    <div class="btn-flex">
-                    <v-icon size="24px" color="white">mdi-account</v-icon>
-                    Profil
-                    </div>
-                </v-btn>
-                </template>
-                <span>Accéder à votre profil</span>
-                </v-tooltip>
-
-                
-
-                <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                icon to="/_id/inbox" v-bind="attrs" v-on="on">
-                <div class="btn-flex">
-                    <v-icon size="24px" color="white">mdi-comment</v-icon>
-                    Inbox
-                </div>
-                </v-btn>
-                </template>
-                <span>Accéder à votre messagerie</span>
-                </v-tooltip>
+            
                 
                 <v-menu bottom :offset-y="true" :close-on-content-click="closeOnContentClick">
                     <template v-slot:activator="{ on, attrs }">

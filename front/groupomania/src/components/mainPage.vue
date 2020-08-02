@@ -86,7 +86,7 @@
                                 contain/>
                             </div>
                                 <div v-if="post[0].User !== null"> 
-                                    <v-card-text>Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
+                                    <v-card-text @click="goToUser(post[0].User.username)">Created by {{ post[0].User.username }} - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
                                 <div v-else>
                                     <v-card-text>Utilisateur Supprimé - {{ post[0].createdAt | moment("from") }}</v-card-text>

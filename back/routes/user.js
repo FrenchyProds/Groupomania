@@ -9,6 +9,6 @@ router.get('/home', auth.me, userCtrl.home);
 router.get('/user/:id', auth.me, userCtrl.userMe);
 router.put('/user/:id', auth.me, userCtrl.updateMe);
 router.delete('/user/:id', auth.me, userCtrl.deleteMe);
-router.get('/user/:username', userCtrl.findUser);
+router.get('/finduser/:username', userCtrl.findUser);
 
 module.exports = router;

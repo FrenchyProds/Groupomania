@@ -112,6 +112,7 @@ exports.login = async (req, res, next) => {
       exports.findUser = async (req, res) => {
         await db.User.findOne( {
           where: { username: req.params.username}
+        })
           .then(user => {
             if(!user) {
               return res.status(404).json({ error: 'Utilisateur inconnu !'})
@@ -120,5 +121,4 @@ exports.login = async (req, res, next) => {
             return user;
             }
           })
-        });
       }

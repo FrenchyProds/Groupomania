@@ -34,17 +34,44 @@
                 </v-col>
             </v-row>
         </v-card>
+        
 
         <v-tabs grow class="elevation-2" background-color="white">
-                <v-tab>Profil</v-tab>
-                <v-tab>Historique</v-tab>
+                <v-tab v-if="toggleGag == false" @click="toggleGags()">Gags</v-tab>
+                <v-tab v-if="toggleReddit == false" @click='toggleReddits()'>Discutes</v-tab>
+                <v-tab v-if="toggleComment == false" @click='toggleComments()'>Commentaires</v-tab>
         </v-tabs>
 
+        <div class="gags" v-show="toggleGag" v-for="gag in gags" :key="gag.id">
+            <div @click="goToGag(gag.id)">
+                <v-card-title class="centered-text">{{gag.title}}</v-card-title>
+                <v-img
+                            :src="(gag.content)"
+                            aspect-ratio="1.5"
+                            max-height="500"
+                            contain/>
+            </div>
+            <v-card-text>Posté {{ gag.createdAt | moment("from") }}</v-card-text>
+            <v-divider></v-divider>
+        </div>
+
+        <div class="reddits" v-show="toggleReddit" v-for="reddit in reddits" :key="reddit.id">
+            <div @click="goToReddit(reddit.id)">
+                <v-card-title class="centered-text">{{reddit.title}}</v-card-title>
+                <v-card-text>{{reddit.content}}</v-card-text>
+            </div>
+            <v-card-text>Posté {{ reddit.createdAt | moment("from") }}</v-card-text>
+            <v-divider></v-divider>
+        </div>
+
+    <modifiedfoot />
+    <div class="clear"></div>
     </v-container>
     
 </template>
 
 <script>
+import modifiedfoot from '../modifiedfoot'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
@@ -60,6 +87,12 @@ export default {
         lastName: '',
         avatar: '',
         department: '',
+        gags: [],
+        reddits: [],
+        comments: [],
+        toggleGag: false,
+        toggleReddit: false,
+        toggleComment: false,
     }
     },
     beforeRouteUpdate (to, from, next) {
@@ -68,11 +101,14 @@ export default {
         },
     created () {
             this.fetchUser(this.$route.params.username)
+            console.log(this.$route.params.username)
         },
+    mounted () {
+    },
     methods: {
         fetchUser() {
             this.axios
-                    .get( `http://localhost:3000/user/${this.$route.params.username}`, {
+                    .get( `http://localhost:3000/finduser/${this.$route.params.username}`, {
                         headers: {
                             Authorization: `Bearer ${tokenFetch}`
                         }
@@ -87,13 +123,64 @@ export default {
                         this.lastName = this.user.lastName
                         this.department = this.user.department
                         this.avatar = this.user.avatar
-                        console.log(response)
-                    })
+                        this.fetchGags();
+                        this.fetchReddits()
+                    })  
             },
+            fetchGags() {
+                        this.axios
+                        .get(`http://localhost:3000/gag/byUser/${this.id}`, {
+                            headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                }
+                        }).then(response => {
+                        this.gags = response.data.data
+                        console.log(this.gags)
+                        })
+            },
+            fetchReddits() {
+                        this.axios.get(`http://localhost:3000/reddit/byUser/${this.id}`, {
+                        headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                }
+                        }).then(response => {
+                        this.reddits = response.data.data
+                        console.log(this.reddits)
+                        })
+            },
+            toggleGags() {
+                this.toggleGag = true;
+                this.toggleReddit = false;
+                this.toggleComment = false;
+            },
+            toggleReddits() {
+                this.toggleGag = false;
+                this.toggleReddit = true;
+                this.toggleComment = false;
+            },
+            toggleComments() {
+                this.toggleGag = false;
+                this.toggleReddit = false;
+                this.toggleComment = true;
+            },
+             goToReddit(postId) {
+            this.$router.push({name:'voirdiscute',params:{id:postId}})
+            },
+             goToGag(postId) {
+            this.$router.push({name:'voirgag',params:{id:postId}})
+            }
+        },
+        components: {
+            modifiedfoot,
         }
     }
 </script>
 
 <style scoped>
 
+.v-card__title {
+    justify-content: center;
+}
+
+.clear { clear: both; height: 150px; }
 </style>
