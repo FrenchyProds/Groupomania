@@ -7,11 +7,12 @@
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
                     <div @click="goToPost(post.id)">
-                    <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
-                    <v-divider></v-divider>
-                    <v-card-text>{{ post.content }}</v-card-text>
+                        <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>{{ post.content }}</v-card-text>
+                    </div>
                     <div v-if="post.User !== null">
-                        <v-card-text>Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                        <v-card-text @click="goToUser(post.User.username)">Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
                     </div>
                     <div v-else>
                         <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
@@ -55,7 +56,7 @@
                 </v-tooltip>
                 </v-card-text>
                 <v-divider></v-divider>
-                </div>
+                
                     
                 </div>
            </div>
@@ -116,6 +117,9 @@ export default {
     methods: {
         goToPost(postId) {
             this.$router.push({name:'voirdiscute',params:{id:postId}})
+        },
+        goToUser(username) {
+            this.$router.push({name:'user', params:{username:username}})
         }
     },
     name: 'groupodiscute',

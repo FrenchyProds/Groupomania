@@ -84,7 +84,7 @@
                     max-height="500"
                     contain/>
                     <div v-if="post.User !== null">
-                        <v-card-text>Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
+                        <v-card-text @click="goToUser(user.username)">Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
                             <div v-if="post.createdAt != post.updatedAt">
                                 Modifié il y a {{ post.updatedAt | moment("from") }}
                             </div>
@@ -320,6 +320,9 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
             },
+            goToUser(username) {
+            this.$router.push({name:'user', params:{username:username}})
+        }
         },
     name: 'voirgag',
     components: {

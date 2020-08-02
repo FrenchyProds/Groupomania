@@ -49,7 +49,7 @@
                         <v-divider></v-divider>
                         <v-card-text class="content">{{ post.content }}</v-card-text>
                          <div v-if="post.User !== null">
-                        <v-card-text class="flex-row">Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
+                        <v-card-text class="flex-row" @click="goToUser(user.username)">Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
                             <div v-if="post.createdAt != post.updatedAt">
                                 Modifié {{ post.updatedAt | moment("from") }}
                             </div>
@@ -186,6 +186,9 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
             },
+            goToUser(username) {
+            this.$router.push({name:'user', params:{username:username}})
+        }
         },
     name: 'voirdiscute',
     components: {

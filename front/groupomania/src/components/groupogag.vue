@@ -16,7 +16,7 @@
                         contain/>
                         </div>
                         <div v-if="post.User !== null">
-                        <v-card-text>Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                        <v-card-text @click="goToUser(post.User.username)">Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <div v-else>
                         <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
@@ -124,6 +124,9 @@ export default {
         methods: {
         goToPost(postId) {
             this.$router.push({name:'voirgag',params:{id:postId}})
+        },
+        goToUser(username) {
+            this.$router.push({name:'user', params:{username:username}})
         }
     },
     name: 'groupogag',

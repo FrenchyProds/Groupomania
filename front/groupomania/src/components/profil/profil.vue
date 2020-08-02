@@ -250,10 +250,10 @@ import ProgressBar from "vuejs-progress-bar";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-let userId = JSON.parse(localStorage.getItem('id'));
+// let userId = JSON.parse(localStorage.getItem('id'));
 
-let userMe = `http://localhost:3000/user/${userId}`;
-console.log(userMe)
+// let userMe = `http://localhost:3000/user/${userId}`;
+// console.log(userMe)
 
 export default {
     data() {
@@ -301,7 +301,7 @@ export default {
         fileContents: null,
         formData: null,
         componentKey: 0,
-        userMe: this.userMe
+        userMe: '',
         // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
@@ -311,16 +311,22 @@ export default {
         beforeRouteEnter (to, from, next) {
             return tokenFetch ? next() : next('/')
         },
+        beforeRouteUpdate (to, from, next) {
+            this.fetchUser(to.params.id)
+            next()
+        },
         created () {
-            this.fetchAuthenticatedUser()
+            this.fetchUser(this.$route.params.id)
+            this.userMe = `http://localhost:3000/user/${this.$route.params.id}`
+            console.log(this.userMe)
         },
         // computed () {
             
         // },
          methods: {
-            async fetchAuthenticatedUser () {
+            async fetchUser () {
                 this.axios
-                    .get(await userMe, {
+                    .get(await this.userMe, {
                         headers: {
                             Authorization: `Bearer ${tokenFetch}`
                         }
@@ -415,7 +421,7 @@ export default {
                 console.log(this.department)
                 this.axios
                     .put(
-                        userMe,
+                        this.userMe,
                         {
                             department: this.department
                         },
@@ -446,7 +452,7 @@ export default {
                 console.log(this.lastName)
                 this.axios
                     .put(
-                        userMe,
+                        this.userMe,
                         {
                             firstName: this.firstName,
                             lastName: this.lastName
@@ -473,7 +479,7 @@ export default {
                         })
             },
             imageSubmit() {
-                this.axios.put(userMe
+                this.axios.put(this.userMe
                 ,{
                 avatar: this.avatar },
                     {
@@ -501,7 +507,7 @@ export default {
                 console.log(this.password)
                 this.axios
                     .put(
-                        userMe,
+                        this.userMe,
                         {
                             password: this.updatePass
                         },
@@ -539,7 +545,7 @@ export default {
                             swal("Votre compte a été supprimé avec succes", {
                             icon: "success",
                             })
-                        this.axios.delete(userMe
+                        this.axios.delete(this.userMe
                 ,
                     {
                         headers: {
