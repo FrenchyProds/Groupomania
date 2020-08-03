@@ -59,8 +59,6 @@
 
 <script>
 
-let userId = JSON.parse(localStorage.getItem('id'));
-
 export default {
     data: () => ({
       icons: [
@@ -78,19 +76,15 @@ export default {
           return true
         }
       },
-      profil() {
-      if(this.$route.path == "/myprofile/" + userId) {
-          return true
-        }
-      },
       logoff() {
           localStorage.clear();
           sessionStorage.clear();
+          delete this.axios.defaults.headers.common["Authorization"];
           this.$router.push('/');
       },
       goBack() {
           window.history.back();
-      }
+      },
     },
     name: 'foot'
 }

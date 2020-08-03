@@ -247,13 +247,13 @@ import foot from '../modifiedfoot'
 import axios from "axios";
 import swal from 'sweetalert';
 import ProgressBar from "vuejs-progress-bar";
+import jwt_decode from 'jwt-decode'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-// let userId = JSON.parse(localStorage.getItem('id'));
+var decoded = jwt_decode(tokenFetch);
 
-// let userMe = `http://localhost:3000/user/${userId}`;
-// console.log(userMe)
+let userId = decoded.userId
 
 export default {
     data() {
@@ -302,6 +302,7 @@ export default {
         formData: null,
         componentKey: 0,
         userMe: '',
+        userIsMe: userId,
         // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
@@ -317,16 +318,17 @@ export default {
         },
         created () {
             this.fetchUser(this.$route.params.id)
-            this.userMe = `http://localhost:3000/user/${this.$route.params.id}`
-            console.log(this.userMe)
+            // if(this.$route.params.id != this.userIsMe) {
+            //             console.log(this.userIsMe)
+            //             console.log(this.$route.params.id)
+            //             window.location.reload()
+            //             this.$router.push({name: 'home'}) 
+            //         }        
         },
-        // computed () {
-            
-        // },
          methods: {
-            async fetchUser () {
+             fetchUser () {
                 this.axios
-                    .get(await this.userMe, {
+                    .get(`http://localhost:3000/user/${this.$route.params.id}`, {
                         headers: {
                             Authorization: `Bearer ${tokenFetch}`
                         }
@@ -341,8 +343,8 @@ export default {
                         this.department = this.user.department
                         this.avatar = this.user.avatar
                         this.password = this.user.password
-                        console.log(this.user)
-                    })
+                        console.log(this.user)  
+                    })            
             },
             // function to handle file info obtained from local
             // file system and set the file state
@@ -421,7 +423,7 @@ export default {
                 console.log(this.department)
                 this.axios
                     .put(
-                        this.userMe,
+                        `http://localhost:3000/user/${this.$route.params.id}`,
                         {
                             department: this.department
                         },
@@ -452,7 +454,7 @@ export default {
                 console.log(this.lastName)
                 this.axios
                     .put(
-                        this.userMe,
+                        `http://localhost:3000/user/${this.$route.params.id}`,
                         {
                             firstName: this.firstName,
                             lastName: this.lastName
@@ -479,7 +481,7 @@ export default {
                         })
             },
             imageSubmit() {
-                this.axios.put(this.userMe
+                this.axios.put(`http://localhost:3000/user/${this.$route.params.id}`
                 ,{
                 avatar: this.avatar },
                     {
@@ -507,7 +509,7 @@ export default {
                 console.log(this.password)
                 this.axios
                     .put(
-                        this.userMe,
+                        `http://localhost:3000/user/${this.$route.params.id}`,
                         {
                             password: this.updatePass
                         },
@@ -545,7 +547,7 @@ export default {
                             swal("Votre compte a été supprimé avec succes", {
                             icon: "success",
                             })
-                        this.axios.delete(this.userMe
+                        this.axios.delete(`http://localhost:3000/user/${this.$route.params.id}`
                 ,
                     {
                         headers: {

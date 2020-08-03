@@ -21,17 +21,16 @@
                                     <v-card-title>
                                     <span class="headline" >Modifier ma publication</span>
                                     </v-card-title>
-                                    <v-card-text>
                                     <v-container>
+                                        <v-card-text>
                                         <v-row>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field textarea label="Contenu de la publication" v-model="post.content"></v-text-field>
+                                            <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
                                         </v-col>
                                         </v-row>
-                                    </v-container>
                                     </v-card-text>
                                     <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -40,6 +39,28 @@
                                     <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
                                     </v-row>
                                     </v-card-actions>
+                                    </v-container>
+                                    
+                                    <v-card class="d-flex text-center my-2">
+                                    <v-row class="align-center mx-3">
+                                        <v-col cols="12">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                    icon v-bind="attrs" v-on="on">
+                                                    <div class="btn-flex" @click="deletePost()">
+                                                        <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                                        Supprimer
+                                                    </div>
+                                                    </v-btn>
+                                                </template>
+                                                <span>Supprimer ma publication</span>
+                                            </v-tooltip>
+                                        </v-col>
+                                    </v-row>
+                                </v-card>
+                                    
+                                    
                                 </v-card>
                                 </v-dialog>
                             </v-row>
@@ -60,38 +81,36 @@
                         </div>
                          </div>
                         <v-divider></v-divider>
-                        <v-card-text class="text-truncate" background-color="grey">
-
                         
+                        <v-card-text class="text-truncate" background-color="grey">
+                            <div class="likes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                </template>
+                                <span>J'aime !</span>
+                                </v-tooltip>
+                            </div>
 
+                            <div class="dislikes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                </template>
+                                <span>J'aime pas !</span>
+                                </v-tooltip>
+                            </div>
 
-                        <div class="likes">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                             </template>
-                            <span>J'aime !</span>
+                            <span>Signaler du contenu</span>
                             </v-tooltip>
-                        </div>
-
-                        <div class="dislikes">
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                            </template>
-                            <span>J'aime pas !</span>
-                            </v-tooltip>
-                        </div>
-
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                    </template>
-                    <span>Signaler du contenu</span>
-                    </v-tooltip>
-                    </v-card-text>
-                    <v-divider></v-divider>
-            </div>
+                        </v-card-text>
+                        <v-divider></v-divider>
+                        
+                </div>
 
             <v-card-title>
                 Commentaires
@@ -188,7 +207,43 @@ export default {
             },
             goToUser(username) {
             this.$router.push({name:'user', params:{username:username}})
-        }
+        },
+            deletePost() {
+                        swal({
+                        title: "Voulez-vous vraiment supprimer votre publication ?",
+                        text: "Une fois supprimé, vous ne pourrez pas la récupérer",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Votre publication a été supprimé avec succes", {
+                            icon: "success",
+                            })
+                        this.axios.delete(`http://localhost:3000/reddit/${this.$route.params.id}`
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            this.$router.push('/groupodiscute')
+                        } else {
+                            swal("Suppresion de publication annulée");
+                        }
+                        })
+                
+                .catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+                    }
         },
     name: 'voirdiscute',
     components: {

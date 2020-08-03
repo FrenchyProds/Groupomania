@@ -67,9 +67,11 @@ exports.login = async (req, res, next) => {
         await db.User.findOne({ where: {  id: req.params.id } })
         .then(user => {
            if(!user) {
+            console.log('test')
              return res.status(404).json({ error: 'Utilisateur inconnu !'})
            } else {
            res.status(200).json({ user })
+           console.log(user)
            return user;
            }
          })

@@ -71,6 +71,18 @@ router.put('/reddit/:id', async (req, res) => {
         return reddit;
   })
 
+  router.delete('/reddit/:id', async (req, res) => {
+    await db.Reddit.destroy({ where: { id: req.params.id}
+    })
+    .then(reddit => {
+      if(!reddit) {
+        return res.status(404).json({ error: 'Publication inconnue !'})
+      } else {
+      res.status(200).json({ success : true })
+  }
+  })
+})
+
   router.get('/reddit/byUser/:id', async (req, res) => {
     const reddit = await db.Reddit.findAll({
       where: { userId : req.params.id },
@@ -131,6 +143,18 @@ router.put('/gag/:id', async (req, res) => {
         console.log(gag)
         return gag;
   })
+
+router.delete('/gag/:id', async (req, res) => {
+  await db.Gag.destroy({ where: { id: req.params.id}
+  })
+  .then(gag => {
+    if(!gag) {
+      return res.status(404).json({ error: 'Publication inconnue !'})
+    } else {
+    res.status(200).json({ success : true })
+}
+})
+})
 
 router.get('/gag/:id', async (req, res) => {
     const Gag = await db.Gag.findOne({ where: { id: req.params.id },

@@ -90,7 +90,7 @@ export default {
         gags: [],
         reddits: [],
         comments: [],
-        toggleGag: false,
+        toggleGag: true,
         toggleReddit: false,
         toggleComment: false,
     }
