@@ -253,8 +253,6 @@ export default {
     margin-left: 1rem;
 }
 
-.clear { clear: both; height: 150px; }
-
 form input {
   background: #fff;
   border: 1px solid #9c9c9c;

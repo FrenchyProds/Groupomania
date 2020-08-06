@@ -102,12 +102,14 @@
                                 </v-tooltip>
                             </div>
 
+                        <div v-if="user.id != this.userIsMe">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                             </template>
                             <span>Signaler du contenu</span>
                             </v-tooltip>
+                        </div>
                         </v-card-text>
                         <v-divider></v-divider>
                         
@@ -127,8 +129,6 @@
                 </v-card-text>
             </div>
             </div>
-
-        <div class="clear"></div>
             
         <modifiedfoot/>
     </v-container>
@@ -165,7 +165,8 @@ export default {
         userIsMe: userId,
         modalDialog: false,
         updateTitle: '',
-        updateContent: ''
+        updateContent: '',
+        isFlagged: ''
     }},      
      mounted() {
          this.asyncData();
@@ -181,6 +182,7 @@ export default {
                 this.post = res.data.data
                 this.user = this.post.User
                 this.comments = this.post.Comments
+                this.isFlagged = this.post.isFlag
                 console.log(this.userIsMe)
                 console.log(this.comments)
                 console.log(res.data.data)
@@ -252,7 +254,47 @@ export default {
                     console.log('An error occurred:', error.response);
                     swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
+                    },
+                     reportContent() {
+                         if(this.isFlagged == false) {
+                        swal({
+                        title: "Voulez-vous vraiment signaler ce contenu ?",
+                        text: "",
+                        icon: "info",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willReport) => {
+                        if (willReport) {
+                            swal("Contenu signalé avec succes",{
+                            icon: "success",
+                            })
+                        this.axios.put(`http://localhost:3000/reddit/report/${this.$route.params.id}`
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            window.location.reload()
+                        } else {
+                            swal("Signlament annulé");
+                        }
+                        })
+                
+                .catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+                    } else {
+                        swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
                     }
+                }
         },
     name: 'voirdiscute',
     components: {
@@ -295,5 +337,4 @@ export default {
     max-width: 100%;
 }
 
-.clear { clear: both; height: 150px; }
 </style>

@@ -13,7 +13,8 @@ router.post('/reddit/post', async (req, res) => {
         },
         title: req.body.title,
         content: req.body.content,
-        userId: token.getUserIdByToken(req)
+        userId: token.getUserIdByToken(req),
+        postType: 'reddit'
       });
       res.status(200).json({ data: Reddit })
       .catch(error => res.status(500).json({ error }))
@@ -71,6 +72,20 @@ router.put('/reddit/:id', async (req, res) => {
         return reddit;
   })
 
+  router.put('/reddit/report/:id', async (req, res) => {
+    await db.Reddit.findOne({ where: { id: req.params.id }})
+      .then(reddit => {
+        if(!reddit) {
+            console.log(req.params.id)
+            return res.status(404).json({ error: 'Publication inconnue !'})
+          } else {
+          db.Reddit.update( { isFlag: true }, { where: { id: req.params.id }})
+          res.status(200).json({ data: reddit })
+          return reddit;
+          }
+  })
+})
+
   router.delete('/reddit/:id', async (req, res) => {
     await db.Reddit.destroy({ where: { id: req.params.id}
     })
@@ -100,7 +115,8 @@ router.post('/gag/post', async (req, res) => {
         },
         title: req.body.title,
         content: req.body.content,
-        userId: token.getUserIdByToken(req)
+        userId: token.getUserIdByToken(req),
+        postType: 'gag'
       });
       res.status(200).json({ data: Gag })
       .catch(error => res.status(500).json({ error }))
@@ -144,6 +160,21 @@ router.put('/gag/:id', async (req, res) => {
         return gag;
   })
 
+  router.put('/gag/report/:id', async (req, res) => {
+    await db.Gag.findOne({ where: { id: req.params.id }})
+      .then(gag => {
+        if(!gag) {
+            console.log(req.params.id)
+            return res.status(404).json({ error: 'Publication inconnue !'})
+          } else {
+          db.Gag.update( { isFlag: true }, { where: { id: req.params.id }})
+          res.status(200).json({ data: gag })
+          return gag;
+          }
+    })
+})
+
+
 router.delete('/gag/:id', async (req, res) => {
   await db.Gag.destroy({ where: { id: req.params.id}
   })
@@ -152,8 +183,8 @@ router.delete('/gag/:id', async (req, res) => {
       return res.status(404).json({ error: 'Publication inconnue !'})
     } else {
     res.status(200).json({ success : true })
-}
-})
+    }
+  })
 })
 
 router.get('/gag/:id', async (req, res) => {
@@ -175,6 +206,32 @@ router.get('/gag/:id', async (req, res) => {
           }
     })
 });
+
+router.get('/flaggedGags', async (req, res) => {
+  const Gag = await db.Gag.findAll({ where: { isFlag : 1 },
+    include: {
+      model: db.User,
+      attributes: ["username"],
+    },
+  order: [["createdAt", "DESC"]],
+ })
+ res.status(200).json({ Gag })
+ return Gag;
+})
+
+router.get('/flaggedReddits', async (req, res) => {
+  const Reddit = await db.Reddit.findAll({ where: { isFlag : 1 },
+    include: {
+      model: db.User,
+      attributes: ["username"],
+    },
+    order: [["createdAt", "DESC"]],
+    })
+    res.status(200).json({ Reddit })
+    return Reddit;
+})
+ 
+
 
 module.exports = router;
 

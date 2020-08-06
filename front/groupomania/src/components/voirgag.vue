@@ -135,28 +135,33 @@
                         </v-tooltip>
                     </div>
 
-                    <div class="comments">
-                        <v-tooltip top>
-                        <template v-slot:activator="{ on, attrs }">
-                        <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                        8</v-btn>
-                        </template>
-                        <span>Laisser un commentaire</span>
-                        </v-tooltip>
-                    </div>
-
+                <div v-if="user.id != this.userIsMe">
                     <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                    <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                     </template>
                     <span>Signaler du contenu</span>
                     </v-tooltip>
+                </div>
                     </v-card-text>
                     <v-divider></v-divider>
+                
+                <v-card-title>
+                    Commentaires
+                </v-card-title>
+
+                <div v-if="!post.Comments || post.Comments.length === 0">
+                    Aucun commentaire n'a été posté pour l'instant !
+                </div>
+                <div v-else>
+                <div class="comments" v-for="comment in comments" :key="comment.id">
+                    <v-card-text>
+                        <p>{{comment.content}}</p>
+                    </v-card-text>
+                </div>
+                </div>
                     
             </div>
-
-        <div class="clear"></div>
             
         <modifiedfoot/>
     </v-container>
@@ -229,7 +234,8 @@ export default {
         userIsMe: userId,
         modalDialog: false,
         updateTitle: '',
-        updateContent: ''
+        updateContent: '',
+        isFlagged: ''
     }},      
      mounted() {
          this.asyncData();
@@ -244,6 +250,7 @@ export default {
                     }).then(res => {
                 this.post = res.data.data
                 this.user = this.post.User
+                this.isFlagged = this.post.isFlag
                 console.log(res.data.data)
           })
             },
@@ -382,9 +389,49 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                                 })
                             },
+                reportContent() {
+                    if(this.isFlagged == false) {
+                        swal({
+                            title: "Voulez-vous vraiment signaler ce contenu ?",
+                            text: "",
+                            icon: "info",
+                            buttons: true,
+                            dangerMode: true,
+                        }) 
+                        .then((willReport) => {
+                            if (willReport) {
+                                swal("Contenu signalé avec succes",{
+                                    icon: "success",
+                                })
+                        this.axios.put(`http://localhost:3000/gag/report/${this.$route.params.id}`
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            window.location.reload()
+                        } else {
+                            swal("Signlament annulé");
+                        }
+                        })
+                
+                .catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
+                    } else {
+                        swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
+                    }
+                },
             goToUser(username) {
-            this.$router.push({name:'user', params:{username:username}})
-        }
+                this.$router.push({name:'user', params:{username:username}})
+            }
         },
     name: 'voirgag',
     components: {
@@ -418,5 +465,4 @@ export default {
    margin-top: 2rem;
    color: red;
 }
-.clear { clear: both; height: 150px; }
 </style>

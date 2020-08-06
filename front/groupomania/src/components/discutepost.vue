@@ -126,5 +126,4 @@ export default {
    bottom: 100px;
    right: 47%
 }
-.clear { clear: both; height: 150px; }
 </style>

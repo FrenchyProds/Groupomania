@@ -11,25 +11,28 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: Sequelize.UUIDV4,
     },
     title: DataTypes.STRING,
-    type: DataTypes.STRING,
     content: DataTypes.STRING,
-    userId: {
-      type: DataTypes.INTEGER,
-      references: { 
-          model: db.User, 
-          key: 'id' },
-      allowNull: false
+    // userId: {
+    //   type: DataTypes.INTEGER,
+    //   references: { 
+    //       model: db.User, 
+    //       key: 'id' },
+    //   allowNull: false
+    // },
+    postType:{ 
+      type: DataTypes.STRING,
+      default: 'reddit',
     },
-    // isFlag: {
-    //   type: DataTypes.BOOLEAN,
-    //   allowNull: false,
-    //   defaultValue: false,
-    // },
-    // hasBeenModerated: {
-    //   type: DataTypes.BOOLEAN,
-    //   allowNull: false,
-    //   defaultValue: false,
-    // },
+    isFlag: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    hasBeenModerated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   });
   Reddit.associate = (models) => {
     Reddit.hasMany(models.Comment, { foreignKey: 'commentId', sourceKey: 'id' }),

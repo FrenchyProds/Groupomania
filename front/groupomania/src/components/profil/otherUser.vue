@@ -5,11 +5,23 @@
                 <v-img :src="(avatar) || 'https://picsum.photos/300/200?random'"
                 contain/>
             </v-list-item-avatar>
+             
             <v-list-item-content class="text-center">
                 <v-list-item-subtitle class="headline mb-1 text-capitalize">{{user.username}}</v-list-item-subtitle>
                 <v-list-item-subtitle class="headline">{{user.firstName || 'Prénom'}} {{user.lastName || 'Nom'}}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
+
+        
+
+        <div class="text-center pb-5" v-if="user.id != this.userIsMe">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon>Signaler l'utilisateur</v-btn>
+                </template>
+                <span>Signaler du contenu</span>
+            </v-tooltip>
+        </div>
 
         <v-divider></v-divider>
 
@@ -65,15 +77,26 @@
         </div>
 
     <modifiedfoot />
-    <div class="clear"></div>
     </v-container>
     
 </template>
 
 <script>
 import modifiedfoot from '../modifiedfoot'
+import jwt_decode from 'jwt-decode'
+import swal from 'sweetalert'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
+
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
 
 export default {
     data() {
@@ -93,6 +116,8 @@ export default {
         toggleGag: true,
         toggleReddit: false,
         toggleComment: false,
+        userIsMe: userId,
+        isFlagged: '',
     }
     },
     beforeRouteUpdate (to, from, next) {
@@ -123,6 +148,7 @@ export default {
                         this.lastName = this.user.lastName
                         this.department = this.user.department
                         this.avatar = this.user.avatar
+                        this.isFlagged = this.user.isFlag
                         this.fetchGags();
                         this.fetchReddits()
                     })  
@@ -148,6 +174,46 @@ export default {
                         console.log(this.reddits)
                         })
             },
+            reportContent() {
+                         if(this.isFlagged == false) {
+                            swal({
+                                title: "Voulez-vous vraiment signaler cet utilisateur ?",
+                                text: "",
+                                icon: "info",
+                                buttons: true,
+                                dangerMode: true,
+                            }) 
+                            .then((willReport) => {
+                                if (willReport) {
+                                    swal("Utilisateur signalé avec succes",{
+                                        icon: "success",
+                                    })
+                                this.axios.put(`http://localhost:3000/user/report/${this.$route.params.username}`
+                                ,
+                        {
+                            headers: {
+                            Authorization: `Bearer ${tokenFetch}`
+                                }    
+                        })
+                                .then(response => {
+                                    // Handle success.
+                                    console.log(response)     
+                                })
+                                window.location.reload()
+                            } else {
+                                swal("Signlament annulé");
+                            }
+                            })
+                    
+                    .catch(error => {
+                        // Handle error.
+                        console.log('An error occurred:', error.response);
+                        swal("Quelque chose n'a pas fonctionné", "", "error")
+                            })
+                        } else {
+                            swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
+                        }
+                    },
             toggleGags() {
                 this.toggleGag = true;
                 this.toggleReddit = false;
@@ -182,5 +248,4 @@ export default {
     justify-content: center;
 }
 
-.clear { clear: both; height: 150px; }
 </style>

@@ -24,7 +24,7 @@
         <v-card class="text-center">
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
-                            <div v-if="post[0].type === 'reddit'"> <!-- TEMPLATE REDDIT --> 
+                            <div v-if="post[0].postType === 'reddit'"> <!-- TEMPLATE REDDIT --> 
                                 <div @click="goToReddit(post[0].id)">
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
                                 <v-divider></v-divider>
@@ -173,8 +173,8 @@ export default {
                ]).then(res => {
                    for (let i= 0; i < res.length; i++) {
                     this.posts.push(res[i].data.data)
-                    this.reddit = this.posts.type
-                    this.gag = this.posts.type
+                    this.reddit = this.posts.postType
+                    this.gag = this.posts.postType
                    }
                    console.log(res)
                    console.log(this.posts)
@@ -262,6 +262,5 @@ export default {
    bottom: 100px;
    right: 47%
 }
-.clear { clear: both; height: 150px; }
 
 </style>

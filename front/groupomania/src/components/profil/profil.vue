@@ -162,7 +162,7 @@
                             <v-btn
                             icon v-bind="attrs" v-on="on" @click="imageSubmit()">
                             <div class="btn-flex">
-                                <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                <v-icon size="24px" :disabled="hasImage"  color="green">mdi-checkbox-marked-circle</v-icon>
                                 Confirmer
                             </div>
                             </v-btn>
@@ -269,7 +269,6 @@
             </div>
         </div>
 
-        <div class="clear"></div>
     
         <foot/>
     </v-container>
@@ -354,7 +353,7 @@ export default {
         toggleReddit: false,
         toggleComment: false,
         isAdmin: '',
-        confirmedAdmin: ''
+        confirmedAdmin: '',
         // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
@@ -370,6 +369,11 @@ export default {
         },
         created () {
             this.fetchUser(this.$route.params.id)
+        },
+        computed: {
+            hasImage () {
+                return !this.fileContents;
+            }
         },
          methods: {
              fetchUser () {
@@ -708,7 +712,6 @@ export default {
     margin-left: 1rem;
 }
 
-.clear { clear: both; height: 150px; }
 
 form input {
   background: #fff;

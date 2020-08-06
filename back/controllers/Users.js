@@ -78,14 +78,14 @@ exports.login = async (req, res, next) => {
          })
        };
 
-       function encryptPasswordIfChanged(user, options) {
-        if (user.changed('password')) {
-          crypt(user.get('password'));
-        }
-      }
+      //  function encryptPasswordIfChanged(user, options) {
+      //   if (user.changed('password')) {
+      //     crypt(user.get('password'));
+      //   }
+      // }
 
       exports.updateMe = async (req, res) => {
-        db.User.beforeUpdate(encryptPasswordIfChanged)
+        // db.User.beforeUpdate(encryt)
         await db.User.update(req.body, {
           where: { id: req.params.id }
         });
@@ -146,3 +146,23 @@ exports.login = async (req, res, next) => {
             }
           })
       }
+
+     exports.reportUser = async (req, res) => {
+        await db.User.findOne({ where: { username: req.params.username }})
+          .then(user => {
+            if(!user) {
+                console.log(req.params.id)
+                return res.status(404).json({ error: 'Utilisateur inconnu !'})
+              } else {
+              db.User.update( { isFlag: true }, { where: { username: req.params.username }})
+              res.status(200).json({ data: user })
+              return user;
+              }
+        })
+    }
+
+    exports.flaggedUsers = async (req, res) => {
+     const user =  await db.User.findAll({ where: { isFlag: 1 }})
+            res.status(200).json({ data: user })
+            return user;
+  }

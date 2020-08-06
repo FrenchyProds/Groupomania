@@ -14,13 +14,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: { notEmpty: true }
         },
-        userId: {
-            type: DataTypes.UUID,
-            references: { 
-                model: db.User, 
-                key: 'id' },
-            allowNull: true
-        },
+        // userId: {
+        //     type: DataTypes.UUID,
+        //     references: { 
+        //         model: db.User, 
+        //         key: 'id' },
+        //     allowNull: true
+        // },
         redditId: {
             type: DataTypes.UUID,
             references: { 

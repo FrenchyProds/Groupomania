@@ -12,25 +12,28 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: Sequelize.UUIDV4,
     },
     title: DataTypes.STRING,
-    type: DataTypes.STRING,
-    content: DataTypes.STRING,
-    userId: {
-    type: DataTypes.INTEGER,
-    references: { 
-        model: db.user, 
-        key: 'id' },
-    allowNull: false
+    postType:{ 
+      type: DataTypes.STRING,
+      default: 'gag',
     },
-    // isFlag: {
-    //   type: DataTypes.BOOLEAN,
-    //   allowNull: false,
-    //   defaultValue: false,
+    content: DataTypes.STRING,
+    // userId: {
+    // type: DataTypes.INTEGER,
+    // references: { 
+    //     model: db.user, 
+    //     key: 'id' },
+    // allowNull: false
     // },
-    // hasBeenModerated: {
-    //   type: DataTypes.BOOLEAN,
-    //   allowNull: false,
-    //   defaultValue: false,
-    // },
+    isFlag: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    hasBeenModerated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
 });
   Gag.associate = (models) => {
     Gag.hasMany(models.Comment, { foreignKey: 'gagId', sourceKey: 'id' }),

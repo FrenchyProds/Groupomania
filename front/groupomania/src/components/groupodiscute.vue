@@ -81,7 +81,6 @@
                 <span>Créer ma publication GroupoDiscute!</span>    
             </v-tooltip>
         </v-card>
-        <div class="clear"></div>
         <foot/>
     </v-container>
 </template>
@@ -154,5 +153,4 @@ export default {
    bottom: 100px;
    right: 47%
 }
-.clear { clear: both; height: 150px; }
 </style>

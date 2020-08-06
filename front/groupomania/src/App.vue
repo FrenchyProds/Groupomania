@@ -3,6 +3,7 @@
     <v-content>
       <router-view><Index/></router-view>
     </v-content>
+    <div class="clear"></div>
   </v-app>
 </template>
 
@@ -26,4 +27,6 @@ export default {
   text-decoration: none;
   color: rgba(0, 0, 0, 0.8)
 }
+
+.clear { clear: both; height: 150px; }
 </style>

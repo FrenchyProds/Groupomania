@@ -87,8 +87,6 @@
                 </template>
                 <span>Créer ma publication GroupoGag !</span>    
             </v-tooltip>
-
-        <div class="clear"></div>
             
         <foot/>
     </v-container>
@@ -164,5 +162,4 @@ export default {
    bottom: 100px;
    right: 47%
 }
-.clear { clear: both; height: 150px; }
 </style>
