@@ -38,7 +38,7 @@
               ></v-text-field>
             </v-row>
             <v-row justify="center">
-              <v-btn type="submit" value="Submit" class="mt-4" outlined color="green">Valider</v-btn>
+              <v-btn type="submit" value="Submit" class="mt-4" outlined color="green" :disabled='isComplete'>Valider</v-btn>
             </v-row>
           </v-col>
         </v-container>
@@ -87,6 +87,11 @@ const registerUrl = 'http://localhost:3000/register'
           validate () {
         this.$refs.form.validate()
       },
+        },
+        computed: {
+          isComplete () {
+            return !this.username || !this.email || !this.password;
+            }
         },
     components: {
       indexhead

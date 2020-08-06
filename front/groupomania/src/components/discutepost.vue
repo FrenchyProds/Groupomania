@@ -25,7 +25,7 @@
               </v-row>
             
             <v-row justify="space-around">
-                <v-btn type="submit" value="Submit" class="mt-4" outlined color="green">Valider</v-btn>
+                <v-btn type="submit" value="Submit" class="mt-4" outlined color="green" :disabled='isComplete'>Valider</v-btn>
                 <v-btn color="red" class="mt-4" outlined @click.native="$emit('input')">Annuler</v-btn>
             </v-row>
           </v-col>
@@ -37,12 +37,21 @@
 
 <script>
 import swal from 'sweetalert'
+import jwt_decode from 'jwt-decode'
 
 const redditURL = 'http://localhost:3000/reddit/post'
 
-let userId = JSON.parse(sessionStorage.getItem('id'));
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
 
 export default {
   props: {
@@ -85,6 +94,9 @@ export default {
       },
         },
   computed: {
+    isComplete () {
+    return !this.title || !this.content;
+    }
   },
   components: {
   }

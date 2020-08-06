@@ -49,9 +49,9 @@
         <v-tooltip top> 
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                icon v-bind="attrs" v-on="on" @click="formSubmit()">
+                icon v-bind="attrs" v-on="on" @click="formSubmit()" :disabled='isComplete'>
                 <div class="btn-flex">
-                    <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                    <v-icon size="24px"  color="green">mdi-checkbox-marked-circle</v-icon>
                     Confirmer
                 </div>
                 </v-btn>
@@ -68,10 +68,22 @@
 import swal from 'sweetalert'
 import ProgressBar from "vuejs-progress-bar";
 import axios from "axios";
+import jwt_decode from 'jwt-decode'
 
-let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-let userId = JSON.parse(sessionStorage.getItem('id'));
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
+
+console.log(userId)
+
 
 const gagURL = 'http://localhost:3000/gag/post'
 
@@ -91,7 +103,7 @@ export default {
         color: "#E8C401",
         backgroundColor: "#000000"
       },
-      layout: {
+      layout: { 
         height: 35,
         width: 140,
         type: "line",
@@ -113,7 +125,8 @@ export default {
       options: progressBarOptions,
       fileContents: null,
       formData: null,
-      secure_url: ''
+      secure_url: '',
+      isDisabled: true,
     }},
     methods: {
             // function to handle file info obtained from local
@@ -219,6 +232,9 @@ export default {
       },
         },
   computed: {
+  isComplete () {
+    return !this.title || !this.secure_url;
+    }
   },
   components: {
       ProgressBar

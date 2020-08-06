@@ -20,7 +20,17 @@ module.exports = (sequelize, DataTypes) => {
         model: db.user, 
         key: 'id' },
     allowNull: false
-    },  
+    },
+    // isFlag: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false,
+    // },
+    // hasBeenModerated: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false,
+    // },
 });
   Gag.associate = (models) => {
     Gag.hasMany(models.Comment, { foreignKey: 'gagId', sourceKey: 'id' }),

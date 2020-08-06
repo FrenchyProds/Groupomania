@@ -1,7 +1,10 @@
 <template>
     <v-container>
         <mainhead/>
-        <v-select :items="items" label="Trier par :" filled>
+        <v-select
+        :items="items"
+        label="Trier par :"
+        filled>
         </v-select>
             <div>
                 <div class="content" v-for="post in posts" :key="post.id">
@@ -102,7 +105,7 @@ let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 export default {
     data () {
         return {
-        items: ['Dernières publications', 'Le plus de likes'],
+        items: ['Dernières publications', 'Le plus de likes',],
         posts: [],
         url: [],
         gagpost: false,

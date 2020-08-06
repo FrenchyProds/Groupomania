@@ -33,6 +33,16 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           defaultValue: false,
         },
+        // isFlag: {
+        //   type: DataTypes.BOOLEAN,
+        //   allowNull: false,
+        //   defaultValue: false,
+        // },
+        // hasBeenModerated: {
+        //   type: DataTypes.BOOLEAN,
+        //   allowNull: false,
+        //   defaultValue: false,
+        // },
   });
   User.associate = (models) => {
     // hasMany association: foreign key (userId) stored on target model (Text)

@@ -22,15 +22,16 @@
                                     <span class="headline" >Modifier ma publication</span>
                                     </v-card-title>
                                     <v-container>
-                                        <v-card-text>
+                                        <v-card-text class="align-center">
                                         <v-row>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
                                         </v-col>
+                                        </v-row>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
                                         </v-col>
-                                        </v-row>
+                                        
                                     </v-card-text>
                                     <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -141,9 +142,16 @@ import swal from 'sweetalert'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
-var decoded = jwt_decode(tokenFetch);
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
 
-let userId = decoded.userId
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
+
 
 export default {
     data () {
@@ -233,6 +241,7 @@ export default {
                                 console.log(response)     
                             })
                             this.$router.push('/groupodiscute')
+                            window.location.reload()
                         } else {
                             swal("Suppresion de publication annulée");
                         }
@@ -280,5 +289,11 @@ export default {
 .content {
     font-size: 1.1rem;
 }
+
+.col-sm-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
 .clear { clear: both; height: 150px; }
 </style>

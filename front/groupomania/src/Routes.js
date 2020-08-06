@@ -12,6 +12,8 @@ import voirgag from './components/voirgag'
 import voirdiscute from './components/voirdiscute'
 import rules from './components/rules'
 import user from './components/profil/otherUser'
+import admin from './components/admin/admin'
+
 
 export default [
     {
@@ -145,6 +147,12 @@ export default [
                 next()
             } next()
         } 
+    },
+    {
+        path: '/administration',
+        name: 'admin',
+        component: admin,
+        requiresAuth: true,
     },
     {
         path: '/user/:username',

@@ -19,7 +19,17 @@ module.exports = (sequelize, DataTypes) => {
           model: db.User, 
           key: 'id' },
       allowNull: false
-    },  
+    },
+    // isFlag: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false,
+    // },
+    // hasBeenModerated: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false,
+    // },
   });
   Reddit.associate = (models) => {
     Reddit.hasMany(models.Comment, { foreignKey: 'commentId', sourceKey: 'id' }),

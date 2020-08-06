@@ -12,231 +12,264 @@
         </v-list-item>
 
         <v-tabs grow class="elevation-2" background-color="white">
-                <v-tab>Préferences</v-tab>
-                <v-tab>Historique</v-tab>
+                <v-tab @click="toggleOptions()">Préferences</v-tab>
+                <v-tab @click="toggleHistory()">Historique</v-tab>
+                <v-tab v-if="this.confirmedAdmin == 1" @click="adminPanel()">Admin Panel</v-tab>
         </v-tabs>
 
-    <v-divider></v-divider>
+        <v-divider></v-divider>
 
-    <v-card>
-        <v-row class="text-center">
-            <v-col cols="4">
-                Email
-            </v-col>
-            <v-col>
-                {{user.email}}
-            </v-col>
-        </v-row>
-    </v-card>
-
-<v-form ref="form" @submit="depSubmit">
-    <v-card class="my-2">
-        <v-row class="text-center ml-1">
-            <v-col cols="4">
-                Département
-            </v-col>
-            <v-col>
-                {{user.department}}
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="11">
-                <v-text-field placeholder="Modifier" input="text" v-model="department">
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-card
-            flat
-            tile
-            width="100%"
-            class="white text-center">
-            <v-card-text class="d-flex justify-space-around">
-            
-
-                <v-tooltip top> 
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
-                        <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
-                            Confirmer
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Confirmer</span>
-                </v-tooltip>
-            </v-card-text>
-         </v-card>
-    </v-card>
-    </v-form> 
-
-<v-form ref="form" @submit="nameSubmit">
-    <v-card class="my-2">
-        <v-row class="text-center ml-1">
-            <v-col cols="4">
-                Prénom
-            </v-col>
-            <v-col>
-                {{user.firstName}}
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="11">
-                <v-text-field placeholder="Modifier" input="text" v-model="firstName">
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row class="text-center ml-1">
-            <v-col cols="4">
-                Nom
-            </v-col>
-            <v-col>
-                {{user.lastName}}
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="11">
-                <v-text-field placeholder="Modifier" input="text" v-model="lastName">
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-card
-            flat
-            tile
-            width="100%"
-            class="white text-center">
-            <v-card-text class="d-flex justify-space-around">
-            
-
-                <v-tooltip top> 
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
-                        <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
-                            Confirmer
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Confirmer</span>
-                </v-tooltip>
-            </v-card-text>
-         </v-card>
-    </v-card>
-</v-form>
-
-    <v-card class="text-center my-2">
-        <v-row class="align-center">
-            <v-col>
-                <v-card-text class="title font-weight-regular">
-                Modifier mon avatar
-                </v-card-text>
-            </v-col>
-        </v-row>
-        <div v-show="showProgress">
-            <progress-bar :options="options" :value="progress" />
-        </div>
-        <v-row class="align-center pb-3">
-            <v-col cols="12">
-                <v-form v-on:submit.prevent="upload" ref="form">
-                <v-row class="d-block pb-5">
-                <!-- allow the user to select an image file and when they have selected it call a function 
-                to handle this event-->
-                <label for="file-input"></label>
-                <input
-                    id="file-input"
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    @change="handleFileChange($event)"
-                />
-                </v-row>
-                <!-- submit button is disabled until a file is selected -->
-                <v-btn type="submit" :disabled="filesSelected != 1" fill color="light-green" >Héberger</v-btn>
-                </v-form>
-            </v-col>
-        </v-row>
-        <v-tooltip top> 
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on" @click="imageSubmit()">
-                        <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
-                            Confirmer
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Confirmer</span>
-                </v-tooltip>
-    </v-card>
-
-
-<v-form ref="form" @submit="passwordSubmit">
-    <v-card class="my-2">
-        <v-row class="text-center ml-1">
-            <v-col cols="12">
-                Modifier mon mot de passe
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="11">
-                <v-text-field placeholder="Nouveau mot de passe" v-model="updatePass">
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="11">
-                <v-text-field placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-card
-            flat
-            tile
-            width="100%"
-            class="white text-center">
-            <v-card-text class="d-flex justify-space-around">
-        <v-tooltip top> 
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on" type="submit" value="Submit">
-                        <div class="btn-flex">
-                            <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
-                            Confirmer
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Confirmer</span>
-                </v-tooltip>
-            </v-card-text>
+        <div v-if="showOptions == true">
+        <v-card>
+            <v-row class="text-center">
+                <v-col cols="4">
+                    Email
+                </v-col>
+                <v-col>
+                    {{user.email}}
+                </v-col>
+            </v-row>
         </v-card>
-    </v-card>
-</v-form>
 
-    
+        <v-form ref="form" @submit="depSubmit">
+            <v-card class="my-2">
+                <v-row class="text-center ml-1">
+                    <v-col cols="4">
+                        Département
+                    </v-col>
+                    <v-col>
+                        {{user.department}}
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col cols="11">
+                        <v-text-field placeholder="Modifier" input="text" v-model="department">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                    <v-card
+                        flat
+                        tile
+                        width="100%"
+                        class="white text-center">
+                        <v-card-text class="d-flex justify-space-around">
+                        
 
-    <v-card class="d-flex text-center my-2">
-        <v-row class="align-center mx-3">
-            <v-col class="red--text" cols="12">
-                Supprimer mon compte
-            </v-col>
-            <v-col cols="12">
-                <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        icon v-bind="attrs" v-on="on">
-                        <div class="btn-flex" @click="deleteAccount()">
-                            <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
-                            Supprimer
-                        </div>
-                        </v-btn>
-                    </template>
-                    <span>Supprimer mon compte</span>
-                </v-tooltip>
-            </v-col>
-        </v-row>
-    </v-card>
+                            <v-tooltip top> 
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                    icon v-bind="attrs" v-on="on" type="submit" value="Submit">
+                                    <div class="btn-flex">
+                                        <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                        Confirmer
+                                    </div>
+                                    </v-btn>
+                                </template>
+                                <span>Confirmer</span>
+                            </v-tooltip>
+                        </v-card-text>
+                    </v-card>
+                </v-card>
+            </v-form> 
 
-<div class="clear"></div>
+        <v-form ref="form" @submit="nameSubmit">
+            <v-card class="my-2">
+                <v-row class="text-center ml-1">
+                    <v-col cols="4">
+                        Prénom
+                    </v-col>
+                    <v-col>
+                        {{user.firstName}}
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col cols="11">
+                        <v-text-field placeholder="Modifier" input="text" v-model="firstName">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row class="text-center ml-1">
+                    <v-col cols="4">
+                        Nom
+                    </v-col>
+                    <v-col>
+                        {{user.lastName}}
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col cols="11">
+                        <v-text-field placeholder="Modifier" input="text" v-model="lastName">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-card
+                    flat
+                    tile
+                    width="100%"
+                    class="white text-center">
+                    <v-card-text class="d-flex justify-space-around">
+                    
+
+                        <v-tooltip top> 
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                icon v-bind="attrs" v-on="on" type="submit" value="Submit">
+                                <div class="btn-flex">
+                                    <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                    Confirmer
+                                </div>
+                                </v-btn>
+                            </template>
+                            <span>Confirmer</span>
+                        </v-tooltip>
+                    </v-card-text>
+                </v-card>
+            </v-card>
+        </v-form>
+
+        <v-card class="text-center my-2">
+            <v-row class="align-center">
+                <v-col>
+                    <v-card-text class="title font-weight-regular">
+                    Modifier mon avatar
+                    </v-card-text>
+                </v-col>
+            </v-row>
+            <div v-show="showProgress">
+                <progress-bar :options="options" :value="progress" />
+            </div>
+            <v-row class="align-center pb-3">
+                <v-col cols="12">
+                    <v-form v-on:submit.prevent="upload" ref="form">
+                    <v-row class="d-block pb-5">
+                    <!-- allow the user to select an image file and when they have selected it call a function 
+                    to handle this event-->
+                    <label for="file-input"></label>
+                    <input
+                        id="file-input"
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        @change="handleFileChange($event)"
+                    />
+                    </v-row>
+                    <!-- submit button is disabled until a file is selected -->
+                    <v-btn type="submit" :disabled="filesSelected != 1" fill color="light-green" >Héberger</v-btn>
+                    </v-form>
+                </v-col>
+            </v-row>
+            <v-tooltip top> 
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                            icon v-bind="attrs" v-on="on" @click="imageSubmit()">
+                            <div class="btn-flex">
+                                <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                Confirmer
+                            </div>
+                            </v-btn>
+                        </template>
+                        <span>Confirmer</span>
+                    </v-tooltip>
+        </v-card>
+
+
+        <v-form ref="form" @submit="passwordSubmit">
+            <v-card class="my-2">
+                <v-row class="text-center ml-1">
+                    <v-col cols="12">
+                        Modifier mon mot de passe
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col cols="11">
+                        <v-text-field placeholder="Nouveau mot de passe" v-model="updatePass">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row no-gutters>
+                    <v-col cols="11">
+                        <v-text-field placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-card
+                    flat
+                    tile
+                    width="100%"
+                    class="white text-center">
+                    <v-card-text class="d-flex justify-space-around">
+                <v-tooltip top> 
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                icon v-bind="attrs" v-on="on" type="submit" value="Submit">
+                                <div class="btn-flex">
+                                    <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                    Confirmer
+                                </div>
+                                </v-btn>
+                            </template>
+                            <span>Confirmer</span>
+                        </v-tooltip>
+                    </v-card-text>
+                </v-card>
+            </v-card>
+        </v-form>
+
+        
+
+        <v-card class="d-flex text-center my-2">
+            <v-row class="align-center mx-3">
+                <v-col class="red--text" cols="12">
+                    Supprimer mon compte
+                </v-col>
+                <v-col cols="12">
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                            icon v-bind="attrs" v-on="on">
+                            <div class="btn-flex" @click="deleteAccount()">
+                                <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                Supprimer
+                            </div>
+                            </v-btn>
+                        </template>
+                        <span>Supprimer mon compte</span>
+                    </v-tooltip>
+                </v-col>
+            </v-row>
+        </v-card>
+        </div>
+
+        <div v-if="showHistory == true">
+             <v-tabs grow class="elevation-2" background-color="white">
+                <v-tab v-if="toggleGag == false" @click="toggleGags()">Gags</v-tab>
+                <v-tab v-if="toggleReddit == false" @click='toggleReddits()'>Discutes</v-tab>
+                <v-tab v-if="toggleComment == false" @click='toggleComments()'>Commentaires</v-tab>
+            </v-tabs>
+
+            <div class="gags" v-show="toggleGag" v-for="gag in gags" :key="gag.id">
+                <div @click="goToGag(gag.id)">
+                    <v-card-title class="centered-text">{{gag.title}}</v-card-title>
+                    <v-img
+                                :src="(gag.content)"
+                                aspect-ratio="1.5"
+                                max-height="500"
+                                contain/>
+                </div>
+                <v-card-text>Posté {{ gag.createdAt | moment("from") }}</v-card-text>
+                <v-divider></v-divider>
+            </div>
+
+            <div class="reddits" v-show="toggleReddit" v-for="reddit in reddits" :key="reddit.id">
+                <div @click="goToReddit(reddit.id)">
+                    <v-card-title class="centered-text">{{reddit.title}}</v-card-title>
+                    <v-card-text>{{reddit.content}}</v-card-text>
+                </div>
+                <v-card-text>Posté {{ reddit.createdAt | moment("from") }}</v-card-text>
+                <v-divider></v-divider>
+            </div>
+        </div>
+
+        <div class="clear"></div>
     
         <foot/>
     </v-container>
@@ -251,9 +284,18 @@ import jwt_decode from 'jwt-decode'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
-var decoded = jwt_decode(tokenFetch);
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
 
-let userId = decoded.userId
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
+
+console.log(userId)
+
 
 export default {
     data() {
@@ -303,6 +345,16 @@ export default {
         componentKey: 0,
         userMe: '',
         userIsMe: userId,
+        showOptions: true,
+        showHistory: false,
+        reddits: [],
+        gags: [],
+        comments: [],
+        toggleGag: true,
+        toggleReddit: false,
+        toggleComment: false,
+        isAdmin: '',
+        confirmedAdmin: ''
         // imageURL: `${this.results.secure_url}`,
         // darkMode: '',
         // password: '',
@@ -318,12 +370,6 @@ export default {
         },
         created () {
             this.fetchUser(this.$route.params.id)
-            // if(this.$route.params.id != this.userIsMe) {
-            //             console.log(this.userIsMe)
-            //             console.log(this.$route.params.id)
-            //             window.location.reload()
-            //             this.$router.push({name: 'home'}) 
-            //         }        
         },
          methods: {
              fetchUser () {
@@ -343,8 +389,24 @@ export default {
                         this.department = this.user.department
                         this.avatar = this.user.avatar
                         this.password = this.user.password
-                        console.log(this.user)  
-                    })            
+                        this.isAdmin = this.user.isAdmin
+                        this.fetchGags();
+                        this.fetchReddits()
+                        console.log(this.user)
+                        if(this.isAdmin == true) {
+                            this.fetchAdmin(this.$route.params.id)
+                            }
+                    })  
+            },
+            fetchAdmin() {
+                this.axios.get(`http://localhost:3000/admin/${this.$route.params.id}`, {
+                    headers: {
+                            Authorization: `Bearer ${tokenFetch}`
+                        }
+                }).then(response => {
+                    this.confirmedAdmin = response.data.user.isAdmin
+                    console.log(this.confirmedAdmin)
+                })
             },
             // function to handle file info obtained from local
             // file system and set the file state
@@ -569,6 +631,59 @@ export default {
                     console.log('An error occurred:', error.response);
                     swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
+                    },
+                    fetchGags() {
+                        this.axios
+                        .get(`http://localhost:3000/gag/byUser/${this.id}`, {
+                            headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                }
+                        }).then(response => {
+                        this.gags = response.data.data
+                        console.log(this.gags)
+                        })
+                    },
+                    fetchReddits() {
+                                this.axios.get(`http://localhost:3000/reddit/byUser/${this.id}`, {
+                                headers: {
+                                            Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }).then(response => {
+                                this.reddits = response.data.data
+                                console.log(this.reddits)
+                                })
+                    },
+                    toggleOptions() {
+                        this.showOptions = true;
+                        this.showHistory = false;
+                    },
+                    toggleHistory() {
+                        this.showOptions = false;
+                        this.showHistory = true;
+                    },
+                    toggleGags() {
+                        this.toggleGag = true;
+                        this.toggleReddit = false;
+                        this.toggleComment = false;
+                    },
+                    toggleReddits() {
+                        this.toggleGag = false;
+                        this.toggleReddit = true;
+                        this.toggleComment = false;
+                    },
+                    toggleComments() {
+                        this.toggleGag = false;
+                        this.toggleReddit = false;
+                        this.toggleComment = true;
+                    },
+                    goToReddit(postId) {
+                        this.$router.push({name:'voirdiscute',params:{id:postId}})
+                    },
+                    goToGag(postId) {
+                        this.$router.push({name:'voirgag',params:{id:postId}})
+                    },
+                    adminPanel() {
+                        this.$router.push({name:'admin'})
                     }
                 },
             headers: {

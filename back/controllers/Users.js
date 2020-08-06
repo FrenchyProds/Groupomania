@@ -2,6 +2,7 @@ var jwt = require('jsonwebtoken')
 var bcrypt = require('bcrypt')
 var db = require("../models");
 var asyncHandler = require('../middleware/asyncHandler')
+const crypt = require('../middleware/passwordCrypt')
 require('dotenv').config();
 
 
@@ -77,7 +78,14 @@ exports.login = async (req, res, next) => {
          })
        };
 
+       function encryptPasswordIfChanged(user, options) {
+        if (user.changed('password')) {
+          crypt(user.get('password'));
+        }
+      }
+
       exports.updateMe = async (req, res) => {
+        db.User.beforeUpdate(encryptPasswordIfChanged)
         await db.User.update(req.body, {
           where: { id: req.params.id }
         });
@@ -98,6 +106,20 @@ exports.login = async (req, res, next) => {
         console.log(user)
         return user;
       };
+
+      // exports.updatePassword = async (req, res) => {
+      //   const user = await db.User.findOne({ where: {  id: req.params.id } })
+      //     if(!user) {
+      //      console.log('test')
+      //       return res.status(404).json({ error: 'Utilisateur inconnu !'})
+      //     } else {
+      //     res.status(200).json({ user })
+      //     const salt = bcrypt.genSalt(10);
+      //     user.password = bcrypt.hash(user.password, salt);
+      //     db.User.update(req.body.password)
+      //     return user;
+      //     }
+      // }
 
       exports.deleteMe = async (req, res) => {
         await db.User.destroy( {

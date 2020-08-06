@@ -37,19 +37,18 @@
             
                 
                 <v-menu bottom :offset-y="true" :close-on-content-click="closeOnContentClick">
-                    <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                icon
-                v-on="on"
-                v-bind="attrs">
-                <div class="btn-flex">
-                    <v-icon size="24px" color="white">mdi-close-circle</v-icon>
-                    Logout  
-                </div>
-                </v-btn>
+                    <template v-slot:activator="{ on }">
+                        <v-btn
+                        icon
+                        v-on="on">
+                        <div class="btn-flex">
+                            <v-icon size="24px" color="white">mdi-close-circle</v-icon>
+                            Logout  
+                        </div>
+                        </v-btn>
                     </template>
-                <v-btn @click="logoff"><v-icon left>mdi-close-circle</v-icon>Se déconnecter</v-btn>
-            </v-menu>
+                    <v-btn @click="logoff"><v-icon left>mdi-close-circle</v-icon>Se déconnecter</v-btn>
+                </v-menu>
             </v-card-text>    
             </v-card>
         </v-footer>

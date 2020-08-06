@@ -65,8 +65,21 @@
 
 <script>
 
-let userId = JSON.parse(localStorage.getItem('id'))
+import jwt_decode from 'jwt-decode'
 
+let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
+
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
+
+console.log(userId)
 
 export default {
     data: () => ({

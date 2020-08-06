@@ -70,6 +70,27 @@
                                     <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
                                     </v-row>
                                     </v-card-actions>
+
+                                <v-card class="d-flex text-center my-2">
+                                    <v-row class="align-center mx-3">
+                                        <v-col cols="12">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                    icon v-bind="attrs" v-on="on">
+                                                    <div class="btn-flex" @click="deletePost()">
+                                                        <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                                        Supprimer
+                                                    </div>
+                                                    </v-btn>
+                                                </template>
+                                                <span>Supprimer ma publication</span>
+                                            </v-tooltip>
+                                        </v-col>
+                                    </v-row>
+                                </v-card>
+                                    
+
                                 </v-card>
                                 </v-dialog>
                             </v-row>
@@ -86,7 +107,7 @@
                     <div v-if="post.User !== null">
                         <v-card-text @click="goToUser(user.username)">Crée par {{ user.username }} - {{ post.createdAt | moment("from") }}
                             <div v-if="post.createdAt != post.updatedAt">
-                                Modifié il y a {{ post.updatedAt | moment("from") }}
+                                Modifié {{ post.updatedAt | moment("from") }}
                             </div>
                         </v-card-text>
                     </div>
@@ -152,9 +173,15 @@ import jwt_decode from 'jwt-decode'
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
-var decoded = jwt_decode(tokenFetch);
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
 
-let userId = decoded.userId
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
 
 export default {
     props: {
@@ -320,6 +347,41 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
             },
+            deletePost() {
+                        swal({
+                        title: "Voulez-vous vraiment supprimer votre publication ?",
+                        text: "Une fois supprimé, vous ne pourrez pas la récupérer",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Votre publication a été supprimé avec succes", {
+                            icon: "success",
+                            })
+                        this.axios.delete(`http://localhost:3000/gag/${this.$route.params.id}`
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            this.$router.push('/groupogag')
+                            window.location.reload();
+                        } else {
+                            swal("Suppresion de publication annulée");
+                        }
+                        }).catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                })
+                            },
             goToUser(username) {
             this.$router.push({name:'user', params:{username:username}})
         }
