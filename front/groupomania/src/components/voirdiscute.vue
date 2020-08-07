@@ -116,17 +116,53 @@
                 </div>
 
             <v-card-title>
-                Commentaires
+                Commentaires : {{ comments.length }}
             </v-card-title>
 
-            <div v-if="!post.Comments || post.Comments.length === 0">
+            <v-row class="align-center">
+                <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
+                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon>mdi-arrow-right</v-icon></v-btn>
+            </v-row>
+
+            <div v-if="!comments.length || comments.length === 0">
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="comment in comments" :key="comment.id">
-                <v-card-text>
-                    <p>{{comment.content}}</p>
-                </v-card-text>
+            <div class="comments" v-for="comment in comments" :key="comment.redditId">
+                <v-card>
+                    <v-card-text>
+                        <p>{{comment.content}}</p>
+                        <p class="justify-center">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
+                    </v-card-text>
+                    <v-card-text class="text-truncate" background-color="grey">
+                        <div class="likes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                </template>
+                                <span>J'aime !</span>
+                                </v-tooltip>
+                            </div>
+
+                            <div class="dislikes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                </template>
+                                <span>J'aime pas !</span>
+                                </v-tooltip>
+                            </div>
+
+                        <div v-if="user.id != comment.userId">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            </template>
+                            <span>Signaler du contenu</span>
+                            </v-tooltip>
+                        </div>
+                    </v-card-text>
+                </v-card> 
             </div>
             </div>
             
@@ -156,7 +192,6 @@ userId = decoded.userId
 export default {
     data () {
         return {
-        items: ['Dernières publications', 'Le plus de likes'],
         post: [],
         user: [],
         url: [],
@@ -166,11 +201,18 @@ export default {
         modalDialog: false,
         updateTitle: '',
         updateContent: '',
-        isFlagged: ''
+        isFlagged: '',
+        commentContent:''
     }},      
      mounted() {
          this.asyncData();
+         this.fetchComments();
         },
+    computed: {
+        commentHasContent () {
+            return !this.commentContent
+        }
+    },
         methods: {
             async asyncData() {
                  await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id,
@@ -181,12 +223,18 @@ export default {
                     }).then(res => {
                 this.post = res.data.data
                 this.user = this.post.User
-                this.comments = this.post.Comments
                 this.isFlagged = this.post.isFlag
                 console.log(this.userIsMe)
-                console.log(this.comments)
-                console.log(res.data.data)
-          })
+                })
+            },
+                async fetchComments() {
+                    await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/comments',
+                {
+                    })
+                        .then(res => {
+                            this.comments = res.data.data
+                            console.log(res)       
+                })
             },
             updatePost() {
                  this.axios.put('http://localhost:3000/reddit/' + this.$route.params.id, {
@@ -294,6 +342,29 @@ export default {
                     } else {
                         swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
                     }
+                },
+                postComment() {
+                    this.axios.post('http://localhost:3000/reddit/' + this.$route.params.id + '/comment',
+                    {
+                        content: this.commentContent,
+                    },
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }
+                        })
+                        .then(response => {
+                        // Handle success.
+                        console.log(response)
+                        console.log(this.content)
+                        swal('Commentaire publié !', '', 'success')
+                        window.location.reload();
+                        })
+                        .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
                 }
         },
     name: 'voirdiscute',

@@ -36,8 +36,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   Reddit.associate = (models) => {
     Reddit.hasMany(models.Comment, { foreignKey: 'commentId', sourceKey: 'id' }),
-    Reddit.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' }),
-    Reddit.hasMany(models.Reaction, { foreignKey: 'reactionId', sourceKey: 'id' })
+    Reddit.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' })
 };
   return Reddit;
 }

@@ -14,25 +14,32 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: { notEmpty: true }
         },
-        // userId: {
-        //     type: DataTypes.UUID,
-        //     references: { 
-        //         model: db.User, 
-        //         key: 'id' },
-        //     allowNull: true
-        // },
+        userId: {
+            type: DataTypes.UUID,
+            references: { 
+                model: db.User, 
+                key: 'id' },
+            allowNull: false
+        },
         redditId: {
             type: DataTypes.UUID,
             references: { 
                 model: db.Reddit, 
                 key: 'id' },
             allowNull: true
+        },
+        gagId: {
+            type: DataTypes.UUID,
+            references: { 
+                model: db.Gag, 
+                key: 'id' },
+            allowNull: true
         }
     });
     Comment.associate = (models) => {
-    Comment.hasMany(models.Reaction, { foreignKey: 'reactionId', sourceKey: 'id' }),
     Comment.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' }),
-    Comment.belongsTo(models.Gag, { foreignKey: 'gagId', sourceKey:'id'})
+    Comment.belongsTo(models.Gag, { foreignKey: 'gagId', sourceKey:'id'}),
+    Comment.belongsTo(models.User, { foreignKey: 'userId', sourceKey: 'id'})
 };
     return Comment
 }

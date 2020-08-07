@@ -37,8 +37,7 @@ module.exports = (sequelize, DataTypes) => {
 });
   Gag.associate = (models) => {
     Gag.hasMany(models.Comment, { foreignKey: 'gagId', sourceKey: 'id' }),
-    Gag.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' }),
-    Gag.hasMany(models.Reaction, { foreignKey: 'gagId', sourcekey:'id'})
+    Gag.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' })
 };
   return Gag;
 };

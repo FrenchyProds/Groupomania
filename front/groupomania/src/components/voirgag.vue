@@ -145,22 +145,58 @@
                 </div>
                     </v-card-text>
                     <v-divider></v-divider>
-                
-                <v-card-title>
-                    Commentaires
-                </v-card-title>
+                                             
+            </div>
 
-                <div v-if="!post.Comments || post.Comments.length === 0">
-                    Aucun commentaire n'a été posté pour l'instant !
-                </div>
-                <div v-else>
-                <div class="comments" v-for="comment in comments" :key="comment.id">
+            <v-card-title>
+                Commentaires : {{ comments.length }}
+            </v-card-title>
+
+            <v-row class="align-center">
+                <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
+                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon>mdi-arrow-right</v-icon></v-btn>
+            </v-row>
+
+            <div v-if="this.comments.length === 0">
+                Aucun commentaire n'a été posté pour l'instant !
+            </div>
+            <div v-else>
+            <div class="comments" v-for="comment in comments" :key="comment.gagId">
+                <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>
+                        <p class="justify-center">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
                     </v-card-text>
-                </div>
-                </div>
-                    
+                    <v-card-text class="text-truncate" background-color="grey">
+                        <div class="likes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                </template>
+                                <span>J'aime !</span>
+                                </v-tooltip>
+                            </div>
+
+                            <div class="dislikes">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                </template>
+                                <span>J'aime pas !</span>
+                                </v-tooltip>
+                            </div>
+
+                        <div v-if="user.id != comment.userId">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="reportComment()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            </template>
+                            <span>Signaler du contenu</span>
+                            </v-tooltip>
+                        </div>
+                    </v-card-text>
+                </v-card> 
+            </div>
             </div>
             
         <modifiedfoot/>
@@ -217,6 +253,7 @@ export default {
         post: [],
         user: [],
         url: [],
+        comments: [],
         gagpost: false,
         results: null,
         errors: [],
@@ -235,11 +272,17 @@ export default {
         modalDialog: false,
         updateTitle: '',
         updateContent: '',
-        isFlagged: ''
+        isFlagged: '',
+        commentContent:''
     }},      
      mounted() {
          this.asyncData();
         },
+     computed: {
+        commentHasContent () {
+            return !this.commentContent
+        }
+     },
         methods: {
             async asyncData() {
                  await this.axios.get('http://localhost:3000/gag/' + this.$route.params.id,
@@ -253,6 +296,16 @@ export default {
                 this.isFlagged = this.post.isFlag
                 console.log(res.data.data)
           })
+          await this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/comments',
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        })
+                        .then(res => {
+                            this.comments = res.data.data
+                            console.log(this.comments)       
+                })
             },
             handleFileChange: function(event) {
         console.log("handlefilechange", event.target.files);
@@ -428,6 +481,29 @@ export default {
                     } else {
                         swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
                     }
+                },
+                postComment() {
+                    this.axios.post('http://localhost:3000/gag/' + this.$route.params.id + '/comment',
+                    {
+                        content: this.commentContent,
+                    },
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }
+                        })
+                        .then(response => {
+                        // Handle success.
+                        console.log(response)
+                        console.log(this.content)
+                        swal('Commentaire publié !', '', 'success')
+                        window.location.reload();
+                        })
+                        .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
                 },
             goToUser(username) {
                 this.$router.push({name:'user', params:{username:username}})

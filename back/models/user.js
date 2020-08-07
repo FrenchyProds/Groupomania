@@ -49,7 +49,6 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Reddit, { foreignKey: 'userId', sourceKey: 'id' });
     User.hasMany(models.Gag, { foreignKey: 'userId', sourceKey: 'id' });
     User.hasMany(models.Comment, { foreignKey: 'userId', sourceKey: 'id' });
-    User.hasMany(models.Reaction, { foreignKey: 'userId', sourceKey: 'id' })
 };
   return User;
 };

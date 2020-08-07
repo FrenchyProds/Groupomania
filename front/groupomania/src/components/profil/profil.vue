@@ -267,6 +267,13 @@
                 <v-card-text>Posté {{ reddit.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
             </div>
+
+            <div class="comments" v-show="toggleComment" v-for="comment in comments" :key="comment.id">
+                    <v-card-text>{{comment.content}}</v-card-text>
+                    <v-card-text>Sur la publication : {{comment.Reddit.title|| comment.Gag.title}} </v-card-text>
+                <v-card-text> {{ comment.createdAt | moment("from") }}</v-card-text>
+                <v-divider></v-divider>
+            </div>
         </div>
 
     
@@ -395,7 +402,8 @@ export default {
                         this.password = this.user.password
                         this.isAdmin = this.user.isAdmin
                         this.fetchGags();
-                        this.fetchReddits()
+                        this.fetchReddits();
+                        this.fetchComments();
                         console.log(this.user)
                         if(this.isAdmin == true) {
                             this.fetchAdmin(this.$route.params.id)
@@ -655,6 +663,16 @@ export default {
                                 }).then(response => {
                                 this.reddits = response.data.data
                                 console.log(this.reddits)
+                                })
+                    },
+                    fetchComments() {
+                        this.axios.get(`http://localhost:3000/comments/byUser/${this.id}`, {
+                            headers: {
+                                            Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }).then(response => {
+                                this.comments = response.data.data
+                                console.log(this.comments)
                                 })
                     },
                     toggleOptions() {

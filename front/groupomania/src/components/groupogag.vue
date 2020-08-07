@@ -6,7 +6,7 @@
         label="Trier par :"
         filled>
         </v-select>
-            <div>
+            <div v-if="posts.length > 0">
                 <div class="content" v-for="post in posts" :key="post.id">
                     
                         <div @click="goToPost(post.id)">
@@ -49,19 +49,13 @@
                         <div class="comments">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                            <v-btn @click="goToPost(post.id)" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
                             8</v-btn>
                             </template>
                             <span>Laisser un commentaire</span>
                             </v-tooltip>
                         </div>
 
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                    </template>
-                    <span>Signaler du contenu</span>
-                    </v-tooltip>
                     </v-card-text>
                     <v-divider></v-divider>
 
