@@ -7,11 +7,11 @@ router.get('/reddit/:id/comments/', async (req, res) => {
     const Comment = await db.Comment.findAll({ where: { redditId: req.params.id },
       include: {
         model: db.User,
-        attributes: ["username"],
+        attributes: ["username", "id"],
         },
       order: [["createdAt", "DESC"]],
     })
-    res.status(200).json({  data: Comment });
+    res.status(200).json({ Comment });
     return Comment;
 })
 
@@ -38,7 +38,7 @@ router.get('/gag/:id/comments/', async (req, res) => {
   const Comment = await db.Comment.findAll({ where: { gagId: req.params.id },
     include: {
       model: db.User,
-      attributes: ["username"],
+      attributes: ["username", "id"],
       },
     order: [["createdAt", "DESC"]],
   })
@@ -68,14 +68,29 @@ router.post('/gag/:id/comment', async (req, res) => {
 router.get('/comments/byUser/:id', async (req, res) => {
   const Comment = await db.Comment.findAll({ where: { userId: req.params.id },
     include: {
-      model: db.Reddit || db.Gag,
-      attributes: ["title"],
+      model: db.Reddit && db.Gag,
+      attributes: ["title",],
     },
     order: [["createdAt", "DESC"]],
   })
   res.status(200).json({  data: Comment });
   return Comment;
 })
+
+router.put(':id/report', async (req, res) => {
+  await db.Comment.findOne({ where: { id: req.comment.id }})
+  console.log(req.comment.id)
+    .then(comment => {
+      if(!comment) {
+          return res.status(404).json({ error: 'Commentaire inconnu !'})
+        } else {
+        db.Comment.update( { isFlag: true }, { where: { id: req.comment.id }})
+        res.status(200).json({ data: comment })
+        return comment;
+        }
+  })
+})
+
 
 
 module.exports = router;

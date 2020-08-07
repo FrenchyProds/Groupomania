@@ -78,14 +78,13 @@ exports.login = async (req, res, next) => {
          })
        };
 
-      //  function encryptPasswordIfChanged(user, options) {
-      //   if (user.changed('password')) {
-      //     crypt(user.get('password'));
-      //   }
-      // }
+       function encryptPasswordIfChanged(user, options) {
+        if (user.changed('password')) {
+          crypt(user.get('password'));
+        }
+      }
 
       exports.updateMe = async (req, res) => {
-        // db.User.beforeUpdate(encryt)
         await db.User.update(req.body, {
           where: { id: req.params.id }
         });
@@ -107,19 +106,20 @@ exports.login = async (req, res, next) => {
         return user;
       };
 
-      // exports.updatePassword = async (req, res) => {
-      //   const user = await db.User.findOne({ where: {  id: req.params.id } })
-      //     if(!user) {
-      //      console.log('test')
-      //       return res.status(404).json({ error: 'Utilisateur inconnu !'})
-      //     } else {
-      //     res.status(200).json({ user })
-      //     const salt = bcrypt.genSalt(10);
-      //     user.password = bcrypt.hash(user.password, salt);
-      //     db.User.update(req.body.password)
-      //     return user;
-      //     }
-      // }
+      exports.updatePassword = async (req, res) => {
+        const user = await db.User.findOne({ where: { id: req.params.id } });
+        let password = req.body.password;
+        const salt = await bcrypt.genSalt(10);
+        password = await bcrypt.hash(password, salt);
+        await db.User.update( {password: password}, {where: { id: req.params.id}})
+          if(!user) {
+           console.log('test')
+            return res.status(404).json({ error: 'Utilisateur inconnu !'})
+          } else {
+          res.status(200).json({ user })
+          return user;
+          }
+        }
 
       exports.deleteMe = async (req, res) => {
         await db.User.destroy( {

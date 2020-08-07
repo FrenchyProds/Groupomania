@@ -121,14 +121,14 @@
 
             <v-row class="align-center">
                 <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
-                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon>mdi-arrow-right</v-icon></v-btn>
+                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon color="green">mdi-arrow-right</v-icon></v-btn>
             </v-row>
 
-            <div v-if="!comments.length || comments.length === 0">
+            <div v-if="!comments.length">
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="comment in comments" :key="comment.redditId">
+            <div class="comments" v-for="(comment,index) in comments" :key="index">
                 <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>
@@ -153,13 +153,15 @@
                                 </v-tooltip>
                             </div>
 
-                        <div v-if="user.id != comment.userId">
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                            </template>
-                            <span>Signaler du contenu</span>
-                            </v-tooltip>
+                        <div v-if="userIsMe != comment.User.id">
+                            <div v-if="comment.isFlag != true">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn @click="reportComment()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                </template>
+                                <span>Signaler du contenu</span>
+                                </v-tooltip>
+                            </div>
                         </div>
                     </v-card-text>
                 </v-card> 
@@ -202,11 +204,11 @@ export default {
         updateTitle: '',
         updateContent: '',
         isFlagged: '',
-        commentContent:''
+        commentContent:'',
+        commentId: ''
     }},      
      mounted() {
          this.asyncData();
-         this.fetchComments();
         },
     computed: {
         commentHasContent () {
@@ -224,16 +226,17 @@ export default {
                 this.post = res.data.data
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
+                this.fetchComments();
                 console.log(this.userIsMe)
                 })
             },
                 async fetchComments() {
-                    await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/comments',
+                   await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/comments',
                 {
                     })
                         .then(res => {
-                            this.comments = res.data.data
-                            console.log(res)       
+                            this.comments = res.data.Comment
+                            console.log(this.comments)
                 })
             },
             updatePost() {
@@ -330,7 +333,7 @@ export default {
                             })
                             window.location.reload()
                         } else {
-                            swal("Signlament annulé");
+                            swal("Signalement annulé");
                         }
                         })
                 
@@ -365,8 +368,39 @@ export default {
                             console.log('An error occurred:', error.response);
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
-                }
-        },
+                },
+                reportComment() {
+                        console.log(this.commentId)
+                        swal({
+                        title: "Voulez-vous vraiment signaler ce commentaire ?",
+                        text: "",
+                        icon: "info",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willReport) => {
+                        if (willReport) {
+                            swal("Commentaire signalé avec succes",{
+                            icon: "success",
+                            })
+                        this.axios.put(`http://localhost:3000/b92a0c63-280b-4ad2-ad40-d399a9674b43/report`
+                ,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)    
+                                console.log(this.commentId) 
+                            })
+                            console.log(this.commentId)
+                            window.location.reload()
+                        }
+                    })
+                }     
+            }  ,
     name: 'voirdiscute',
     components: {
         mainhead,

@@ -34,7 +34,17 @@ module.exports = (sequelize, DataTypes) => {
                 model: db.Gag, 
                 key: 'id' },
             allowNull: true
-        }
+        },
+        isFlag: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+          },
+          hasBeenModerated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+          },
     });
     Comment.associate = (models) => {
     Comment.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' }),

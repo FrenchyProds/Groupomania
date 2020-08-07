@@ -118,18 +118,12 @@
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
                                 <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                                8</v-btn>
+                                </v-btn>
                                 </template>
                                 <span>Laisser un commentaire</span>
                                 </v-tooltip>
                             </div>
 
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                            </template>
-                            <span>Signaler du contenu</span>
-                            </v-tooltip>
                             </v-card-text>
                             <v-divider></v-divider>
                         </div> <!--FIN DU TEMPLATE GAG --> 

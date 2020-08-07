@@ -76,6 +76,18 @@
             <v-divider></v-divider>
         </div>
 
+        <div class="comments" v-show="toggleComment" v-for="comment in comments" :key="comment.id">
+                    <v-card-text>{{comment.content}}</v-card-text>
+                    <div v-if="comment.Reddit" @click="goToReddit(comment.redditId)">
+                        <v-card-text>Sur la publication : {{comment.Reddit.title }} </v-card-text>
+                    </div>
+                    <div v-if="comment.Gag" @click="goToGag(comment.gagId)">
+                        <v-card-text>Sur la publication : {{comment.Gag.title }} </v-card-text>
+                    </div>                    
+                <v-card-text> {{ comment.createdAt | moment("from") }}</v-card-text>
+                <v-divider></v-divider>
+            </div>
+
     <modifiedfoot />
     </v-container>
     
@@ -150,7 +162,8 @@ export default {
                         this.avatar = this.user.avatar
                         this.isFlagged = this.user.isFlag
                         this.fetchGags();
-                        this.fetchReddits()
+                        this.fetchReddits();
+                        this.fetchComments();
                     })  
             },
             fetchGags() {
@@ -173,6 +186,16 @@ export default {
                         this.reddits = response.data.data
                         console.log(this.reddits)
                         })
+            },
+            fetchComments() {
+                        this.axios.get(`http://localhost:3000/comments/byUser/${this.id}`, {
+                            headers: {
+                                            Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }).then(response => {
+                                this.comments = response.data.data
+                                console.log(this.comments)
+                                })
             },
             reportContent() {
                          if(this.isFlagged == false) {

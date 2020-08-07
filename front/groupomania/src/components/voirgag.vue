@@ -154,14 +154,14 @@
 
             <v-row class="align-center">
                 <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
-                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon>mdi-arrow-right</v-icon></v-btn>
+                <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon color="green">mdi-arrow-right</v-icon></v-btn>
             </v-row>
 
             <div v-if="this.comments.length === 0">
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="comment in comments" :key="comment.gagId">
+            <div class="comments" v-for="(comment,index) in comments" :key="index">
                 <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>

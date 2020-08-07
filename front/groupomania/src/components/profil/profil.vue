@@ -11,7 +11,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-tabs grow class="elevation-2" background-color="white">
+        <v-tabs vertical grow class="elevation-2" background-color="white">
                 <v-tab @click="toggleOptions()">Préferences</v-tab>
                 <v-tab @click="toggleHistory()">Historique</v-tab>
                 <v-tab v-if="this.confirmedAdmin == 1" @click="adminPanel()">Admin Panel</v-tab>
@@ -270,7 +270,12 @@
 
             <div class="comments" v-show="toggleComment" v-for="comment in comments" :key="comment.id">
                     <v-card-text>{{comment.content}}</v-card-text>
-                    <v-card-text>Sur la publication : {{comment.Reddit.title|| comment.Gag.title}} </v-card-text>
+                    <div v-if="comment.Reddit" @click="goToReddit(comment.redditId)">
+                        <v-card-text>Sur la publication : {{comment.Reddit.title }} </v-card-text>
+                    </div>
+                    <div v-if="comment.Gag" @click="goToGag(comment.gagId)">
+                        <v-card-text>Sur la publication : {{comment.Gag.title }} </v-card-text>
+                    </div>                    
                 <v-card-text> {{ comment.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
             </div>
@@ -583,7 +588,7 @@ export default {
                 console.log(this.password)
                 this.axios
                     .put(
-                        `http://localhost:3000/user/${this.$route.params.id}`,
+                        `http://localhost:3000/user/password/${this.$route.params.id}`,
                         {
                             password: this.updatePass
                         },

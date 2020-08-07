@@ -1,14 +1,15 @@
 <template>
     <v-container>
-        <v-tabs grow class="elevation-2" background-color="white">
+        <v-tabs  grow class="elevation-2 mb-2" background-color="white">
             <v-tab v-if="showFlag == false" @click="toggleFlags()">Posts signalés</v-tab>
             <v-tab v-if="showHistory == false" @click='toggleAdminHistory()'>Historique d'administration</v-tab>
         </v-tabs>
 
-            <v-tabs grow class="elevation-2" background-color="white">
-                <v-tab v-if="showReddits == false" @click="toggleReddit()">Discutes Signalées</v-tab>
-                <v-tab v-if="showGags == false" @click='toggleGag()'>Gags Signalés</v-tab>
-                <v-tab v-if="showUsers == false" @click='toggleUsers()'>Utilisateurs Signalés</v-tab>
+            <v-tabs show-arrows class="elevation-2" background-color="white">
+                <v-tab @click="toggleReddit()">Discutes Signalées</v-tab>
+                <v-tab @click='toggleGag()'>Gags Signalés</v-tab>
+                <v-tab @click='toggleUsers()'>Utilisateurs Signalés</v-tab>
+                <v-tab @click="toggleComments()">Commentaires Signalés</v-tab>
             </v-tabs>
 
     <div v-if="showFlag == true">
@@ -40,13 +41,13 @@
             <div v-if="showGags == true">
                 <v-card class="my-4">
                 <v-card-title class="justify-center">Gags Signalés</v-card-title>
-                <div class="content" v-for="gag in gag" :key="gag.id">
+                <div class="content" v-for="gag in gags" :key="gag.id">
                     <div v-if="gag.isFlag == true">
                         <div @click="goToGag(gag.id)">
                             <v-card-title background-color="lightgrey" class="postTitle">{{ gag.title }}</v-card-title>
                             <v-divider></v-divider>
                             <v-img
-                            :src="(post.content)"
+                            :src="(gag.content)"
                             aspect-ratio="1.5"
                             max-height="500"
                             contain/>
@@ -141,6 +142,7 @@ export default {
             showReddits: true,
             showGags: false,
             showUsers: false,
+            showComments: false,
         }
     },
     mounted() {
@@ -188,16 +190,25 @@ export default {
                         this.showGags = true;
                         this.showReddits = false;
                         this.showUsers = false;
+                        this.showComments = false;
                     },
         toggleReddit() {
                         this.showGags = false;
                         this.showReddits = true;
                         this.showUsers = false;
+                        this.showComments = false;
                     },
         toggleUsers() {
                         this.showGags = false;
                         this.showReddits = false;
                         this.showUsers = true;
+                        this.showComments = false;
+                    },
+        toggleComments() {
+                        this.showGags = false;
+                        this.showReddits = false;
+                        this.showUsers = false;
+                        this.showComments = true;
                     },
         goToGag(postId) {
             this.$router.push({name:'voirgag',params:{id:postId}})
