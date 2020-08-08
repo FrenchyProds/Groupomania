@@ -37,6 +37,16 @@
                 prepend-icon="lock"
               ></v-text-field>
             </v-row>
+             <v-row>
+              <v-text-field
+              v-model="passwordConf"
+                label="Confirmation du Mot de Passe"
+                class="ma-2"
+                required
+                type="password"
+                prepend-icon="lock"
+              ></v-text-field>
+            </v-row>
             <v-row justify="center">
               <v-btn type="submit" value="Submit" class="mt-4" outlined color="green" :disabled='isComplete'>Valider</v-btn>
             </v-row>
@@ -63,10 +73,12 @@ const registerUrl = 'http://localhost:3000/register'
       username: '',
       email: '',
       password: "",
+      passwordConf:''
     }),
     methods: {
           formSubmit(e) {
           e.preventDefault();
+          if(this.password == this.passwordConf) {
           this.axios.post(registerUrl
           ,{
            username: this.username,
@@ -83,6 +95,9 @@ const registerUrl = 'http://localhost:3000/register'
             console.log('An error occurred:', error.response);
             swal("Quelque chose n'a pas fonctionné", "", "error")
           })
+          } else {
+            swal('Mots de passe différents !','Merci de bien vouloir renseigner deux mots de passe identiques', 'error')
+          }
           },
           validate () {
         this.$refs.form.validate()
@@ -90,7 +105,7 @@ const registerUrl = 'http://localhost:3000/register'
         },
         computed: {
           isComplete () {
-            return !this.username || !this.email || !this.password;
+            return !this.username || !this.email || !this.password || !this.passwordConf;
             }
         },
     components: {

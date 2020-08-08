@@ -76,16 +76,28 @@
             <v-divider></v-divider>
         </div>
 
-        <div class="comments" v-show="toggleComment" v-for="comment in comments" :key="comment.id">
-                    <v-card-text>{{comment.content}}</v-card-text>
-                    <div v-if="comment.Reddit" @click="goToReddit(comment.redditId)">
-                        <v-card-text>Sur la publication : {{comment.Reddit.title }} </v-card-text>
-                    </div>
-                    <div v-if="comment.Gag" @click="goToGag(comment.gagId)">
-                        <v-card-text>Sur la publication : {{comment.Gag.title }} </v-card-text>
-                    </div>                    
-                <v-card-text> {{ comment.createdAt | moment("from") }}</v-card-text>
+        <div class="comments" v-show="toggleComment">
+             <div v-for="gagComment in gagComments" :key="gagComment.gagId">
+                <div v-if="gagComment.gagId != null">
+                    <v-card-text>{{gagComment.content}}</v-card-text>
+                    <div @click="goToGag(gagComment.gagId)">
+                        <v-card-text>Sur la publication : {{gagComment.Gag.title }} </v-card-text>
+                    </div>                   
+                <v-card-text> {{ gagComment.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
+                </div>
+            </div>
+
+            <div v-for="redditComment in redditComments" :key="redditComment.redditId">
+                    <div v-if="redditComment.redditId != null">
+                        <v-card-text>{{redditComment.content}}</v-card-text>
+                        <div @click="goToReddit(redditComment.redditId)">
+                            <v-card-text>Sur la publication : {{redditComment.Reddit.title }} </v-card-text>
+                        </div>                   
+                        <v-card-text> {{ redditComment.createdAt | moment("from") }}</v-card-text>
+                        <v-divider></v-divider>
+                    </div>
+                </div>
             </div>
 
     <modifiedfoot />
@@ -124,7 +136,8 @@ export default {
         department: '',
         gags: [],
         reddits: [],
-        comments: [],
+        gagComments: [],
+        redditComments: [],
         toggleGag: true,
         toggleReddit: false,
         toggleComment: false,
@@ -163,7 +176,8 @@ export default {
                         this.isFlagged = this.user.isFlag
                         this.fetchGags();
                         this.fetchReddits();
-                        this.fetchComments();
+                        this.fetchGagComments();
+                        this.fetchRedditComments();
                     })  
             },
             fetchGags() {
@@ -187,13 +201,23 @@ export default {
                         console.log(this.reddits)
                         })
             },
-            fetchComments() {
-                        this.axios.get(`http://localhost:3000/comments/byUser/${this.id}`, {
+            fetchGagComments() {
+                        this.axios.get(`http://localhost:3000/comments/gag/byUser/${this.id}`, {
                             headers: {
                                             Authorization: `Bearer ${tokenFetch}`
                                         }
                                 }).then(response => {
-                                this.comments = response.data.data
+                                this.gagComments = response.data.data
+                                console.log(this.comments)
+                                })
+            },
+            fetchRedditComments() {
+                        this.axios.get(`http://localhost:3000/comments/reddit/byUser/${this.id}`, {
+                            headers: {
+                                            Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }).then(response => {
+                                this.redditComments = response.data.data
                                 console.log(this.comments)
                                 })
             },

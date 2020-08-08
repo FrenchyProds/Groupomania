@@ -132,7 +132,15 @@
                 <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>
-                        <p class="justify-center">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
+                        <div v-if="comment.User !== null">
+                        <p class="justify-center" @click="goToUser(comment.User.username)">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
+                        </div>
+                        <div v-else>
+                        <p>Utilisateur Supprimé - {{ comment.createdAt | moment("from") }}</p>
+                        </div>
+                        <div v-if="comment.createdAt != comment.updatedAt">
+                                Modifié {{ comment.updatedAt | moment("from") }}
+                            </div>
                     </v-card-text>
                     <v-card-text class="text-truncate" background-color="grey">
                         <div class="likes">

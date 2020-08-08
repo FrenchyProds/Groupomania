@@ -115,7 +115,7 @@
                                 <v-btn
                                 icon v-bind="attrs" v-on="on" type="submit" value="Submit">
                                 <div class="btn-flex">
-                                    <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                    <v-icon size="24px" :disabled="hasName"  color="green">mdi-checkbox-marked-circle</v-icon>
                                     Confirmer
                                 </div>
                                 </v-btn>
@@ -181,13 +181,13 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field placeholder="Nouveau mot de passe" v-model="updatePass">
+                        <v-text-field type="password" placeholder="Nouveau mot de passe" v-model="updatePass">
                         </v-text-field>
                     </v-col>
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
+                        <v-text-field type="password" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
                         </v-text-field>
                     </v-col>
                 </v-row>
@@ -202,7 +202,7 @@
                                 <v-btn
                                 icon v-bind="attrs" v-on="on" type="submit" value="Submit">
                                 <div class="btn-flex">
-                                    <v-icon size="24px" v-if="!null"  color="green">mdi-checkbox-marked-circle</v-icon>
+                                    <v-icon size="24px" :disabled="hasPassword"  color="green">mdi-checkbox-marked-circle</v-icon>
                                     Confirmer
                                 </div>
                                 </v-btn>
@@ -268,16 +268,29 @@
                 <v-divider></v-divider>
             </div>
 
-            <div class="comments" v-show="toggleComment" v-for="comment in comments" :key="comment.id">
-                    <v-card-text>{{comment.content}}</v-card-text>
-                    <div v-if="comment.Reddit" @click="goToReddit(comment.redditId)">
-                        <v-card-text>Sur la publication : {{comment.Reddit.title }} </v-card-text>
-                    </div>
-                    <div v-if="comment.Gag" @click="goToGag(comment.gagId)">
-                        <v-card-text>Sur la publication : {{comment.Gag.title }} </v-card-text>
-                    </div>                    
-                <v-card-text> {{ comment.createdAt | moment("from") }}</v-card-text>
+
+            <div class="comments" v-show="toggleComment">
+             <div v-for="gagComment in gagComments" :key="gagComment.gagId">
+                <div v-if="gagComment.gagId != null">
+                    <v-card-text>{{gagComment.content}}</v-card-text>
+                    <div @click="goToGag(gagComment.gagId)">
+                        <v-card-text>Sur la publication : {{gagComment.Gag.title }} </v-card-text>
+                    </div>                   
+                <v-card-text> {{ gagComment.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
+                </div>
+            </div>
+
+            <div v-for="redditComment in redditComments" :key="redditComment.redditId">
+                    <div v-if="redditComment.redditId != null">
+                        <v-card-text>{{redditComment.content}}</v-card-text>
+                        <div @click="goToReddit(redditComment.redditId)">
+                            <v-card-text>Sur la publication : {{redditComment.Reddit.title }} </v-card-text>
+                        </div>                   
+                        <v-card-text> {{ redditComment.createdAt | moment("from") }}</v-card-text>
+                        <v-divider></v-divider>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -360,7 +373,8 @@ export default {
         showHistory: false,
         reddits: [],
         gags: [],
-        comments: [],
+        gagComments: [],
+        redditComments: [],
         toggleGag: true,
         toggleReddit: false,
         toggleComment: false,
@@ -385,6 +399,12 @@ export default {
         computed: {
             hasImage () {
                 return !this.fileContents;
+            },
+            hasPassword () {
+                    return !this.updatePass || !this.confPass;
+            },
+            hasName () {
+                return !this.firstName || !this.lastName
             }
         },
          methods: {
@@ -408,7 +428,8 @@ export default {
                         this.isAdmin = this.user.isAdmin
                         this.fetchGags();
                         this.fetchReddits();
-                        this.fetchComments();
+                        this.fetchGagComments();
+                        this.fetchRedditComments();
                         console.log(this.user)
                         if(this.isAdmin == true) {
                             this.fetchAdmin(this.$route.params.id)
@@ -586,6 +607,7 @@ export default {
                 passwordSubmit(e) {
                 e.preventDefault();
                 console.log(this.password)
+                if(this.updatePass == this.confPass) {
                 this.axios
                     .put(
                         `http://localhost:3000/user/password/${this.$route.params.id}`,
@@ -598,6 +620,7 @@ export default {
                             }
                         }
                     )
+                    
                     .then(response => {
                         // display success notification     
                         this.notification = Object.assign({}, this.notification, {
@@ -612,6 +635,9 @@ export default {
                             console.log('An error occurred:', error.response);
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
+                    } else {
+                        swal("Mots de passe différents !","Merci de bien vouloir renseigner des mots de passe identiques", "error")
+                    }
                     },
                     deleteAccount() {
                         swal({
@@ -670,14 +696,24 @@ export default {
                                 console.log(this.reddits)
                                 })
                     },
-                    fetchComments() {
-                        this.axios.get(`http://localhost:3000/comments/byUser/${this.id}`, {
+                    fetchGagComments() {
+                        this.axios.get(`http://localhost:3000/comments/Gag/byUser/${this.id}`, {
                             headers: {
                                             Authorization: `Bearer ${tokenFetch}`
                                         }
                                 }).then(response => {
-                                this.comments = response.data.data
-                                console.log(this.comments)
+                                this.gagComments = response.data.data
+                                console.log(this.gagComments)
+                                })
+                    },
+                    fetchRedditComments() {
+                        this.axios.get(`http://localhost:3000/comments/Reddit/byUser/${this.id}`, {
+                            headers: {
+                                            Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }).then(response => {
+                                this.redditComments = response.data.data
+                                console.log(this.redditComments)
                                 })
                     },
                     toggleOptions() {

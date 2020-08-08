@@ -6,8 +6,8 @@ const bodyParser = require("body-parser")
 const helmet = require("helmet")
 
 const userRoutes = require('./routes/user');
-const postRoutes = require('./controllers/Posts')
-const commentRoutes = require('./controllers/Comments')
+const postRoutes = require('./routes/post')
+const commentRoutes = require('./routes/comment')
 
 const app = express()
 
