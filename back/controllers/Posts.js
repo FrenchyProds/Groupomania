@@ -2,6 +2,8 @@ var express = require('express')
 var router = express.Router()
 const token = require('../middleware/getUserIdByToken');
 var db = require("../models");
+const { Op } = require("sequelize")
+const asyncHandler = require('../middleware/asyncHandler')
 
 exports.createReddit = async (req, res) => {
     const Reddit = await db.Reddit.create({
@@ -15,7 +17,7 @@ exports.createReddit = async (req, res) => {
         postType: 'reddit'
       });
       res.status(200).json({ data: Reddit })
-      .catch(error => res.status(500).json({ error }))
+      return Reddit;
 };
 
 exports.createGag = async (req, res) => {
@@ -30,7 +32,6 @@ exports.createGag = async (req, res) => {
       postType: 'gag'
     });
     res.status(200).json({ data: Gag })
-    .catch(error => res.status(500).json({ error }))
     return Gag;
 };
 
@@ -59,39 +60,150 @@ exports.getAllGags = async (req, res) => {
 };
 
 exports.findOneReddit = async (req, res) => {
-    const Reddit = await db.Reddit.findOne({ where: { id: req.params.id },
+    const reddit = await db.Reddit.findOne({ where: { id: req.params.id },
         include: 
           {
             model: db.User,
             attributes: ["id", "username"],
           },
       })
-    .then(reddit => {
         if(!reddit) {
             return res.status(404).json({ error: 'Publication inconnue !'})
-          } else {
+          }
+
+            const comments = await db.Comment.findAll({
+              where: { redditId: req.params.id },
+              order: [["createdAt", "DESC"]],
+              attributes: ["id", "content", "createdAt"],
+              include: [
+                {
+                  model: db.User,
+                  attributes: ["id", "username"],
+                },
+              ],
+            });
+
+              const isLiked = await db.Like.findOne({
+                where: {
+                  [Op.and]: [
+                    { redditId: req.params.id },
+                    { userId: token.getUserIdByToken(req) },
+                    { like: 1 },
+                  ],
+                },
+              });
+
+              const isDisliked = await db.Like.findOne({
+                where: {
+                  [Op.and]: [
+                    { redditId: req.params.id },
+                    { userId: token.getUserIdByToken(req) },
+                    { like: -1 },
+                  ],
+                },
+              });
+
+              const commentsCount = await db.Comment.count({
+                where: {
+                  redditId: req.params.id,
+                },
+              });
+
+              const likesCount = await db.Like.count({
+                where: {
+                  [Op.and]: [{ redditId: req.params.id }, { like: 1 }],
+                },
+              });
+
+              const dislikesCount = await db.Like.count({
+                where: {
+                  [Op.and]: [{ redditId: req.params.id }, { like: -1 }],
+                },
+              });
+
+          // likesCount, disLikesCount, comments
+          reddit.setDataValue("comments", comments);
+          reddit.setDataValue("commentsCount", commentsCount);
+          reddit.setDataValue("isLiked", !!isLiked);
+          reddit.setDataValue("isDisliked", !!isDisliked);
+          reddit.setDataValue("likesCount", likesCount);
+          reddit.setDataValue("dislikesCount", dislikesCount);
           res.status(200).json({ data: reddit })
           return reddit;
-          }
-    })
 };
+ 
 
 exports.findOneGag = async (req, res) => {
-  const Gag = await db.Gag.findOne({ where: { id: req.params.id },
-      include: 
-        {
-          model: db.User,
-          attributes: ["id", "username"],
-        },
-    })
-  .then(gag => {
-      if(!gag) {
-          return res.status(404).json({ error: 'Publication inconnue !'})
-        } else {
-        res.status(200).json({ data: gag })
-        return gag;
-        }
+  const gag = await db.Gag.findOne({ where: { id: req.params.id },
+    include: 
+      {
+        model: db.User,
+        attributes: ["id", "username"],
+      },
   })
+    if(!gag) {
+        return res.status(404).json({ error: 'Publication inconnue !'})
+      }
+
+        const comments = await db.Comment.findAll({
+          where: { gagId: req.params.id },
+          order: [["createdAt", "DESC"]],
+          attributes: ["id", "content", "createdAt"],
+          include: [
+            {
+              model: db.User,
+              attributes: ["id", "username"],
+            },
+          ],
+        });
+
+          const isLiked = await db.Like.findOne({
+            where: {
+              [Op.and]: [
+                { gagId: req.params.id },
+                { userId: token.getUserIdByToken(req) },
+                { like: 1 },
+              ],
+            },
+          });
+
+          const isDisliked = await db.Like.findOne({
+            where: {
+              [Op.and]: [
+                { gagId: req.params.id },
+                { userId: token.getUserIdByToken(req) },
+                { like: -1 },
+              ],
+            },
+          });
+
+          const commentsCount = await db.Comment.count({
+            where: {
+              gagId: req.params.id,
+            },
+          });
+
+          const likesCount = await db.Like.count({
+            where: {
+              [Op.and]: [{ gagId: req.params.id }, { like: 1 }],
+            },
+          });
+
+          const dislikesCount = await db.Like.count({
+            where: {
+              [Op.and]: [{ gagId: req.params.id }, { like: -1 }],
+            },
+          });
+
+      // likesCount, disLikesCount, comments
+      gag.setDataValue("comments", comments);
+      gag.setDataValue("commentsCount", commentsCount);
+      gag.setDataValue("isLiked", !!isLiked);
+      gag.setDataValue("isDisliked", !!isDisliked);
+      gag.setDataValue("likesCount", likesCount);
+      gag.setDataValue("dislikesCount", dislikesCount);
+      res.status(200).json({ data: gag })
+      return gag;
 };
 
 exports.updateReddit = async (req, res) => {

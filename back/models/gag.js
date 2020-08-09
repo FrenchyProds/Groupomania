@@ -17,13 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       default: 'gag',
     },
     content: DataTypes.STRING,
-    // userId: {
-    // type: DataTypes.INTEGER,
-    // references: { 
-    //     model: db.user, 
-    //     key: 'id' },
-    // allowNull: false
-    // },
     isFlag: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -37,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
 });
   Gag.associate = (models) => {
     Gag.hasMany(models.Comment, { foreignKey: 'gagId', sourceKey: 'id' }),
-    Gag.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' })
+    Gag.belongsTo(models.User, { onDelete: "CASCADE", foreignKey: 'userId', sourceKey:'id' })
 };
   return Gag;
 };

@@ -87,7 +87,8 @@
                             <div class="likes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                <v-btn @click="likePost()" class="green--text" v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>
+                                <div v-if="(post.likesCount > post.dislikesCount)"> {{post.likesCount - post.dislikesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime !</span>
                                 </v-tooltip>
@@ -96,7 +97,8 @@
                             <div class="dislikes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                <v-btn @click="dislikePost()" v-bind="attrs" class="red--text" v-on="on"><v-icon color="red">mdi-arrow-down-bold</v-icon>
+                                <div v-if="post.dislikesCount > post.likesCount">-{{post.dislikesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime pas !</span>
                                 </v-tooltip>
@@ -146,7 +148,7 @@
                         <div class="likes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                <v-btn  v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
                                 </template>
                                 <span>J'aime !</span>
                                 </v-tooltip>
@@ -235,7 +237,7 @@ export default {
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
                 this.fetchComments();
-                console.log(this.userIsMe)
+                console.log(res)
                 })
             },
                 async fetchComments() {
@@ -407,8 +409,34 @@ export default {
                             window.location.reload()
                         }
                     })
-                }     
-            }  ,
+                },
+                likePost() {
+                    this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/like',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                window.location.reload(); 
+                            })
+                        },
+                 dislikePost() {
+                    this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/dislike',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                window.location.reload(); 
+                            })
+                        }
+            } ,
     name: 'voirdiscute',
     components: {
         mainhead,

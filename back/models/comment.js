@@ -48,8 +48,8 @@ module.exports = (sequelize, DataTypes) => {
     });
     Comment.associate = (models) => {
     Comment.belongsTo(models.Reddit, { foreignKey: 'redditId', sourceKey:'id' }),
-    Comment.belongsTo(models.Gag, { foreignKey: 'gagId', sourceKey:'id'}),
-    Comment.belongsTo(models.User, { foreignKey: 'userId', sourceKey: 'id'})
+    Comment.belongsTo(models.Gag, { onDelete: "CASCADE", foreignKey: 'gagId', sourceKey:'id'}),
+    Comment.belongsTo(models.User, { onDelete: "CASCADE", foreignKey: 'userId', sourceKey: 'id'})
 };
     return Comment
 }

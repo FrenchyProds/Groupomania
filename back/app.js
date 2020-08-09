@@ -8,6 +8,7 @@ const helmet = require("helmet")
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post')
 const commentRoutes = require('./routes/comment')
+const likeRoutes = require('./routes/like')
 
 const app = express()
 
@@ -29,6 +30,7 @@ app.use(bodyParser.json())
 
 app.use('/', userRoutes);
 app.use('/', postRoutes);
-app.use('/', commentRoutes)
+app.use('/', commentRoutes);
+app.use('/', likeRoutes);
 
 module.exports = app;

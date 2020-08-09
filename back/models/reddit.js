@@ -12,13 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     content: DataTypes.STRING,
-    // userId: {
-    //   type: DataTypes.INTEGER,
-    //   references: { 
-    //       model: db.User, 
-    //       key: 'id' },
-    //   allowNull: false
-    // },
     postType:{ 
       type: DataTypes.STRING,
       default: 'reddit',

@@ -24,6 +24,7 @@
         <v-card class="text-center">
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
+                    <div v-if="posts.length != 0">
                             <div v-if="post[0].postType === 'reddit'"> <!-- TEMPLATE REDDIT --> 
                                 <div @click="goToReddit(post[0].id)">
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
@@ -127,6 +128,7 @@
                             </v-card-text>
                             <v-divider></v-divider>
                         </div> <!--FIN DU TEMPLATE GAG --> 
+                    </div>
                 </div>
            </div>
         </v-card>
@@ -148,7 +150,6 @@ console.log(localStorage)
 
 export default {
     data: () => ({
-        items: ['Dernières publications', 'Le plus de likes'],
         // test: [],
         posts: [],
         reddit: '',
@@ -170,8 +171,6 @@ export default {
                     this.reddit = this.posts.postType
                     this.gag = this.posts.postType
                    }
-                   console.log(res)
-                   console.log(this.posts)
           })
           if (localStorage.getItem('reloaded')) {
                 // The page was just reloaded. Clear the value from local storage
