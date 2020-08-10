@@ -120,7 +120,8 @@
                     <div class="likes">
                         <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
-                        <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                        <v-btn @click="likePost()" v-bind="attrs" v-on="on" class="green--text"><v-icon color="green">mdi-arrow-up-bold</v-icon>
+                        <div v-if="(post.likesCount > post.dislikesCount)"> {{post.likesCount - post.dislikesCount}}</div></v-btn>
                         </template>
                         <span>J'aime !</span>
                         </v-tooltip>
@@ -129,7 +130,8 @@
                     <div class="dislikes">
                         <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
-                        <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                        <v-btn @click="dislikePost()" v-bind="attrs" v-on="on" class="red--text"><v-icon color="red">mdi-arrow-down-bold</v-icon>
+                        <div v-if="post.dislikesCount > post.likesCount">-{{post.dislikesCount}}</div></v-btn>
                         </template>
                         <span>J'aime pas !</span>
                         </v-tooltip>
@@ -281,7 +283,7 @@ export default {
         updateTitle: '',
         updateContent: '',
         isFlagged: '',
-        commentContent:''
+        commentContent:'',
     }},      
      mounted() {
          this.asyncData();
@@ -513,6 +515,48 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
                 },
+                likePost() {
+                    this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/like',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.post.isLiked) {
+                                    swal("Like supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.post.isLiked) {
+                                    swal("Publication likée !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        },
+                    
+                forceRerender() {
+                    this.componentKey += 1;
+                },
+                 dislikePost() {
+                    this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/dislike',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.post.isDisliked) {
+                                    swal("Dislike supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.post.isDisliked) {
+                                    swal("Publication dislikée !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        },
             goToUser(username) {
                 this.$router.push({name:'user', params:{username:username}})
             }

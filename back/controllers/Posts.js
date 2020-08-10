@@ -37,10 +37,18 @@ exports.createGag = async (req, res) => {
 
 exports.getAllReddits = async (req, res) => {
     const Reddit = await db.Reddit.findAll({
-        include: {
+          include: [{
             model: db.User,
-            attributes: ["username"],
+            attributes: ["username", "id"],
+          }, {
+            model: db.Comment,
+            attributes: ["content", "id"],
           },
+           {
+            model: db.Like,
+            attributes: ["like"],
+          }
+        ],
         order: [["createdAt", "DESC"]],
        })
        res.status(200).json({ data: Reddit })
@@ -49,10 +57,18 @@ exports.getAllReddits = async (req, res) => {
 
 exports.getAllGags = async (req, res) => {
   const Gag = await db.Gag.findAll({
-      include: {
-          model: db.User,
-          attributes: ["username"],
-        },
+      include: [{
+        model: db.User,
+        attributes: ["username", "id"],
+      }, {
+        model: db.Comment,
+        attributes: ["content", "id"],
+      },
+      //  {
+      //   model: db.Like,
+      //   attributes: ["id"],
+      // }
+    ],
       order: [["createdAt", "DESC"]],
      })
      res.status(200).json({ data: Gag })

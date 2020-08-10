@@ -1,37 +1,34 @@
 <template>
     <v-container>
         <mainhead/>
-        <v-select
-        :items="items"
-        label="Trier par :"
-        filled>
-        </v-select>
+        <v-card>
             <div v-if="posts.length > 0">
-                <div class="content" v-for="post in posts" :key="post.id">
-                    
-                        <div @click="goToPost(post.id)">
-                        <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
+                <div class="content" v-for="eachpost in eachPosts" :key="eachpost.id">
+                        <div @click="goToPost(eachpost.id)">
+                        <v-card-title background-color="lightgrey">{{ eachpost.title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-img
-                        :src="(post.content)"
+                        :src="(eachpost.content)"
                         aspect-ratio="1.5"
                         max-height="500"
                         contain/>
                         </div>
-                        <div v-if="post.User !== null">
-                        <v-card-text @click="goToUser(post.User.username)">Crée par {{ post.User.username }} - {{ post.createdAt | moment("from") }}</v-card-text>
+                        <div v-if="eachpost.User !== null">
+                        <v-card-text @click="goToUser(eachpost.User.username)">Crée par {{ eachpost.User.username }} - {{ eachpost.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <div v-else>
-                        <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
+                        <v-card-text>Utilisateur Supprimé - {{ eachpost.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <v-divider></v-divider>
                         
                         <v-card-text class="text-truncate" background-color="grey">
                         
-                        <div class="likes">
+                         <div class="likes">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                            <v-btn @click="likePost(eachpost.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon color="green">mdi-arrow-up-bold</v-icon>
+                            <div v-if="eachpost.likesCount > eachpost.dislikesCount">{{eachpost.likesCount}}</div>
+                            </v-btn>
                             </template>
                             <span>J'aime !</span>
                             </v-tooltip>
@@ -40,7 +37,8 @@
                         <div class="dislikes">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                            <v-btn @click="dislikePost(eachpost.id)" v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
+                            <div v-if="eachpost.dislikesCount > eachpost.likesCount">{{eachpost.dislikesCount}}</div></v-btn>
                             </template>
                             <span>J'aime pas !</span>
                             </v-tooltip>
@@ -49,8 +47,8 @@
                         <div class="comments">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn @click="goToPost(post.id)" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                            8</v-btn>
+                            <v-btn @click="goToPost(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                            <div :key="eachpost.id">{{eachpost.commentsCount}}</div></v-btn>
                             </template>
                             <span>Laisser un commentaire</span>
                             </v-tooltip>
@@ -61,6 +59,7 @@
 
                 </div>
             </div>
+        </v-card> 
 
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -90,6 +89,7 @@
 import foot from './foot'
 import mainhead from './mainhead'
 import gagpost from './gagpost'
+import swal from 'sweetalert'
 
 const apiUrl = 'http://localhost:3000/gag';
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
@@ -97,12 +97,11 @@ let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 export default {
     data () {
         return {
-        items: ['Dernières publications', 'Le plus de likes',],
         posts: [],
         url: [],
+        eachPosts: [],
+        id: '',
         gagpost: false,
-        title: '',
-        id: ''
 
     }},      
      mounted() {
@@ -114,6 +113,19 @@ export default {
                     }).then(res => {
                 this.posts = res.data.data
                 console.log(res.data.data)
+                for(let i = 0; i < this.posts.length; i++) {
+                console.log(this.posts[i].id)
+                this.axios.get(apiUrl + '/' + this.posts[i].id,
+                {
+                headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                    }).then(res => {
+                this.eachPosts.push(res.data.data)
+                console.log(this.eachPosts)
+                console.log(res)
+                })
+            }
           })
         },
         methods: {
@@ -122,7 +134,46 @@ export default {
         },
         goToUser(username) {
             this.$router.push({name:'user', params:{username:username}})
-        }
+        },
+        likePost(gagId) {
+            console.log(gagId)
+                    this.axios.get(apiUrl + '/' + gagId + '/like',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.eachPosts.isLiked) {
+                                    swal("Like supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.eachPosts.isLiked) {
+                                    swal("Publication likée !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        },
+                 dislikePost(redditId) {
+                    this.axios.get(apiUrl + '/' + redditId + '/dislike',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.eachPosts.isDisliked) {
+                                    swal("Dislike supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.eachPosts.isDisliked) {
+                                    swal("Publication dislikée !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        }
     },
     name: 'groupogag',
     components: {

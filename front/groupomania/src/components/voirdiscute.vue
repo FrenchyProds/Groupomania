@@ -420,7 +420,13 @@ export default {
                             .then(response => {
                                 // Handle success.
                                 console.log(response)
-                                window.location.reload(); 
+                                if(this.post.isLiked) {
+                                    swal("Like supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.post.isLiked) {
+                                    swal("Publication likée !","","success")
+                                    window.location.reload();
+                                }
                             })
                         },
                  dislikePost() {
@@ -433,7 +439,13 @@ export default {
                             .then(response => {
                                 // Handle success.
                                 console.log(response)
-                                window.location.reload(); 
+                                if(this.post.isDisliked) {
+                                    swal("Dislike supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.post.isDisliked) {
+                                    swal("Publication dislikée !","","success")
+                                    window.location.reload();
+                                }
                             })
                         }
             } ,

@@ -40,44 +40,11 @@
                                 <v-divider></v-divider>
                                 
                             
-                            <v-card-text class="text-truncate" background-color="grey">
-                            <div class="likes">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
-                                </template>
-                                <span>J'aime !</span>
-                                </v-tooltip>
-                            </div>
-                            <div class="dislikes">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                                </template>
-                                <span>J'aime pas !</span>
-                                </v-tooltip>
-                            </div>
-                            <div class="comments">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                                8</v-btn>
-                                </template>
-                                <span>Laisser un commentaire</span>
-                                </v-tooltip>
-                            </div>
-                            <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn to="./groupodiscute/post/report" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                            </template>
-                            <span>Signaler du contenu</span>
-                            </v-tooltip>
-                            </v-card-text>
-                            <v-divider></v-divider>
                             </div>     <!-- FIN DU TEMPLATE REDDIT --> 
 
                             <div v-else> 
                             <div @click="goToGag(post[0].id)"> <!-- TEMPLATE GAG --> 
+                                
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
                                 <v-divider></v-divider>
                                 <v-img
@@ -92,41 +59,7 @@
                                 <div v-else>
                                     <v-card-text>Utilisateur Supprimé - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
-                                <v-divider></v-divider>
                             
-                            
-                            <v-card-text class="text-truncate" background-color="grey">
-
-                            <div class="likes">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
-                                </template>
-                                <span>J'aime !</span>
-                                </v-tooltip>
-                            </div>
-
-                            <div class="dislikes">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
-                                </template>
-                                <span>J'aime pas !</span>
-                                </v-tooltip>
-                            </div>
-
-                            <div class="comments">
-                                <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn to="./groupodiscute/post/comment" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                                </v-btn>
-                                </template>
-                                <span>Laisser un commentaire</span>
-                                </v-tooltip>
-                            </div>
-
-                            </v-card-text>
-                            <v-divider></v-divider>
                         </div> <!--FIN DU TEMPLATE GAG --> 
                     </div>
                 </div>
@@ -168,8 +101,7 @@ export default {
                ]).then(res => {
                    for (let i= 0; i < res.length; i++) {
                     this.posts.push(res[i].data.data)
-                    this.reddit = this.posts.postType
-                    this.gag = this.posts.postType
+                    console.log(this.posts)
                    }
           })
           if (localStorage.getItem('reloaded')) {
@@ -234,10 +166,6 @@ export default {
 
 .v-card__title {
     word-break: normal;
-}
-
-.content:last-child {
-    padding-bottom: 6rem;
 }
 
 .text-truncate {
