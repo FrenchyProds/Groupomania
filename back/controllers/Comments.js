@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 const token = require('../middleware/getUserIdByToken');
 var db = require("../models");
+const { Op } = require("sequelize")
 
 exports.redditComments = async (req, res) => {
     const Comment = await db.Comment.findAll({ where: { redditId: req.params.id },
@@ -11,8 +12,110 @@ exports.redditComments = async (req, res) => {
         },
       order: [["createdAt", "DESC"]],
     })
+
     res.status(200).json({ Comment });
     return Comment;
+}
+
+exports.eachRedditComment = async (req, res) => {
+  const Comment = await db.Comment.findOne({ where: {redditId: req.params.id, id: req.params.commentId},
+    include: {
+      model: db.User,
+      attributes: ["username", "id"],
+      },
+    order: [["createdAt", "DESC"]],
+    })
+
+  const isLiked = await db.Like.findOne({
+    where: {
+      [Op.and]: [
+        { commentId: req.params.commentId },
+        { userId: token.getUserIdByToken(req) },
+        { like: 1 },
+      ],
+    },
+  });
+  
+  const isDisliked = await db.Like.findOne({
+    where: {
+      [Op.and]: [
+        { commentId: req.params.commentId },
+        { userId: token.getUserIdByToken(req) },
+        { like: -1 },
+      ],
+    },
+  });
+  
+  const likesCount = await db.Like.count({
+    where: {
+      [Op.and]: [{ commentId: req.params.commentId }, { like: 1 }],
+    },
+  });
+  
+  const dislikesCount = await db.Like.count({
+    where: {
+      [Op.and]: [{ commentId: req.params.commentId }, { like: -1 }],
+    },
+  });
+  
+  Comment.setDataValue("isLiked", !!isLiked);
+  Comment.setDataValue("isDisliked", !!isDisliked);
+  Comment.setDataValue("likesCount", likesCount);
+  Comment.setDataValue("dislikesCount", dislikesCount);
+
+  res.status(200).json({ Comment });
+  return Comment;
+
+}
+
+exports.eachGagComment = async (req, res) => {
+  const Comment = await db.Comment.findOne({ where: {gagId: req.params.id, id: req.params.commentId},
+    include: {
+      model: db.User,
+      attributes: ["username", "id"],
+      },
+    order: [["createdAt", "DESC"]],
+    })
+
+  const isLiked = await db.Like.findOne({
+    where: {
+      [Op.and]: [
+        { commentId: req.params.commentId },
+        { userId: token.getUserIdByToken(req) },
+        { like: 1 },
+      ],
+    },
+  });
+  
+  const isDisliked = await db.Like.findOne({
+    where: {
+      [Op.and]: [
+        { commentId: req.params.commentId },
+        { userId: token.getUserIdByToken(req) },
+        { like: -1 },
+      ],
+    },
+  });
+  
+  const likesCount = await db.Like.count({
+    where: {
+      [Op.and]: [{ commentId: req.params.commentId }, { like: 1 }],
+    },
+  });
+  
+  const dislikesCount = await db.Like.count({
+    where: {
+      [Op.and]: [{ commentId: req.params.commentId }, { like: -1 }],
+    },
+  });
+  
+  Comment.setDataValue("isLiked", !!isLiked);
+  Comment.setDataValue("isDisliked", !!isDisliked);
+  Comment.setDataValue("likesCount", likesCount);
+  Comment.setDataValue("dislikesCount", dislikesCount);
+
+  res.status(200).json({ Comment });
+  return Comment;
 }
 
 exports.gagComments = async (req, res) => {
@@ -91,19 +194,44 @@ exports.findRedditCommentByUser = async (req, res) => {
   return Comment;
 }
 
+exports.reportRedditComment = async (req, res) => {
+  await db.Comment.findOne({ where: { redditId: req.params.id, id: req.params.commentId }})
+    .then(comment => {
+      if(!comment) {
+          return res.status(404).json({ error: 'Commentaire inconnu !'})
+        } else {
+        db.Comment.update( { isFlag: true }, { where: { redditId: req.params.id, id: req.params.commentId }})
+        res.status(200).json({ data: comment })
+        return comment;
+        }
+  })
+}
 
-// router.put(':id/report', async (req, res) => {
-//   await db.Comment.findOne({ where: { id: req.comment.id }})
-//   console.log(req.comment.id)
-//     .then(comment => {
-//       if(!comment) {
-//           return res.status(404).json({ error: 'Commentaire inconnu !'})
-//         } else {
-//         db.Comment.update( { isFlag: true }, { where: { id: req.comment.id }})
-//         res.status(200).json({ data: comment })
-//         return comment;
-//         }
-//   })
-// })
+exports.reportGagComment = async (req, res) => {
+  await db.Comment.findOne({ where: { gagId: req.params.id, id: req.params.commentId }})
+    .then(comment => {
+      if(!comment) {
+          return res.status(404).json({ error: 'Commentaire inconnu !'})
+        } else {
+        db.Comment.update( { isFlag: true }, { where: { gagId: req.params.id, id: req.params.commentId }})
+        res.status(200).json({ data: comment })
+        return comment;
+        }
+  })
+}
+
+exports.flaggedComments = async (req, res) => {
+  const Comment = await db.Comment.findAll({ where: { isFlag : 1 },
+    include: {
+      model: db.User,
+      attributes: ["username"],
+    },
+    order: [["createdAt", "DESC"]],
+    })
+    res.status(200).json({ Comment })
+    return Comment;
+}
+
+
 
 

@@ -130,7 +130,7 @@
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="(comment,index) in comments" :key="index">
+            <div class="comments" v-for="(comment,index) in eachComment" :key="index">
                 <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>
@@ -148,7 +148,8 @@
                         <div class="likes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn  v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                <v-btn @click="likeComment(comment.id)" class="green--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-up-bold</v-icon>
+                                <div v-if="comment.likesCount > comment.dislikesCount">{{comment.likesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime !</span>
                                 </v-tooltip>
@@ -157,7 +158,8 @@
                             <div class="dislikes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                <v-btn @click="dislikeComment(comment.id)" class="red--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon>
+                                <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime pas !</span>
                                 </v-tooltip>
@@ -167,7 +169,7 @@
                             <div v-if="comment.isFlag != true">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="reportComment()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                <v-btn @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                                 </template>
                                 <span>Signaler du contenu</span>
                                 </v-tooltip>
@@ -200,6 +202,7 @@ if(decoded != undefined) {
 userId = decoded.userId
 }
 
+let redditUrl = 'http://localhost:3000/reddit/'
 
 export default {
     data () {
@@ -215,7 +218,7 @@ export default {
         updateContent: '',
         isFlagged: '',
         commentContent:'',
-        commentId: ''
+        eachComment: []
     }},      
      mounted() {
          this.asyncData();
@@ -227,7 +230,7 @@ export default {
     },
         methods: {
             async asyncData() {
-                 await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id,
+                 await this.axios.get(redditUrl + this.$route.params.id,
                 {
                 headers: {
                     Authorization: `Bearer ${tokenFetch}`
@@ -241,16 +244,35 @@ export default {
                 })
             },
                 async fetchComments() {
-                   await this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/comments',
+                   await this.axios.get(redditUrl + this.$route.params.id + '/comments',
                 {
+                    headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
                     })
                         .then(res => {
                             this.comments = res.data.Comment
                             console.log(this.comments)
+                            this.fetchEachComment()
                 })
             },
+            async fetchEachComment() {
+                for(let i = 0; i < this.comments.length; i++) {
+               await this.axios.get(redditUrl + this.$route.params.id + '/comment/' + this.comments[i].id,
+               {
+                    headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                })
+                    .then(res => {
+                        this.eachComment.push(res.data.Comment)
+                        console.log(res.data)
+                    }) 
+               
+                }
+            },
             updatePost() {
-                 this.axios.put('http://localhost:3000/reddit/' + this.$route.params.id, {
+                 this.axios.put(redditUrl + this.$route.params.id, {
                     title: this.post.title,
                     content: this.post.content,
                 },
@@ -292,7 +314,7 @@ export default {
                             swal("Votre publication a été supprimé avec succes", {
                             icon: "success",
                             })
-                        this.axios.delete(`http://localhost:3000/reddit/${this.$route.params.id}`
+                        this.axios.delete(redditUrl + `${this.$route.params.id}`
                 ,
                     {
                         headers: {
@@ -330,7 +352,7 @@ export default {
                             swal("Contenu signalé avec succes",{
                             icon: "success",
                             })
-                        this.axios.put(`http://localhost:3000/reddit/report/${this.$route.params.id}`
+                        this.axios.put(redditUrl + `report/${this.$route.params.id}`
                 ,
                     {
                         headers: {
@@ -357,7 +379,7 @@ export default {
                     }
                 },
                 postComment() {
-                    this.axios.post('http://localhost:3000/reddit/' + this.$route.params.id + '/comment',
+                    this.axios.post(redditUrl + this.$route.params.id + '/comment',
                     {
                         content: this.commentContent,
                     },
@@ -379,8 +401,7 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
                 },
-                reportComment() {
-                        console.log(this.commentId)
+                reportComment(commentId) {
                         swal({
                         title: "Voulez-vous vraiment signaler ce commentaire ?",
                         text: "",
@@ -393,7 +414,7 @@ export default {
                             swal("Commentaire signalé avec succes",{
                             icon: "success",
                             })
-                        this.axios.put(`http://localhost:3000/b92a0c63-280b-4ad2-ad40-d399a9674b43/report`
+                        this.axios.put(redditUrl + this.$route.params.id + '/comment/report/' + commentId
                 ,
                     {
                         headers: {
@@ -402,16 +423,14 @@ export default {
                     })
                             .then(response => {
                                 // Handle success.
-                                console.log(response)    
-                                console.log(this.commentId) 
+                                console.log(response)
                             })
-                            console.log(this.commentId)
                             window.location.reload()
                         }
                     })
                 },
                 likePost() {
-                    this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/like',
+                    this.axios.get(redditUrl + this.$route.params.id + '/like',
                     {
                         headers: {
                         Authorization: `Bearer ${tokenFetch}`
@@ -430,7 +449,7 @@ export default {
                             })
                         },
                  dislikePost() {
-                    this.axios.get('http://localhost:3000/reddit/' + this.$route.params.id + '/dislike',
+                    this.axios.get(redditUrl + this.$route.params.id + '/dislike',
                     {
                         headers: {
                         Authorization: `Bearer ${tokenFetch}`
@@ -440,14 +459,52 @@ export default {
                                 // Handle success.
                                 console.log(response)
                                 if(this.post.isDisliked) {
-                                    swal("Dislike supprimé !","","success");
+                                    swal("Dislike supprimé !","","uccess");
                                     window.location.reload();
                                 } else if(!this.post.isDisliked) {
                                     swal("Publication dislikée !","","success")
                                     window.location.reload();
                                 }
                             })
-                        }
+                        },
+                        likeComment(commentId) {
+                            this.axios.get(redditUrl + this.$route.params.id + '/comment/' + commentId + '/like',
+                            {
+                                headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                                    }    
+                            })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.eachComment.isLiked) {
+                                    swal("Like supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.eachComment.isLiked) {
+                                    swal("Commentaire liké !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        },
+                        dislikeComment(commentId) {
+                            this.axios.get(redditUrl + this.$route.params.id + '/comment/' + commentId + '/dislike',
+                            {
+                                headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                                    }    
+                            })
+                                    .then(response => {
+                                        // Handle success.
+                                        console.log(response)
+                                        if(this.eachComment.isDisliked) {
+                                            swal("Dislike supprimé !","","success");
+                                            window.location.reload();
+                                        } else if(!this.eachComment.isDisliked) {
+                                            swal("Commentaire disliké !","","success")
+                                            window.location.reload();
+                                        }
+                                    })
+                                },
             } ,
     name: 'voirdiscute',
     components: {

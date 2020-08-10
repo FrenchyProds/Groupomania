@@ -18,7 +18,6 @@
                 <v-card class="my-4">
                 <v-card-title class="justify-center">Reddits Signalés</v-card-title>
                 <div class="content" v-for="reddit in reddits" :key="reddit.id">
-                    <div v-if="reddit.isFlag == true">
                         <div @click="goToReddit(reddit.id)">
                             <v-card-title background-color="lightgrey" class="postTitle">{{ reddit.title }}</v-card-title>
                             <v-divider></v-divider>
@@ -32,17 +31,16 @@
                         </div>
                         <v-divider></v-divider>
                     </div>
-                </div>
                 </v-card>
             </div>
         </div>
+    </div>
 
         <div v-if="gags.length != 0">
             <div v-if="showGags == true">
                 <v-card class="my-4">
                 <v-card-title class="justify-center">Gags Signalés</v-card-title>
                 <div class="content" v-for="gag in gags" :key="gag.id">
-                    <div v-if="gag.isFlag == true">
                         <div @click="goToGag(gag.id)">
                             <v-card-title background-color="lightgrey" class="postTitle">{{ gag.title }}</v-card-title>
                             <v-divider></v-divider>
@@ -53,13 +51,12 @@
                             contain/>
                         </div>
                         <div v-if="gag.User !== null"> 
-                            <v-card-text @click="goToUser(gag.User.username)">Created by {{ gag.User.username }} - {{ gag.createdAt | moment("from") }}</v-card-text>
+                            <v-card-text @click="goToUser(gag.User.username)">Crée par {{ gag.User.username }} - {{ gag.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <div v-else>
                             <v-card-text>Utilisateur Supprimé- {{ gag.createdAt | moment("from") }}</v-card-text>
                         </div>
                         <v-divider></v-divider>
-                    </div>
                 </div>
                 </v-card>
             </div>
@@ -111,7 +108,23 @@
                 </v-card>
         </div>
         </div>
+
+    <div v-if="comments.length != 0">
+        <div v-if="showComments == true">
+            <v-card-title class="justify-center">Commentaires Signalés</v-card-title>
+            <div class="content" v-for="comment in comments" :key="comment.avatar">
+                <v-card class="my-4">
+                <v-card-text>{{comment.content}}</v-card-text>
+                <v-card-text>Dans la publication : 
+                    <div @click="goToReddit(comment.redditId)" v-if="comment.redditId">{{comment.redditId}}</div>
+                    <div @click="goToGag(comment.gagId)" v-else>{{comment.gagId}}</div>
+                </v-card-text>
+                <v-card-text @click="goToUser(comment.User.username)">Posté par {{comment.User.username}} - {{ comment.createdAt | moment("from") }}</v-card-text>
+                </v-card>
+            </div>
+        </div>
     </div>
+            
 
         <div v-if="showHistory == true">
             Test 123 Test
@@ -129,6 +142,7 @@ let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 const redditURL = 'http://localhost:3000/flaggedReddits'
 const gagURL = 'http://localhost:3000/flaggedGags'
 const userURL = 'http://localhost:3000/flaggedUsers'
+const commentURL = 'http://localhost:3000/flaggedComments'
 
 export default {
     data() {
@@ -139,6 +153,7 @@ export default {
             reddits: [],
             gags: [],
             users: [],
+            comments: [],
             showReddits: true,
             showGags: false,
             showUsers: false,
@@ -175,6 +190,15 @@ export default {
                 this.users = res.data.data
                 console.log(res)
                 console.log(this.users)
+          }),
+          this.axios.get(commentURL,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
+                this.comments = res.data.Comment
+                console.log(res.data.Comment)
           })
     },
     methods: {

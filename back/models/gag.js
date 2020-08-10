@@ -30,7 +30,8 @@ module.exports = (sequelize, DataTypes) => {
 });
   Gag.associate = (models) => {
     Gag.hasMany(models.Comment, { foreignKey: 'gagId', sourceKey: 'id' }),
-    Gag.belongsTo(models.User, { onDelete: "CASCADE", foreignKey: 'userId', sourceKey:'id' })
+    Gag.belongsTo(models.User, { onDelete: "CASCADE", foreignKey: 'userId', sourceKey:'id' }),
+    Gag.hasMany(models.Like, { foreignKey: 'likeId', sourceKey: 'id' })
 };
   return Gag;
 };

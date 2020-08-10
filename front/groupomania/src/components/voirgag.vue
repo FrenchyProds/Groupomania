@@ -121,7 +121,7 @@
                         <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
                         <v-btn @click="likePost()" v-bind="attrs" v-on="on" class="green--text"><v-icon color="green">mdi-arrow-up-bold</v-icon>
-                        <div v-if="(post.likesCount > post.dislikesCount)"> {{post.likesCount - post.dislikesCount}}</div></v-btn>
+                        <div v-if="(post.likesCount - post.dislikesCount > 0)"> {{post.likesCount - post.dislikesCount}}</div></v-btn>
                         </template>
                         <span>J'aime !</span>
                         </v-tooltip>
@@ -131,7 +131,7 @@
                         <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
                         <v-btn @click="dislikePost()" v-bind="attrs" v-on="on" class="red--text"><v-icon color="red">mdi-arrow-down-bold</v-icon>
-                        <div v-if="post.dislikesCount > post.likesCount">-{{post.dislikesCount}}</div></v-btn>
+                        <div v-if="post.dislikesCount - post.likesCount > 0">{{post.dislikesCount + post.likesCount}}</div></v-btn>
                         </template>
                         <span>J'aime pas !</span>
                         </v-tooltip>
@@ -151,7 +151,7 @@
             </div>
 
             <v-card-title>
-                Commentaires : {{ comments.length }}
+                Commentaires : {{ post.commentsCount }}
             </v-card-title>
 
             <v-row class="align-center">
@@ -163,7 +163,7 @@
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="(comment,index) in comments" :key="index">
+            <div class="comments" v-for="(comment,index) in eachComment" :key="index">
                 <v-card>
                     <v-card-text>
                         <p>{{comment.content}}</p>
@@ -181,7 +181,8 @@
                         <div class="likes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon color="green">mdi-arrow-up-bold</v-icon>14</v-btn>
+                                <v-btn @click="likeComment(comment.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon>mdi-arrow-up-bold</v-icon>
+                                <div v-if="comment.likesCount > comment.dislikesCount">{{comment.likesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime !</span>
                                 </v-tooltip>
@@ -190,7 +191,8 @@
                             <div class="dislikes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon></v-btn>
+                                <v-btn @click='dislikeComment(comment.id)' v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
+                                <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime pas !</span>
                                 </v-tooltip>
@@ -233,6 +235,8 @@ let userId
 if(decoded != undefined) {
 userId = decoded.userId
 }
+
+let gagUrl = 'http://localhost:3000/gag/'
 
 export default {
     props: {
@@ -284,6 +288,7 @@ export default {
         updateContent: '',
         isFlagged: '',
         commentContent:'',
+        eachComment: [],
     }},      
      mounted() {
          this.asyncData();
@@ -295,7 +300,7 @@ export default {
      },
         methods: {
             async asyncData() {
-                 await this.axios.get('http://localhost:3000/gag/' + this.$route.params.id,
+                 await this.axios.get(gagUrl + this.$route.params.id,
                 {
                 headers: {
                     Authorization: `Bearer ${tokenFetch}`
@@ -306,7 +311,7 @@ export default {
                 this.isFlagged = this.post.isFlag
                 console.log(res.data.data)
           })
-          await this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/comments',
+          await this.axios.get(gagUrl + this.$route.params.id + '/comments',
                 {
                     headers: {
                         Authorization: `Bearer ${tokenFetch}`
@@ -314,8 +319,24 @@ export default {
                         })
                         .then(res => {
                             this.comments = res.data.data
-                            console.log(this.comments)       
+                            console.log(this.comments)  
+                            this.fetchEachComment();     
                 })
+            },
+            async fetchEachComment() {
+                for(let i = 0; i < this.comments.length; i++) {
+                    await this.axios.get(gagUrl + this.$route.params.id + '/comment/' + this.comments[i].id,
+                {
+                    headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }
+                })
+                    .then(res => {
+                        this.eachComment.push(res.data.Comment)
+                        console.log(res.data)
+                    }) 
+               
+                }
             },
             handleFileChange: function(event) {
         console.log("handlefilechange", event.target.files);
@@ -391,7 +412,7 @@ export default {
         }
         },
         updatePost() {
-                 this.axios.put('http://localhost:3000/gag/' + this.$route.params.id, {
+                 this.axios.put(gagUrl + this.$route.params.id, {
                     title: this.post.title,
                     content: this.secure_url,
                 },
@@ -430,7 +451,7 @@ export default {
                             swal("Votre publication a été supprimé avec succes", {
                             icon: "success",
                             })
-                        this.axios.delete(`http://localhost:3000/gag/${this.$route.params.id}`
+                        this.axios.delete(gagUrl + `${this.$route.params.id}`
                 ,
                     {
                         headers: {
@@ -466,7 +487,7 @@ export default {
                                 swal("Contenu signalé avec succes",{
                                     icon: "success",
                                 })
-                        this.axios.put(`http://localhost:3000/gag/report/${this.$route.params.id}`
+                        this.axios.put( gagUrl + `report/${this.$route.params.id}`
                 ,
                     {
                         headers: {
@@ -493,7 +514,7 @@ export default {
                     }
                 },
                 postComment() {
-                    this.axios.post('http://localhost:3000/gag/' + this.$route.params.id + '/comment',
+                    this.axios.post(gagUrl + this.$route.params.id + '/comment',
                     {
                         content: this.commentContent,
                     },
@@ -516,7 +537,7 @@ export default {
                         })
                 },
                 likePost() {
-                    this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/like',
+                    this.axios.get(gagUrl + this.$route.params.id + '/like',
                     {
                         headers: {
                         Authorization: `Bearer ${tokenFetch}`
@@ -539,7 +560,7 @@ export default {
                     this.componentKey += 1;
                 },
                  dislikePost() {
-                    this.axios.get('http://localhost:3000/gag/' + this.$route.params.id + '/dislike',
+                    this.axios.get(gagUrl + this.$route.params.id + '/dislike',
                     {
                         headers: {
                         Authorization: `Bearer ${tokenFetch}`
@@ -557,6 +578,44 @@ export default {
                                 }
                             })
                         },
+                     likeComment(commentId) {
+                            this.axios.get(gagUrl + this.$route.params.id + '/comment/' + commentId + '/like',
+                            {
+                                headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                                    }    
+                            })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)
+                                if(this.eachComment.isLiked) {
+                                    swal("Like supprimé !","","success");
+                                    window.location.reload();
+                                } else if(!this.eachComment.isLiked) {
+                                    swal("Commentaire liké !","","success")
+                                    window.location.reload();
+                                }
+                            })
+                        },
+                        dislikeComment(commentId) {
+                            this.axios.get(gagUrl + this.$route.params.id + '/comment/' + commentId + '/dislike',
+                            {
+                                headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                                    }    
+                            })
+                                    .then(response => {
+                                        // Handle success.
+                                        console.log(response)
+                                        if(this.eachComment.isDisliked) {
+                                            swal("Dislike supprimé !","","success");
+                                            window.location.reload();
+                                        } else if(!this.eachComment.isDisliked) {
+                                            swal("Commentaire disliké !","","success")
+                                            window.location.reload();
+                                        }
+                                    })
+                                },
             goToUser(username) {
                 this.$router.push({name:'user', params:{username:username}})
             }
