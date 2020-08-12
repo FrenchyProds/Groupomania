@@ -7,8 +7,9 @@ const helmet = require("helmet")
 
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post')
-const commentRoutes = require('./routes/comment')
-const likeRoutes = require('./routes/like')
+const commentRoutes = require('./routes/comment');
+const likeRoutes = require('./routes/like');
+const adminRoutes = require('./routes/admin');
 
 const app = express()
 
@@ -32,5 +33,6 @@ app.use('/', userRoutes);
 app.use('/', postRoutes);
 app.use('/', commentRoutes);
 app.use('/', likeRoutes);
+app.use('/', adminRoutes);
 
 module.exports = app;

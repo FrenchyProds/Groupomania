@@ -4,69 +4,127 @@
             <div>
                 <div class="content">
                     <div v-if="user">
-                        <div v-if="user.id === this.userIsMe">
-                            <v-row justify="center">
+                        <v-row justify="space-around">
+                            <div v-if="user.id === this.userIsMe">
                                 <v-dialog v-model="modalDialog" max-width="600px">
-                                <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                    color="white"
-                                    dark
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    >
-                                    Modifier ma publication
-                                    </v-btn>
-                                </template>
-                                <v-card>
-                                    <v-card-title>
-                                    <span class="headline" >Modifier ma publication</span>
-                                    </v-card-title>
-                                    <v-container>
-                                        <v-card-text class="align-center">
-                                        <v-row>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
-                                        </v-col>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn
+                                        color="white"
+                                        dark
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        >
+                                        Modifier ma publication
+                                        </v-btn>
+                                    </template>
+                                    <v-card>
+                                        <v-card-title>
+                                        <span class="headline" >Modifier ma publication</span>
+                                        </v-card-title>
+                                        <v-container>
+                                            <v-card-text class="align-center">
+                                            <v-row>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                            </v-col>
+                                            </v-row>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
+                                            </v-col>
+                                            
+                                        </v-card-text>
+                                        <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-row d-flex class="justify-content-space-between">
+                                        <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
+                                        <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
                                         </v-row>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
-                                        </v-col>
+                                        </v-card-actions>
+                                        </v-container>
                                         
-                                    </v-card-text>
-                                    <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-row d-flex class="justify-content-space-between">
-                                    <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
-                                    <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
-                                    </v-row>
-                                    </v-card-actions>
-                                    </v-container>
-                                    
-                                    <v-card class="d-flex text-center my-2">
-                                    <v-row class="align-center mx-3">
-                                        <v-col cols="12">
-                                            <v-tooltip top>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn
-                                                    icon v-bind="attrs" v-on="on">
-                                                    <div class="btn-flex" @click="deletePost()">
-                                                        <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
-                                                        Supprimer
-                                                    </div>
-                                                    </v-btn>
-                                                </template>
-                                                <span>Supprimer ma publication</span>
-                                            </v-tooltip>
-                                        </v-col>
-                                    </v-row>
-                                </v-card>
-                                    
-                                    
-                                </v-card>
+                                        <v-card class="d-flex text-center my-2">
+                                            <v-row class="align-center mx-3">
+                                                <v-col cols="12">
+                                                    <v-tooltip top>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn
+                                                            icon v-bind="attrs" v-on="on">
+                                                            <div class="btn-flex" @click="deletePost()">
+                                                                <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                                                Supprimer
+                                                            </div>
+                                                            </v-btn>
+                                                        </template>
+                                                        <span>Supprimer ma publication</span>
+                                                    </v-tooltip>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card>
+                                    </v-card>
                                 </v-dialog>
-                            </v-row>
-                        </div>
+                            </div>
+                                    
+
+                            <div v-if="this.isAdmin == true">
+                                <v-dialog v-model="modalDialog" max-width="600px">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn
+                                        color="white"
+                                        dark
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        >
+                                        Modérer la publication
+                                        </v-btn>
+                                    </template>
+                                    <v-card>
+                                        <v-card-title>
+                                            <span class="headline" >Modérer la publication</span>
+                                        </v-card-title>
+                                        <v-container>
+                                            <v-card-text class="align-center">
+                                                <v-row>
+                                                    <v-col cols="12" sm="6" md="4">
+                                                        <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-col cols="12" sm="6" md="4">
+                                                    <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
+                                                </v-col>   
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                    <v-row d-flex class="justify-content-space-between">
+                                                        <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
+                                                        <v-btn color="blue darken-1" text @click="moderatePost()">Confirmer</v-btn>
+                                                    </v-row>
+                                            </v-card-actions>
+                                        </v-container>
+                                        
+                                        <v-card class="d-flex text-center my-2">
+                                            <v-row class="align-center mx-3">
+                                                <v-col cols="12">
+                                                    <v-tooltip top>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn
+                                                            icon v-bind="attrs" v-on="on">
+                                                            <div class="btn-flex" @click="adminDeletePost()">
+                                                                <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                                                Supprimer
+                                                            </div>
+                                                            </v-btn>
+                                                        </template>
+                                                        <span>Supprimer la publication</span>
+                                                    </v-tooltip>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card>
+                                    </v-card>
+                                </v-dialog> 
+                            </div>     
+                        </v-row>
                     </div>
+
                         <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text class="content">{{ post.content }}</v-card-text>
@@ -133,7 +191,12 @@
             <div class="comments" v-for="(comment,index) in eachComment" :key="index">
                 <v-card>
                     <v-card-text>
-                        <p>{{comment.content}}</p>
+                        <v-row class="justify-space-between mx-1">
+                            <p>{{comment.content}}</p>
+                            <div class="btn-flex" v-if="comment.User.id == userIsMe">
+                                <v-btn @click="deleteComment(comment.id)" justify-end icon color="red"><v-icon>mdi-delete-circle</v-icon></v-btn>
+                            </div>
+                        </v-row>
                         <div v-if="comment.User !== null">
                         <p class="justify-center" @click="goToUser(comment.User.username)">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
                         </div>
@@ -141,8 +204,8 @@
                         <p>Utilisateur Supprimé - {{ comment.createdAt | moment("from") }}</p>
                         </div>
                         <div v-if="comment.createdAt != comment.updatedAt">
-                                Modifié {{ comment.updatedAt | moment("from") }}
-                            </div>
+                            Modifié {{ comment.updatedAt | moment("from") }}
+                        </div>
                     </v-card-text>
                     <v-card-text class="text-truncate" background-color="grey">
                         <div class="likes">
@@ -175,6 +238,7 @@
                                 </v-tooltip>
                             </div>
                         </div>
+
                     </v-card-text>
                 </v-card> 
             </div>
@@ -218,7 +282,8 @@ export default {
         updateContent: '',
         isFlagged: '',
         commentContent:'',
-        eachComment: []
+        eachComment: [],
+        isAdmin: ''
     }},      
      mounted() {
          this.asyncData();
@@ -227,6 +292,16 @@ export default {
         commentHasContent () {
             return !this.commentContent
         }
+    },
+    beforeMount() {
+        this.axios.get('http://localhost:3000/user/' + userId, {
+            headers: {
+                Authorization: `Bearer ${tokenFetch}`
+            }
+        }).then(res => {
+            console.log(res)
+            this.isAdmin = res.data.user.isAdmin
+        })
     },
         methods: {
             async asyncData() {
@@ -429,6 +504,39 @@ export default {
                         }
                     })
                 },
+                deleteComment(commentId) {
+                        swal({
+                        title: "Voulez-vous vraiment supprimer votre commentaire ?",
+                        text: "",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Votre commentaire a été supprimé avec succes", {
+                            icon: "success",
+                            })
+                        this.axios.delete(redditUrl + `${this.$route.params.id}` + '/comment/' + commentId,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            window.location.reload();
+                        } else {
+                            swal("Suppresion de commentaire annulée");
+                        }
+                        }).catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                })
+                            },
                 likePost() {
                     this.axios.get(redditUrl + this.$route.params.id + '/like',
                     {
@@ -505,6 +613,71 @@ export default {
                                         }
                                     })
                                 },
+                                moderatePost() {
+                                    this.axios.put(redditUrl + this.$route.params.id + '/admin', {
+                                        title: this.post.title,
+                                        content: this.post.content,
+                                    },
+                                    {
+                                        headers: {
+                                        Authorization: `Bearer ${tokenFetch}`
+                                            }
+                                    }
+                                    )
+                                    .then(response => {
+                                            // display success notification
+                                            this.notification = Object.assign({}, this.notification, {
+                                            message: response.data.message,
+                                            type: 'success'
+                                            })
+                                            this.modalDialog = false,
+                                            swal("Publication modérée !","","success")
+                                            window.location.reload();                   
+                                        })
+                                        .catch(error => {
+                                                // Handle error.
+                                                console.log('An error occurred:', error.response);
+                                                swal("Quelque chose n'a pas fonctionné", "", "error")
+                                            })
+                                },
+                                adminDeletePost() {
+                                    swal({
+                                    title: "Voulez-vous vraiment supprimer la publication ?",
+                                    text: "Une fois supprimé, vous ne pourrez pas la récupérer",
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                    }) 
+                                    .then((willDelete) => {
+                                    if (willDelete) {
+                                        swal("La publication a été supprimé avec succes", {
+                                        icon: "success",
+                                        })
+                                    this.axios.delete(redditUrl + `${this.$route.params.id}/admin`
+                            ,
+                                {
+                                    headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                        }    
+                                })
+                                        .then(response => {
+                                            // Handle success.
+                                            console.log(response)     
+                                        })
+                                        this.$router.push('/groupodiscute')
+                                        window.location.reload()
+                                    } else {
+                                        swal("Suppresion de publication annulée");
+                                    }
+                                    })
+                            
+                            .catch(error => {
+                                // Handle error.
+                                console.log('An error occurred:', error.response);
+                                swal("Quelque chose n'a pas fonctionné", "", "error")
+                                    })
+                                },
+                                            
             } ,
     name: 'voirdiscute',
     components: {

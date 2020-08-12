@@ -2,7 +2,6 @@ var jwt = require('jsonwebtoken')
 var bcrypt = require('bcrypt')
 var db = require("../models");
 var asyncHandler = require('../middleware/asyncHandler')
-const crypt = require('../middleware/passwordCrypt')
 require('dotenv').config();
 
 
@@ -18,7 +17,6 @@ exports.register = asyncHandler(async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.headers)
 
   const user = await db.User.findOne({ where: { email } });
 
@@ -40,8 +38,8 @@ exports.login = async (req, res, next) => {
     { userId: user.id },
     process.env.JWT_SECRET,
     { expiresIn: '24h' }
-) 
-});
+    ) 
+  });
 };
 
 
@@ -68,21 +66,13 @@ exports.login = async (req, res, next) => {
         await db.User.findOne({ where: {  id: req.params.id } })
         .then(user => {
            if(!user) {
-            console.log('test')
              return res.status(404).json({ error: 'Utilisateur inconnu !'})
            } else {
            res.status(200).json({ user })
-           console.log(user)
            return user;
            }
          })
        };
-
-       function encryptPasswordIfChanged(user, options) {
-        if (user.changed('password')) {
-          crypt(user.get('password'));
-        }
-      }
 
       exports.updateMe = async (req, res) => {
         await db.User.update(req.body, {
@@ -100,9 +90,7 @@ exports.login = async (req, res, next) => {
             "password"
           ]
         });
-        console.log(req.params.id)
         res.status(200).json({ data: user });
-        console.log(user)
         return user;
       };
 
@@ -113,7 +101,6 @@ exports.login = async (req, res, next) => {
         password = await bcrypt.hash(password, salt);
         await db.User.update( {password: password}, {where: { id: req.params.id}})
           if(!user) {
-           console.log('test')
             return res.status(404).json({ error: 'Utilisateur inconnu !'})
           } else {
           res.status(200).json({ user })

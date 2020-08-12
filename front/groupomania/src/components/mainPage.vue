@@ -25,7 +25,7 @@
            <div>
                 <div class="content" v-for="post in posts" :key="post.id">
                     <div v-if="posts.length != 0">
-                            <div v-if="post[0].postType === 'reddit'"> <!-- TEMPLATE REDDIT --> 
+                            <v-card v-if="post[0].postType === 'reddit'"> <!-- TEMPLATE REDDIT --> 
                                 <div @click="goToReddit(post[0].id)">
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
                                 <v-divider></v-divider>
@@ -37,12 +37,11 @@
                                 <div v-else>
                                     <v-card-text>Utilisateur Supprimé- {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
-                                <v-divider></v-divider>
                                 
                             
-                            </div>     <!-- FIN DU TEMPLATE REDDIT --> 
+                            </v-card>     <!-- FIN DU TEMPLATE REDDIT --> 
 
-                            <div v-else> 
+                            <v-card v-else> 
                             <div @click="goToGag(post[0].id)"> <!-- TEMPLATE GAG --> 
                                 
                                 <v-card-title background-color="lightgrey" class="postTitle">{{ post[0].title }}</v-card-title>
@@ -60,7 +59,7 @@
                                     <v-card-text>Utilisateur Supprimé - {{ post[0].createdAt | moment("from") }}</v-card-text>
                                 </div>
                             
-                        </div> <!--FIN DU TEMPLATE GAG --> 
+                        </v-card> <!--FIN DU TEMPLATE GAG --> 
                     </div>
                 </div>
            </div>
@@ -161,7 +160,7 @@ export default {
 }
 
 .content {
-    padding-bottom: 2rem;
+    margin-bottom: 2rem;
 }
 
 .v-card__title {

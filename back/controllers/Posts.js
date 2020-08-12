@@ -77,11 +77,11 @@ exports.getAllGags = async (req, res) => {
 
 exports.findOneReddit = async (req, res) => {
     const reddit = await db.Reddit.findOne({ where: { id: req.params.id },
-        include: 
-          {
-            model: db.User,
-            attributes: ["id", "username"],
-          },
+      include: 
+      {
+        model: db.User,
+        attributes: ["id", "username", "isAdmin"],
+      },
       })
         if(!reddit) {
             return res.status(404).json({ error: 'Publication inconnue !'})
@@ -154,7 +154,7 @@ exports.findOneGag = async (req, res) => {
     include: 
       {
         model: db.User,
-        attributes: ["id", "username"],
+        attributes: ["id", "username", "isAdmin"],
       },
   })
     if(!gag) {

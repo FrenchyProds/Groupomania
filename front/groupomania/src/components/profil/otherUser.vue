@@ -77,7 +77,7 @@
         </div>
 
         <div class="comments" v-show="toggleComment">
-             <div v-for="gagComment in gagComments" :key="gagComment.gagId">
+             <div v-for="gagComment in gagComments" :key="gagComment.gagId + Math.random()">
                 <div v-if="gagComment.gagId != null">
                     <v-card-text>{{gagComment.content}}</v-card-text>
                     <div @click="goToGag(gagComment.gagId)">
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div v-for="redditComment in redditComments" :key="redditComment.redditId">
+            <div v-for="redditComment in redditComments" :key="redditComment.redditId + Math.random()">
                     <div v-if="redditComment.redditId != null">
                         <v-card-text>{{redditComment.content}}</v-card-text>
                         <div @click="goToReddit(redditComment.redditId)">

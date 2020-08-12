@@ -9,6 +9,8 @@ router.get('/reddit/:id/comment/:commentId/', commentCtrl.eachRedditComment);
 router.get('/gag/:id/comment/:commentId/', commentCtrl.eachGagComment);
 router.post('/reddit/:id/comment', commentCtrl.createRedditComment);
 router.post('/gag/:id/comment', commentCtrl.createGagComment);
+router.delete('/reddit/:id/comment/:commentId', commentCtrl.deleteRedditComment);
+router.delete('/gag/:id/comment/:commentId', commentCtrl.deleteGagComment);
 router.get('/comments/Reddit/byUser/:id', commentCtrl.findRedditCommentByUser);
 router.get('/comments/Gag/byUser/:id', commentCtrl.findGagCommentByUser);
 router.put('/reddit/:id/comment/report/:commentId', commentCtrl.reportRedditComment);

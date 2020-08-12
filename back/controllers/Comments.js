@@ -170,6 +170,30 @@ exports.createGagComment = async (req, res) => {
   res.status(200).json({ success: true, data: comment });
 };
 
+    exports.deleteRedditComment = async (req, res) => {
+      await db.Comment.destroy({ where: { redditId: req.params.id, id: req.params.commentId }
+      })
+      .then(comment => {
+        if(!comment) {
+          return res.status(404).json({ error: 'Commentaire inconnu !'})
+        } else {
+        res.status(200).json({ success : true })
+    }
+    })
+  }
+
+  exports.deleteGagComment = async (req, res) => {
+    await db.Comment.destroy({ where: { gagId: req.params.id, id: req.params.commentId }
+    })
+    .then(comment => {
+      if(!comment) {
+        return res.status(404).json({ error: 'Commentaire inconnu !'})
+      } else {
+      res.status(200).json({ success : true })
+  }
+  })
+}
+
 exports.findGagCommentByUser = async (req, res) => {
   const Comment = await db.Comment.findAll({ where: { userId: req.params.id, },
     include: {

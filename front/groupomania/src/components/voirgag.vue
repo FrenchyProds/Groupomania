@@ -3,9 +3,9 @@
         <mainhead/>
             <div>
                 <div v-if="user">
-                        <div v-if="user.id === this.userIsMe">
-                            <v-row justify="center">
-                                <v-dialog v-model="modalDialog" max-width="600px">
+                    <v-row justify="space-around">
+                        <div v-if="user.id === userIsMe">
+                            <v-dialog v-model="modalDialog" max-width="600px">
                                 <template v-slot:activator="{ on, attrs }">
                                     <v-btn
                                     color="white"
@@ -23,10 +23,10 @@
                                     <v-card-text>
                                     <v-container>
                                         
-                                        <v-col cols="12" sm="6" md="4">
+                                        <v-col cols="12">
                                             <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="4">
+                                        <v-col cols="12">
                                             <div v-show="showProgress">
                                                 <progress-bar :options="options" :value="progress" />
                                             </div>
@@ -89,13 +89,104 @@
                                         </v-col>
                                     </v-row>
                                 </v-card>
-                                    
-
-                                </v-card>
-                                </v-dialog>
-                            </v-row>
-                        </div>
+                            </v-card>
+                        </v-dialog>
                     </div>
+
+                        <div v-if="this.isAdmin == true">
+                            <v-dialog v-model="modalDialog" max-width="600px">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                color="white"
+                                dark
+                                v-bind="attrs"
+                                v-on="on"
+                                >
+                                Modérer la publication
+                                </v-btn>
+                            </template>
+                            <v-card>
+                                <v-card-title>
+                                <span class="headline" >Modérer la publication</span>
+                                </v-card-title>
+                                <v-card-text>
+                                <v-container>
+                                    
+                                    <v-col cols="12">
+                                        <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <div v-show="showProgress">
+                                            <progress-bar :options="options" :value="progress" />
+                                        </div>
+                                        <v-row class="align-center pb-3">
+                                            <v-col cols="12">
+                                                <v-form v-on:submit.prevent="upload" ref="form">
+                                                <v-row class="d-block pb-5">
+                                                <!-- allow the user to select an image file and when they have selected it call a function 
+                                                to handle this event-->
+                                                <label for="file-input"></label>
+                                                <input
+                                                    id="file-input"
+                                                    type="file"
+                                                    accept="image/png, image/jpeg"
+                                                    @change="handleFileChange($event)"
+                                                />
+                                                </v-row>
+                                                <!-- submit button is disabled until a file is selected -->
+                                                <v-btn type="submit" :disabled="filesSelected != 1" fill color="light-green" >Héberger</v-btn>
+                                                </v-form>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                    <section v-if="results && results.secure_url">
+                                        <img :src="results.secure_url" :alt="results.public_id" />
+                                        </section>
+
+                                        <!-- display errors if not successful -->
+                                        <section>
+                                        <ul v-if="errors.length > 0">
+                                            <li v-for="(error,index) in errors" :key="index">{{error}}</li>
+                                        </ul>
+                                    </section>
+                                    
+                                </v-container>
+                                </v-card-text>
+                                <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-row d-flex class="justify-content-space-between">
+                                <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
+                                <v-btn color="blue darken-1" text @click="moderatePost()">Confirmer</v-btn>
+                                </v-row>
+                                </v-card-actions>
+
+                            <v-card class="d-flex text-center my-2">
+                                <v-row class="align-center mx-3">
+                                    <v-col cols="12">
+                                        <v-tooltip top>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn
+                                                icon v-bind="attrs" v-on="on">
+                                                <div class="btn-flex" @click="adminDeletePost()">
+                                                    <v-icon size="24px" color="red">mdi-delete-circle</v-icon>
+                                                    Supprimer
+                                                </div>
+                                                </v-btn>
+                                            </template>
+                                            <span>Supprimer la publication</span>
+                                        </v-tooltip>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                                
+
+                                        </v-card>
+                                    </v-dialog>
+                                </div>
+                            </v-row>
+                    </div>
+
+                    
                 
                     <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
                     <v-divider></v-divider>
@@ -137,7 +228,7 @@
                         </v-tooltip>
                     </div>
 
-                <div v-if="user.id != this.userIsMe">
+                <div v-if="user.id != userIsMe">
                     <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                     <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
@@ -150,6 +241,7 @@
                                              
             </div>
 
+        <div>
             <v-card-title>
                 Commentaires : {{ post.commentsCount }}
             </v-card-title>
@@ -163,22 +255,29 @@
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="(comment,index) in eachComment" :key="index">
-                <v-card>
-                    <v-card-text>
-                        <p>{{comment.content}}</p>
-                        <div v-if="comment.User !== null">
-                        <p class="justify-center" @click="goToUser(comment.User.username)">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
-                        </div>
-                        <div v-else>
-                        <p>Utilisateur Supprimé - {{ comment.createdAt | moment("from") }}</p>
-                        </div>
-                        <div v-if="comment.createdAt != comment.updatedAt">
+                <div class="comments" v-for="comment in eachComment" :key="comment.id + Math.random()">
+                    <v-card>
+                        <v-card-text>
+                            <v-row class="justify-space-between mx-1">
+                                <p>{{comment.content}}</p>
+
+                                <div class="btn-flex" v-if="comment.User.id == userIsMe">
+                                    <v-btn @click="deleteComment(comment.id)" justify-end icon color="red"><v-icon>mdi-delete-circle</v-icon></v-btn>
+                                </div>
+                                
+                            </v-row>
+                            <div v-if="comment.User !== null">
+                            <p class="justify-center" @click="goToUser(comment.User.username)">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
+                            </div>
+                            <div v-else>
+                            <p>Utilisateur Supprimé - {{ comment.createdAt | moment("from") }}</p>
+                            </div>
+                            <div v-if="comment.createdAt != comment.updatedAt">
                                 Modifié {{ comment.updatedAt | moment("from") }}
                             </div>
-                    </v-card-text>
-                    <v-card-text class="text-truncate" background-color="grey">
-                        <div class="likes">
+                        </v-card-text>
+                        <v-card-text class="text-truncate" background-color="grey">
+                            <div class="likes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
                                 <v-btn @click="likeComment(comment.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon>mdi-arrow-up-bold</v-icon>
@@ -190,26 +289,25 @@
 
                             <div class="dislikes">
                                 <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click='dislikeComment(comment.id)' v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
-                                <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
-                                </template>
-                                <span>J'aime pas !</span>
+                                    <template v-slot:activator="{ on, attrs }">
+                                    <v-btn @click='dislikeComment(comment.id)' v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
+                                    <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
+                                    </template>
+                                    <span>J'aime pas !</span>
                                 </v-tooltip>
                             </div>
-
-                        <div v-if="user.id != comment.userId">
+    
                             <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                            <v-btn @click="reportComment()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                            </template>
-                            <span>Signaler du contenu</span>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-if="comment.User.id != userIsMe" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                </template>
+                                <span>Signaler du contenu</span>
                             </v-tooltip>
-                        </div>
-                    </v-card-text>
-                </v-card> 
+                        </v-card-text>
+                    </v-card> 
+                </div>
             </div>
-            </div>
+        </div>
             
         <modifiedfoot/>
     </v-container>
@@ -263,7 +361,6 @@ export default {
       },
     };
         return {
-        items: ['Dernières publications', 'Le plus de likes'],
         post: [],
         user: [],
         url: [],
@@ -289,10 +386,21 @@ export default {
         isFlagged: '',
         commentContent:'',
         eachComment: [],
+        isAdmin: ''
     }},      
      mounted() {
          this.asyncData();
         },
+    beforeMount() {
+        this.axios.get('http://localhost:3000/user/' + userId, {
+            headers: {
+                Authorization: `Bearer ${tokenFetch}`
+            }
+        }).then(res => {
+            console.log(res)
+            this.isAdmin = res.data.user.isAdmin
+        })
+    },
      computed: {
         commentHasContent () {
             return !this.commentContent
@@ -333,6 +441,8 @@ export default {
                 })
                     .then(res => {
                         this.eachComment.push(res.data.Comment)
+                        console.log(this.userIsMe)
+                        console.log(res.data.Comment.User.id)
                         console.log(res.data)
                     }) 
                
@@ -536,6 +646,39 @@ export default {
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
                 },
+                deleteComment(commentId) {
+                        swal({
+                        title: "Voulez-vous vraiment supprimer votre commentaire ?",
+                        text: "",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        }) 
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Votre commentaire a été supprimé avec succes", {
+                            icon: "success",
+                            })
+                        this.axios.delete(gagUrl + `${this.$route.params.id}` + '/comment/' + commentId,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                            .then(response => {
+                                // Handle success.
+                                console.log(response)     
+                            })
+                            window.location.reload();
+                        } else {
+                            swal("Suppresion de commentaire annulée");
+                        }
+                        }).catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                })
+                            },
                 likePost() {
                     this.axios.get(gagUrl + this.$route.params.id + '/like',
                     {
@@ -616,6 +759,96 @@ export default {
                                         }
                                     })
                                 },
+                                reportComment(commentId) {
+                                    swal({
+                                    title: "Voulez-vous vraiment signaler ce commentaire ?",
+                                    text: "",
+                                    icon: "info",
+                                    buttons: true,
+                                    dangerMode: true,
+                                    }) 
+                                    .then((willReport) => {
+                                    if (willReport) {
+                                        swal("Commentaire signalé avec succes",{
+                                        icon: "success",
+                                        })
+                                    this.axios.put(gagUrl + this.$route.params.id + '/comment/report/' + commentId
+                                    ,
+                                {
+                                    headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                        }    
+                                })
+                                        .then(response => {
+                                            // Handle success.
+                                            console.log(response)
+                                        })
+                                        window.location.reload()
+                                    }
+                                })
+                            },
+                            moderatePost() {
+                                this.axios.put(gagUrl + this.$route.params.id + '/admin', {
+                                    title: this.post.title,
+                                    content: this.secure_url,
+                                },
+                                {
+                                    headers: {
+                                    Authorization: `Bearer ${tokenFetch}`
+                                        }
+                                }
+                                )
+                                .then(response => {
+                                        // display success notification
+                                        this.notification = Object.assign({}, this.notification, {
+                                        message: response.data.message,
+                                        type: 'success'
+                                        })
+                                        this.modalDialog = false,
+                                        swal("Publication modérée !","","success")
+                                        window.location.reload();                   
+                                    })
+                                    .catch(error => {
+                                            // Handle error.
+                                            console.log('An error occurred:', error.response);
+                                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                        })
+                                    },
+                                     adminDeletePost() {
+                                        swal({
+                                        title: "Voulez-vous vraiment supprimer la publication ?",
+                                        text: "Une fois supprimé, vous ne pourrez pas la récupérer",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        }) 
+                                        .then((willDelete) => {
+                                        if (willDelete) {
+                                            swal("La publication a été supprimé avec succes", {
+                                            icon: "success",
+                                            })
+                                        this.axios.delete(gagUrl + `${this.$route.params.id}/admin`
+                                ,
+                                    {
+                                        headers: {
+                                        Authorization: `Bearer ${tokenFetch}`
+                                            }    
+                                    })
+                                            .then(response => {
+                                                // Handle success.
+                                                console.log(response)     
+                                            })
+                                            this.$router.push('/groupogag')
+                                            window.location.reload();
+                                        } else {
+                                            swal("Suppresion de publication annulée");
+                                        }
+                                        }).catch(error => {
+                                            // Handle error.
+                                            console.log('An error occurred:', error.response);
+                                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                                })
+                                            },
             goToUser(username) {
                 this.$router.push({name:'user', params:{username:username}})
             }
