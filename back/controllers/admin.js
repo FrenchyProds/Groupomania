@@ -36,6 +36,18 @@ exports.moderateGag = async (req, res) => {
     return gag;
 };
 
+exports.removeRedditFlag = async (req, res) => {
+  await db.Reddit.findOne({ where: { id: req.params.id}});
+  await db.Reddit.update({ isFlag: false}, { where: { id: req.params.id}})
+  res.status(200).json({ success: true })
+}
+
+exports.removeGagFlag = async (req, res) => {
+  await db.Gag.findOne({ where: { id: req.params.id}});
+  await db.Gag.update({ isFlag: false}, { where: { id: req.params.id}})
+  res.status(200).json({ success: true })
+}
+
 exports.adminDeleteReddit = async (req, res) => {
     await db.Reddit.destroy({ where: { id: req.params.id }})
     .then(reddit => {
@@ -57,6 +69,18 @@ exports.adminDeleteGag = async (req, res) => {
         }
     })
 };
+
+exports.unflagUser = async (req, res) => {
+  await db.User.findOne({ where: { id: req.params.id }})
+  .then(user => {
+    if(!user) {
+        return res.status(404).json({ error: 'Utilisateur inconnu !'})
+      } else {
+  db.User.update({ isFlag: false}, { where: { id: req.params.id }})
+  res.status(200).json({ data: comment })
+    }
+  })
+}
 
 exports.moderateUser = async (req, res) => {
     await db.User.update(req.body, {
@@ -90,6 +114,30 @@ exports.moderateUser = async (req, res) => {
         }
     })
 };
+
+exports.removeRedditCommentFlag = async (req, res) => {
+  await db.Comment.findOne({ where: { redditId: req.params.id, id: req.params.commentId}})
+  .then(comment => {
+    if(!comment) {
+        return res.status(404).json({ error: 'Commentaire inconnu !'})
+      } else {
+  db.Comment.update({ isFlag: false}, { where: { redditId: req.params.id, id: req.params.commentId}})
+  res.status(200).json({ data: comment })
+    }
+  })
+}
+
+exports.removeGagCommentFlag = async (req, res) => {
+  await db.Comment.findOne({ where: { gagId: req.params.id, id: req.params.commentId}})
+  .then(comment => {
+    if(!comment) {
+        return res.status(404).json({ error: 'Commentaire inconnu !'})
+      } else {
+  db.Comment.update({ isFlag: false}, { where: { gagId: req.params.id, id: req.params.commentId}})
+  res.status(200).json({ data: comment })
+    }
+  })
+}
 
 exports.adminDeleteRedditComment = async (req, res) => {
     await db.Comment.destroy({ where: { redditId: req.params.id, id: req.params.commentId }

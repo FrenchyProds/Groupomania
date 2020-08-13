@@ -296,13 +296,25 @@
                                     <span>J'aime pas !</span>
                                 </v-tooltip>
                             </div>
-    
-                            <v-tooltip top>
+
+                            <div v-if="isAdmin == true">
+                                <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-if="comment.User.id != userIsMe" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                <v-btn @click="adminComment(comment.id)" v-bind="attrs" v-on="on" class="red--text">Modérer<v-icon>mdi-delete-circle</v-icon>
+                                </v-btn>
                                 </template>
-                                <span>Signaler du contenu</span>
-                            </v-tooltip>
+                                <span>Modérer le commentaire</span>
+                                </v-tooltip>
+                            </div>
+    
+                            <div v-if="comment.isFlag == false">
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn v-if="comment.User.id != userIsMe" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                    </template>
+                                    <span>Signaler du contenu</span>
+                                </v-tooltip>
+                            </div>
                         </v-card-text>
                     </v-card> 
                 </div>
@@ -386,7 +398,8 @@ export default {
         isFlagged: '',
         commentContent:'',
         eachComment: [],
-        isAdmin: ''
+        isAdmin: '',
+        commentIsFlag: '',
     }},      
      mounted() {
          this.asyncData();
@@ -441,6 +454,7 @@ export default {
                 })
                     .then(res => {
                         this.eachComment.push(res.data.Comment)
+                        this.commentIsFlag = this.eachComment.isFlag
                         console.log(this.userIsMe)
                         console.log(res.data.Comment.User.id)
                         console.log(res.data)
@@ -849,6 +863,39 @@ export default {
                                             swal("Quelque chose n'a pas fonctionné", "", "error")
                                                 })
                                             },
+                                        adminComment(commentId) {
+                                            swal({
+                                                title: "Voulez-vous vraiment supprimer ce commentaire ?",
+                                                text: "",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                                }) 
+                                                .then((willDelete) => {
+                                                if (willDelete) {
+                                                    swal("Le commentaire a été supprimé avec succes", {
+                                                    icon: "success",
+                                                    })
+                                                this.axios.delete(gagUrl + `${this.$route.params.id}` + '/comment/' + commentId + '/admin',
+                                                    {
+                                                        headers: {
+                                                        Authorization: `Bearer ${tokenFetch}`
+                                                            }    
+                                                    })
+                                                    .then(response => {
+                                                        // Handle success.
+                                                        console.log(response)     
+                                                    })
+                                                    window.location.reload();
+                                                } else {
+                                                    swal("Suppresion de commentaire annulée");
+                                                }
+                                                }).catch(error => {
+                                                    // Handle error.
+                                                    console.log('An error occurred:', error.response);
+                                                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                                                        })
+                                                    },
             goToUser(username) {
                 this.$router.push({name:'user', params:{username:username}})
             }

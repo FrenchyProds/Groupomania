@@ -26,7 +26,7 @@
         <v-divider></v-divider>
 
         <v-card>
-            <v-row class="text-center">
+            <v-row class="text-center">     
                 <v-col cols="4">
                     Email
                 </v-col>
@@ -45,14 +45,48 @@
                     {{user.department}}
                 </v-col>
             </v-row>
-        </v-card>
-        
+        </v-card>        
 
-        <v-tabs grow class="elevation-2" background-color="white">
+        <v-tabs mb-2 show-arrows grow class="elevation-2" background-color="white">
+                <v-tab v-if="this.isAdmin == true && toggleModeration == false" @click="toggleMod()">Modérer l'utilisateur</v-tab>
                 <v-tab v-if="toggleGag == false" @click="toggleGags()">Gags</v-tab>
                 <v-tab v-if="toggleReddit == false" @click='toggleReddits()'>Discutes</v-tab>
                 <v-tab v-if="toggleComment == false" @click='toggleComments()'>Commentaires</v-tab>
         </v-tabs>
+
+        <div mt-2 class="moderate" v-show="toggleModeration">
+            <v-form @submit="moderateUser(user.username)">
+                <p>Pour la modération de l'avatar merci de bien vouloir remplacer l'avatar existant par un picsum</p>
+                <v-text-field  v-model="username" label="Modérer le nom d'utilisateur"></v-text-field>
+                <v-text-field  v-model="firstName" label="Modérer le prénom"></v-text-field>
+                <v-text-field  v-model="lastName" label="Modérer le nom"></v-text-field>
+                <v-text-field  v-model="avatar" label="Modérer l'avatar"></v-text-field>
+                <v-text-field  v-model="department" label="Modérer le département"></v-text-field>
+                <v-card
+                    flat
+                    tile
+                    width="100%"
+                    class="white text-center">
+                    <v-card-text class="d-flex justify-space-around">
+                        <v-tooltip top> 
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                icon v-bind="attrs" v-on="on" type="submit" value="Submit">
+                                <div class="btn-flex">
+                                    <v-icon size="24px" color="green">mdi-checkbox-marked-circle</v-icon>
+                                    Confirmer
+                                </div>
+                                </v-btn>
+                            </template>
+                            <span>Confirmer</span>
+                        </v-tooltip>
+                    </v-card-text>
+                </v-card>
+            </v-form>
+            <v-row class="justify-center">
+            <v-btn icon class="red--text">Supprimer l'utilisateur<v-icon>mdi-delete-circle</v-icon></v-btn>
+            </v-row>
+        </div>
 
         <div class="gags" v-show="toggleGag" v-for="gag in gags" :key="gag.id">
             <div @click="goToGag(gag.id)">
@@ -141,8 +175,17 @@ export default {
         toggleGag: true,
         toggleReddit: false,
         toggleComment: false,
+        toggleModeration: false,
         userIsMe: userId,
         isFlagged: '',
+        isAdmin: '',
+    }
+    },
+    watch: {
+    $route(to, from) {
+       if (to !== from) {
+           this.fetchUser(this.username)
+       }
     }
     },
     beforeRouteUpdate (to, from, next) {
@@ -153,6 +196,16 @@ export default {
             this.fetchUser(this.$route.params.username)
             console.log(this.$route.params.username)
         },
+    beforeMount() {
+        this.axios.get('http://localhost:3000/user/' + userId, {
+            headers: {
+                Authorization: `Bearer ${tokenFetch}`
+            }
+        }).then(res => {
+            console.log(res)
+            this.isAdmin = res.data.user.isAdmin
+        })
+    },
     mounted () {
     },
     methods: {
@@ -179,6 +232,35 @@ export default {
                         this.fetchGagComments();
                         this.fetchRedditComments();
                     })  
+            },
+            moderateUser(username) {
+                this.axios.put('http://localhost:3000/user/' + this.id + '/admin',
+                        {
+                            username: this.username,
+                            firstName: this.firstName,
+                            lastName: this.lastName,
+                            department: this.department,
+                            avatar: this.avatar,
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                            }
+                        })
+                        .then(response => {
+                        // display success notification
+                        this.notification = Object.assign({}, this.notification, {
+                          message: response.data.message,
+                          type: 'success'
+                        })     
+                        swal("Utilisateur modéré !","","success")
+                        this.$router.push({name:'user', params:{username:username}})                   
+                    })
+                    .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
             },
             fetchGags() {
                         this.axios
@@ -263,16 +345,25 @@ export default {
                     },
             toggleGags() {
                 this.toggleGag = true;
+                this.toggleModeration = false;
+                this.toggleReddit = false;
+                this.toggleComment = false;
+            },
+            toggleMod() {
+                this.toggleGag = false;
+                this.toggleModeration = true;
                 this.toggleReddit = false;
                 this.toggleComment = false;
             },
             toggleReddits() {
                 this.toggleGag = false;
+                this.toggleModeration = false;
                 this.toggleReddit = true;
                 this.toggleComment = false;
             },
             toggleComments() {
                 this.toggleGag = false;
+                this.toggleModeration = false;
                 this.toggleReddit = false;
                 this.toggleComment = true;
             },
