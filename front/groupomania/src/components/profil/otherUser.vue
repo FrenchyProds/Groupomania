@@ -56,7 +56,8 @@
 
         <div mt-2 class="moderate" v-show="toggleModeration">
             <v-form @submit="moderateUser(user.username)">
-                <p>Pour la modération de l'avatar merci de bien vouloir remplacer l'avatar existant par un picsum</p>
+                <v-card-text>Pour la modération de l'avatar merci de bien vouloir remplacer l'avatar existant par un url picsum</v-card-text>
+                <v-card-text>Si vous modifiez le username, il vous faudra taper le nouveau username dans l'url afin d'accéder au profil (petit souci de routing)</v-card-text>
                 <v-text-field  v-model="username" label="Modérer le nom d'utilisateur"></v-text-field>
                 <v-text-field  v-model="firstName" label="Modérer le prénom"></v-text-field>
                 <v-text-field  v-model="lastName" label="Modérer le nom"></v-text-field>
@@ -84,7 +85,7 @@
                 </v-card>
             </v-form>
             <v-row class="justify-center">
-            <v-btn icon class="red--text">Supprimer l'utilisateur<v-icon>mdi-delete-circle</v-icon></v-btn>
+            <v-btn icon class="red--text" @click="deleteUser(user.id)">Supprimer l'utilisateur<v-icon>mdi-delete-circle</v-icon></v-btn>
             </v-row>
         </div>
 
@@ -261,7 +262,40 @@ export default {
                             console.log('An error occurred:', error.response);
                             swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
-            },
+                },
+                deleteUser(userId) {
+                swal({
+                    title: "Voulez-vous vraiment supprimer cet utilisateur ?",
+                    text: "",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    }) 
+                    .then((willDelete) => {
+                    if (willDelete) {
+                        swal("L'utilisateur a été supprimé avec succes", {
+                        icon: "success",
+                        })
+                    this.axios.delete('http://localhost:3000/user/' + userId + '/admin',
+                        {
+                            headers: {
+                            Authorization: `Bearer ${tokenFetch}`
+                                }    
+                        })
+                        .then(response => {
+                            // Handle success.
+                            console.log(response)     
+                        })
+                        window.location.reload();
+                    } else {
+                        swal("Suppresion d'utilisateur annulée");
+                    }
+                    }).catch(error => {
+                        // Handle error.
+                        console.log('An error occurred:', error.response);
+                        swal("Quelque chose n'a pas fonctionné", "", "error")
+                            })
+                },
             fetchGags() {
                         this.axios
                         .get(`http://localhost:3000/gag/byUser/${this.id}`, {

@@ -2,6 +2,67 @@ var db = require("../models");
 var asyncHandler = require('../middleware/asyncHandler')
 
 
+exports.moderatedReddits = async (req, res) => {
+  await db.Reddit.findAll({ where: { hasBeenModerated: true },
+    include: {
+      model: db.User,
+      attributes: ["username", "id"],
+    }, order: [["createdAt", "DESC"]],})
+  .then(reddit => {
+    if(!reddit) {
+      return res.status(404).json({ error: 'Aucune publication trouvée !'})
+    } else {
+    res.status(200).json({ reddit })
+    return reddit;
+    }
+  })
+}
+
+exports.moderatedGags = async (req, res) => {
+  await db.Gag.findAll({ where: { hasBeenModerated: true },
+    include: {
+      model: db.User,
+      attributes: ["username", "id"],
+    }, order: [["createdAt", "DESC"]],})
+  .then(gag => {
+    if(!gag) {
+      return res.status(404).json({ error: 'Aucune publication trouvée !'})
+    } else {
+    res.status(200).json({ gag })
+    return gag;
+    }
+  })
+}
+
+exports.moderatedUsers = async (req, res) => {
+  await db.User.findAll({ where: { hasBeenModerated: true }})
+  .then(user => {
+    if(!user) {
+      return res.status(404).json({ error: 'Aucun utilisateur trouvée !'})
+    } else {
+    res.status(200).json({ user })
+    return user;
+    }
+  })
+}
+
+exports.moderatedComments = async (req, res) => {
+  await db.Comment.findAll({ where: { hasBeenModerated: true },
+    include: {
+      model: db.User,
+      attributes: ["username"],
+    },
+    order: [["createdAt", "DESC"]],})
+  .then(comment => {
+    if(!comment) {
+      return res.status(404).json({ error: 'Aucun utilisateur trouvée !'})
+    } else {
+    res.status(200).json({ comment })
+    return comment;
+    }
+  })
+}
+
 exports.moderateReddit = async (req, res) => {
     await db.Reddit.update( req.body, {
       where: { id: req.params.id }

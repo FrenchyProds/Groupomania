@@ -3,6 +3,10 @@ const router = express.Router();
 const adminCtrl = require("../controllers/admin");
 const auth = require("../middleware/auth");
 
+router.get('/reddit/admin/moderated', auth.admin, adminCtrl.moderatedReddits);
+router.get('/gag/admin/moderated', auth.admin, adminCtrl.moderatedGags);
+router.get('/user/admin/moderated', auth.admin, adminCtrl.moderatedUsers);
+router.get('/comment/admin/moderated', auth.admin, adminCtrl.moderatedComments);
 router.put('/reddit/:id/admin', auth.admin,  adminCtrl.moderateReddit);
 router.put('/gag/:id/admin', auth.admin, adminCtrl.moderateGag);
 router.put('/reddit/:id/admin/unflag', auth.admin, adminCtrl.removeRedditFlag);

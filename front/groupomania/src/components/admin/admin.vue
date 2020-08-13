@@ -1,16 +1,18 @@
 <template>
     <v-container>
-        <v-tabs  grow class="elevation-2 mb-2" background-color="white">
-            <v-tab v-if="showFlag == false" @click="toggleFlags()">Posts signalés</v-tab>
-            <v-tab v-if="showHistory == false" @click='toggleAdminHistory()'>Historique d'administration</v-tab>
+        <v-tabs show-arrows grow class="elevation-2 mb-2" background-color="white">
+            <v-tab @click="toggleFlags()">Posts signalés</v-tab>
+            <v-tab @click='toggleAdminHistory()'>Historique d'administration</v-tab>
         </v-tabs>
 
+        <div v-if="showFlag == true">
             <v-tabs show-arrows class="elevation-2" background-color="white">
                 <v-tab @click="toggleReddit()">Discutes Signalées</v-tab>
                 <v-tab @click='toggleGag()'>Gags Signalés</v-tab>
                 <v-tab @click='toggleUsers()'>Utilisateurs Signalés</v-tab>
                 <v-tab @click="toggleComments()">Commentaires Signalés</v-tab>
             </v-tabs>
+        </div>
 
     <div v-if="showFlag == true">
         <div v-if="showReddits == true">
@@ -34,7 +36,6 @@
                 </v-card>
             </div>
         </div>
-    </div>
 
         <div v-if="gags.length != 0">
             <div v-if="showGags == true">
@@ -107,6 +108,13 @@
                             <div class="text-center py-4">
                                 <v-tooltip top>
                                     <template v-slot:activator="{ on, attrs }">
+                                        <v-btn @click="deleteUser(user.id)" v-bind="attrs" v-on="on" class="red--text mx-2">Modérer<v-icon>mdi-delete-circle</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>Supprimer l'utilisateur</span>
+                                </v-tooltip>
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
                                         <v-btn @click="unflagUser(user.id)" v-bind="attrs" v-on="on" class="green--text">Dé-signaler<v-icon>mdi-flag-remove</v-icon>
                                         </v-btn>
                                     </template>
@@ -165,10 +173,63 @@
             </div>
         </div>
     </div>
-            
+    </div>
+    
 
         <div v-if="showHistory == true">
-            Test 123 Test
+            <v-tabs show-arrows class="elevation-2" background-color="white">
+                <v-tab @click="toggleRedditHistory()">Discutes Signalées</v-tab>
+                <v-tab @click='toggleGagHistory()'>Gags Signalés</v-tab>
+                <v-tab @click='toggleUsersHistory()'>Utilisateurs Signalés</v-tab>
+                <v-tab @click="toggleCommentsHistory()">Commentaires Signalés</v-tab>
+            </v-tabs>
+            <div v-if="showRedditsHistory == true">
+                <div v-if="moderatedReddits.length != 0">
+                    <v-card class="my-4">
+                    <v-card-title class="justify-center">Reddits Signalés</v-card-title>
+                    <div class="content" v-for="reddit in moderatedReddits" :key="reddit.id">
+                            <div @click="goToReddit(reddit.id)">
+                                <v-card-title background-color="lightgrey" class="postTitle">{{ reddit.title }}</v-card-title>
+                                <v-divider></v-divider>
+                                <v-card-text>{{ reddit.content }}</v-card-text>
+                            </div>
+                            <div v-if="reddit.User !== null"> 
+                                <v-card-text @click="goToUser(reddit.User.username)">Created by {{ reddit.User.username }} - {{ reddit.createdAt | moment("from") }}</v-card-text>
+                            </div>
+                            <div v-else>
+                                <v-card-text>Utilisateur Supprimé- {{ reddit.createdAt | moment("from") }}</v-card-text>
+                            </div>
+                            <v-divider></v-divider>
+                        </div>
+                    </v-card>
+                </div>
+            </div>
+
+            <div v-if="moderatedGags.length != 0">
+                <div v-if="showGagsHistory == true">
+                    <v-card class="my-4">
+                    <v-card-title class="justify-center">Gags Signalés</v-card-title>
+                        <div class="content" v-for="gag in moderatedGags" :key="gag.id">
+                            <div @click="goToGag(gag.id)">
+                                <v-card-title background-color="lightgrey" class="postTitle">{{ gag.title }}</v-card-title>
+                                <v-divider></v-divider>
+                                <v-img
+                                :src="(gag.content)"
+                                aspect-ratio="1.5"
+                                max-height="500"
+                                contain/>
+                            </div>
+                            <div v-if="gag.User !== null"> 
+                                <v-card-text @click="goToUser(gag.User.username)">Crée par {{ gag.User.username }} - {{ gag.createdAt | moment("from") }}</v-card-text>
+                            </div>
+                            <div v-else>
+                                <v-card-text>Utilisateur Supprimé- {{ gag.createdAt | moment("from") }}</v-card-text>
+                            </div>
+                            <v-divider></v-divider>
+                        </div>
+                    </v-card>
+                </div>
+            </div>
         </div>
                             
         <modifiedfoot />
@@ -190,6 +251,11 @@ const gagFlag = 'http://localhost:3000/flaggedGags'
 const userFlag = 'http://localhost:3000/flaggedUsers'
 const commentFlag = 'http://localhost:3000/flaggedComments'
 
+const moderatedReddit = 'http://localhost:3000/reddit/admin/moderated'
+const moderatedGag = 'http://localhost:3000/gag/admin/moderated'
+const moderatedUser = 'http://localhost:3000/user/admin/moderated'
+const moderatedComment = 'http://localhost:3000/comment/admin/moderated'
+
 export default {
     data() {
         return {
@@ -204,6 +270,14 @@ export default {
             showGags: false,
             showUsers: false,
             showComments: false,
+            showRedditsHistory: true,
+            showGagsHistory: false,
+            showUsersHistory: false,
+            showCommentsHistory: false,
+            moderatedReddits: [],
+            moderatedGags: [],
+            moderatedUsers: [],
+            moderatedComments: [],
         }
     },
     mounted() {
@@ -214,7 +288,6 @@ export default {
             }
             }).then(res => {
                 this.reddits = res.data.Reddit
-                console.log(res)
                 console.log(this.reddits)
           })
         this.axios.get(gagFlag,
@@ -224,7 +297,6 @@ export default {
             }
             }).then(res => {
                 this.gags = res.data.Gag
-                console.log(res)
                 console.log(this.gags)
           }),
           this.axios.get(userFlag,
@@ -234,7 +306,6 @@ export default {
             }
             }).then(res => {
                 this.users = res.data.data
-                console.log(res)
                 console.log(this.users)
           }),
           this.axios.get(commentFlag,
@@ -244,7 +315,44 @@ export default {
             }
             }).then(res => {
                 this.comments = res.data.Comment
-                console.log(res.data.Comment)
+                console.log(this.comments)
+          }),
+          this.axios.get(moderatedReddit,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
+                this.moderatedReddits = res.data.reddit
+                console.log(res)
+                console.log(this.moderatedReddits)
+          })
+          this.axios.get(moderatedGag,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
+                this.moderatedGags = res.data.gag
+                console.log(this.moderatedGags)
+          })
+          this.axios.get(moderatedUser,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
+                this.moderatedUsers = res.data.user
+                console.log(this.moderatedUsers)
+          })
+          this.axios.get(moderatedComment,
+          {
+            headers: {
+             Authorization: `Bearer ${tokenFetch}`
+            }
+            }).then(res => {
+                this.moderatedComments = res.data.comment
+                console.log(this.moderatedComments)
           })
     },
     methods: {
@@ -261,6 +369,39 @@ export default {
                     })
                     swal('Signalement supprimé', '', 'success')
                     window.location.reload();
+        },
+        deleteUser(userId) {
+            swal({
+                title: "Voulez-vous vraiment supprimer cet utilisateur ?",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                }) 
+                .then((willDelete) => {
+                if (willDelete) {
+                    swal("L'utilisateur a été supprimé avec succes", {
+                    icon: "success",
+                    })
+                this.axios.delete(userUrl + userId + '/admin',
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                            }    
+                    })
+                    .then(response => {
+                        // Handle success.
+                        console.log(response)     
+                    })
+                    window.location.reload();
+                } else {
+                    swal("Suppresion d'utilisateur annulée");
+                }
+                }).catch(error => {
+                    // Handle error.
+                    console.log('An error occurred:', error.response);
+                    swal("Quelque chose n'a pas fonctionné", "", "error")
+                        })
         },
         unflagRedditComment(redditId, commentId) {
             this.axios.get(redditUrl + redditId + '/comment/' + commentId + '/admin/unflag',
@@ -328,39 +469,39 @@ export default {
                     swal("Quelque chose n'a pas fonctionné", "", "error")
                         })
                     },
-            adminRedditComment(redditId, commentId) {
-            swal({
-                title: "Voulez-vous vraiment supprimer ce commentaire ?",
-                text: "",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                }) 
-                .then((willDelete) => {
-                if (willDelete) {
-                    swal("Le commentaire a été supprimé avec succes", {
-                    icon: "success",
+        adminRedditComment(redditId, commentId) {
+        swal({
+            title: "Voulez-vous vraiment supprimer ce commentaire ?",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            }) 
+            .then((willDelete) => {
+            if (willDelete) {
+                swal("Le commentaire a été supprimé avec succes", {
+                icon: "success",
+                })
+            this.axios.delete(redditUrl + redditId + '/comment/' + commentId + '/admin',
+                {
+                    headers: {
+                    Authorization: `Bearer ${tokenFetch}`
+                        }    
+                })
+                .then(response => {
+                    // Handle success.
+                    console.log(response)     
+                })
+                window.location.reload();
+            } else {
+                swal("Suppresion de commentaire annulée");
+            }
+            }).catch(error => {
+                // Handle error.
+                console.log('An error occurred:', error.response);
+                swal("Quelque chose n'a pas fonctionné", "", "error")
                     })
-                this.axios.delete(redditUrl + redditId + '/comment/' + commentId + '/admin',
-                    {
-                        headers: {
-                        Authorization: `Bearer ${tokenFetch}`
-                            }    
-                    })
-                    .then(response => {
-                        // Handle success.
-                        console.log(response)     
-                    })
-                    window.location.reload();
-                } else {
-                    swal("Suppresion de commentaire annulée");
-                }
-                }).catch(error => {
-                    // Handle error.
-                    console.log('An error occurred:', error.response);
-                    swal("Quelque chose n'a pas fonctionné", "", "error")
-                        })
-                    },
+                },
         toggleFlags() {
                         this.showFlag = true;
                         this.showHistory = false;
@@ -388,6 +529,30 @@ export default {
                         this.showComments = false;
                     },
         toggleComments() {
+                        this.showGags = false;
+                        this.showReddits = false;
+                        this.showUsers = false;
+                        this.showComments = true;
+                    },
+        toggleGagHistory() {
+                        this.showGagsHistory = true;
+                        this.showRedditsHistory = false;
+                        this.showUsersHistory = false;
+                        this.showCommentsHistory = false;
+                    },
+        toggleRedditHistory() {
+                        this.showGagsHistory = false;
+                        this.showRedditsHistory = true;
+                        this.showUsersHistory = false;
+                        this.showCommentsHistory = false;
+                    },
+        toggleUsersHistory() {
+                        this.showGagsHistory = false;
+                        this.showRedditsHistory = false;
+                        this.showUsersHistory = true;
+                        this.showCommentsHistory = false;
+                    },
+        toggleCommentsHistory() {
                         this.showGags = false;
                         this.showReddits = false;
                         this.showUsers = false;
