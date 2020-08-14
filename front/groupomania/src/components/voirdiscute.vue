@@ -125,7 +125,7 @@
                         </v-row>
                     </div>
 
-                        <v-card-title background-color="lightgrey">{{ post.title }}</v-card-title>
+                        <v-card-title class="justify-center" background-color="lightgrey">{{ post.title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text class="content">{{ post.content }}</v-card-text>
                          <div v-if="post.User !== null">
@@ -165,7 +165,7 @@
                         <div v-if="user.id != this.userIsMe">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            <v-btn class="orange--text" @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                             </template>
                             <span>Signaler du contenu</span>
                             </v-tooltip>
@@ -218,6 +218,16 @@
                                 </v-tooltip>
                             </div>
 
+                            <div v-if="isAdmin == true">
+                                <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn @click="adminComment(comment.id)" v-bind="attrs" v-on="on" class="red--text">Modérer<v-icon>mdi-delete-circle</v-icon>
+                                </v-btn>
+                                </template>
+                                <span>Modérer le commentaire</span>
+                                </v-tooltip>
+                            </div>
+
                             <div class="dislikes">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
@@ -232,7 +242,7 @@
                             <div v-if="comment.isFlag != true">
                                 <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                <v-btn class="orange--text" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                                 </template>
                                 <span>Signaler du contenu</span>
                                 </v-tooltip>
@@ -676,6 +686,39 @@ export default {
                                 console.log('An error occurred:', error.response);
                                 swal("Quelque chose n'a pas fonctionné", "", "error")
                                     })
+                                },
+                                adminComment(commentId) {
+                                    swal({
+                                        title: "Voulez-vous vraiment supprimer ce commentaire ?",
+                                        text: "",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        }) 
+                                        .then((willDelete) => {
+                                        if (willDelete) {
+                                            swal("Le commentaire a été supprimé avec succes", {
+                                            icon: "success",
+                                            })
+                                        this.axios.delete(redditUrl + `${this.$route.params.id}` + '/comment/' + commentId + '/admin',
+                                            {
+                                                headers: {
+                                                Authorization: `Bearer ${tokenFetch}`
+                                                    }    
+                                            })
+                                            .then(response => {
+                                                // Handle success.
+                                                console.log(response)     
+                                            })
+                                            window.location.reload();
+                                        } else {
+                                            swal("Suppresion de commentaire annulée");
+                                        }
+                                        }).catch(error => {
+                                            // Handle error.
+                                            console.log('An error occurred:', error.response);
+                                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                                })
                                 },
                                             
             } ,

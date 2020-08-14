@@ -17,7 +17,7 @@
         <div class="text-center pb-5" v-if="user.id != this.userIsMe">
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon>Signaler l'utilisateur</v-btn>
+                    <v-btn class="orange--text" @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon>Signaler l'utilisateur</v-btn>
                 </template>
                 <span>Signaler du contenu</span>
             </v-tooltip>

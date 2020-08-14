@@ -49,6 +49,15 @@
                     </v-tooltip>
                 </div>
 
+                <div v-if="user.id != userIsMe">
+                    <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn class="orange--text" @click="reportContent(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                    </template>
+                    <span>Signaler du contenu</span>
+                    </v-tooltip>
+                </div>
+
                 </v-card-text>
                 <v-divider></v-divider>
                 
@@ -85,9 +94,21 @@ import foot from './foot'
 import mainhead from './mainhead'
 import discute from './discutepost'
 import swal from 'sweetalert'
+import jwt_decode from 'jwt-decode'
 
 const apiUrl = 'http://localhost:3000/reddit';
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
+
 
 export default {
     data () {
@@ -97,6 +118,7 @@ export default {
       id: '',
       eachPosts: [],
       user: [],
+      userIsMe: userId,
     }
   },
   mounted() {
@@ -168,7 +190,47 @@ export default {
                                     window.location.reload();
                                 }
                             })
-                        }
+                        },
+                         reportContent(eachpostId) {
+                            if(this.isFlagged == false) {
+                                swal({
+                                    title: "Voulez-vous vraiment signaler ce contenu ?",
+                                    text: "",
+                                    icon: "info",
+                                    buttons: true,
+                                    dangerMode: true,
+                                }) 
+                                .then((willReport) => {
+                                    if (willReport) {
+                                        swal("Contenu signalé avec succes",{
+                                            icon: "success",
+                                        })
+                                this.axios.put( apiUrl + `/report/` + eachpostId
+                        ,
+                            {
+                                headers: {
+                                Authorization: `Bearer ${tokenFetch}`
+                                    }    
+                            })
+                                    .then(response => {
+                                        // Handle success.
+                                        console.log(response)     
+                                    })
+                                    window.location.reload()
+                                } else {
+                                    swal("Signlament annulé");
+                                }
+                                })
+                        
+                        .catch(error => {
+                            // Handle error.
+                            console.log('An error occurred:', error.response);
+                            swal("Quelque chose n'a pas fonctionné", "", "error")
+                                })
+                            } else {
+                                swal("Ce contenu a déjà été signalé par un autre utilisateur", "Merci quand même :)", "error")
+                            }
+                        },
     },
     name: 'groupodiscute',
     components: {

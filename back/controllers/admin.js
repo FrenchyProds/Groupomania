@@ -98,9 +98,15 @@ exports.moderateGag = async (req, res) => {
 };
 
 exports.removeRedditFlag = async (req, res) => {
-  await db.Reddit.findOne({ where: { id: req.params.id}});
-  await db.Reddit.update({ isFlag: false}, { where: { id: req.params.id}})
-  res.status(200).json({ success: true })
+  await db.Reddit.findOne({ where: { id: req.params.id}})
+  .then(reddit => {
+    if(!reddit) {
+        return res.status(404).json({ error: 'Reddit inconnu !'})
+      } else {
+  db.Reddit.update({ isFlag: false}, { where: { id: req.params.id}})
+  res.status(200).json({ data: reddit })
+    }
+  })
 }
 
 exports.removeGagFlag = async (req, res) => {
@@ -138,7 +144,7 @@ exports.unflagUser = async (req, res) => {
         return res.status(404).json({ error: 'Utilisateur inconnu !'})
       } else {
   db.User.update({ isFlag: false}, { where: { id: req.params.id }})
-  res.status(200).json({ data: comment })
+  res.status(200).json({ data: user })
     }
   })
 }

@@ -231,7 +231,7 @@
                 <div v-if="user.id != userIsMe">
                     <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                    <v-btn class="orange--text" @click="reportContent()" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                     </template>
                     <span>Signaler du contenu</span>
                     </v-tooltip>
@@ -310,7 +310,7 @@
                             <div v-if="comment.isFlag == false">
                                 <v-tooltip top>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-btn v-if="comment.User.id != userIsMe" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                        <v-btn class="orange--text" v-if="comment.User.id != userIsMe" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
                                     </template>
                                     <span>Signaler du contenu</span>
                                 </v-tooltip>
