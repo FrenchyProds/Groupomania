@@ -29,9 +29,11 @@
                   name="password"
                   class="ma-2"
                   prepend-icon="lock"
-                  required
-                  type="password"
+                  required  
+                  :type="passwordFieldType"
                 ></v-text-field>
+                <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow"><v-icon>mdi-eye</v-icon></v-btn>
+                <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow"><v-icon>mdi-eye-off</v-icon></v-btn>
               </v-row>
               <v-row justify="center">
                 <v-btn class="mt-4" outlined color="green" type="submit" value="Submit">Se connecter</v-btn>
@@ -65,6 +67,9 @@ import swal from 'sweetalert'
       passwordRules: [
         v => !!v || 'Mot de passe requis !',
       ],
+      hidePassword: true,
+      toggleShowPass: false,
+      passwordFieldType: 'password'
     }),
     methods: {
     formSubmit(e) {
@@ -85,6 +90,9 @@ import swal from 'sweetalert'
     swal('Adresse email ou mot de passe incorrect !', "", "error")
   })
 },
+      toggleShow() {
+          this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+      },
       validate () {
         this.$refs.form.validate()
       },

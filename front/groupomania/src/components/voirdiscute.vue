@@ -739,7 +739,6 @@ export default {
     justify-content: space-between;
     align-content: center;
     padding: 0.5rem 1rem;
-    margin-bottom: 1rem;
 }
 .hoverTime:hover:before {
     color: darkred;

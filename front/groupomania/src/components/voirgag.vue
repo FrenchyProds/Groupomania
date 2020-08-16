@@ -127,7 +127,7 @@
                                                 to handle this event-->
                                                 <label for="file-input"></label>
                                                 <input
-                                                    id="file-input"
+                                                    id="file-input2"
                                                     type="file"
                                                     accept="image/png, image/jpeg"
                                                     @change="handleFileChange($event)"
@@ -918,7 +918,6 @@ export default {
     justify-content: space-between;
     align-content: center;
     padding: 0.5rem 1rem;
-    margin-bottom: 1rem;
 }
 .hoverTime:hover:before {
     color: darkred;

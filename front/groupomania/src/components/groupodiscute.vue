@@ -1,67 +1,67 @@
 <template>
     <v-container>
         <mainhead/>
-       <v-card class="text-center">
            <div v-if="posts.length > 0">
                 <div class="content" v-for="eachpost in eachPosts" :key="eachpost.id">
-                    <div @click="goToPost(eachpost.id)">
-                        <v-card-title background-color="lightgrey">{{ eachpost.title }}</v-card-title>
+                    <v-card my-2 class="text-center">
+                        <div @click="goToPost(eachpost.id)">
+                            <v-card-title pt-2 class="justify-center" background-color="lightgrey">{{ eachpost.title }}</v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text>{{ eachpost.content }}</v-card-text>
+                        </div>
+                        <div v-if="eachpost.User !== null">
+                            <v-card-text @click="goToUser(eachpost.User.username)">Crée par {{ eachpost.User.username }} - {{ eachpost.createdAt | moment("from") }}</v-card-text>
+                        </div>
+                        <div v-else>
+                            <v-card-text>Utilisateur Supprimé - {{ eachpost.createdAt | moment("from") }}</v-card-text>
+                        </div>
                         <v-divider></v-divider>
-                        <v-card-text>{{ eachpost.content }}</v-card-text>
-                    </div>
-                    <div v-if="eachpost.User !== null">
-                        <v-card-text @click="goToUser(eachpost.User.username)">Crée par {{ eachpost.User.username }} - {{ eachpost.createdAt | moment("from") }}</v-card-text>
-                    </div>
-                    <div v-else>
-                        <v-card-text>Utilisateur Supprimé - {{ eachpost.createdAt | moment("from") }}</v-card-text>
-                    </div>
-                    <v-divider></v-divider>
-                    <v-card-text class="text-truncate" background-color="grey">
+                        <v-card-text class="text-truncate" background-color="grey">
 
-                <div class="likes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="likePost(eachpost.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon color="green">mdi-arrow-up-bold</v-icon>
-                    <div v-if="eachpost.likesCount > eachpost.dislikesCount">{{eachpost.likesCount}}</div>
-                    </v-btn>
-                    </template>
-                    <span>J'aime !</span>
-                    </v-tooltip>
-                </div>
+                        <div class="likes">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="likePost(eachpost.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon>mdi-arrow-up-bold</v-icon>
+                            <div v-if="eachpost.likesCount > eachpost.dislikesCount">{{eachpost.likesCount}}</div>
+                            </v-btn>
+                            </template>
+                            <span>J'aime !</span>
+                            </v-tooltip>
+                        </div>
 
-                <div class="dislikes">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="dislikePost(eachpost.id)" v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
-                    <div v-if="eachpost.dislikesCount > eachpost.likesCount">{{eachpost.dislikesCount}}</div></v-btn>
-                    </template>
-                    <span>J'aime pas !</span>
-                    </v-tooltip>
-                </div>
+                        <div class="dislikes">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="dislikePost(eachpost.id)" v-bind="attrs" v-on="on" class="red--text"><v-icon>mdi-arrow-down-bold</v-icon>
+                            <div v-if="eachpost.dislikesCount > eachpost.likesCount">{{eachpost.dislikesCount}}</div></v-btn>
+                            </template>
+                            <span>J'aime pas !</span>
+                            </v-tooltip>
+                        </div>
 
-                <div class="comments">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="goToPost(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
-                    <div :key="eachpost.id">{{eachpost.commentsCount}}</div></v-btn>
-                    </template>
-                    <span>Laisser un commentaire</span>
-                    </v-tooltip>
-                </div>
+                        <div class="comments">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="goToPost(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-message</v-icon>
+                            <div :key="eachpost.id">{{eachpost.commentsCount}}</div></v-btn>
+                            </template>
+                            <span>Laisser un commentaire</span>
+                            </v-tooltip>
+                        </div>
 
-                <div v-if="user.id != userIsMe">
-                    <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn class="orange--text" @click="reportContent(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                    </template>
-                    <span>Signaler du contenu</span>
-                    </v-tooltip>
-                </div>
+                        <div v-if="eachpost.User.id != userIsMe">
+                            <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn class="orange--text" @click="reportContent(eachpost.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                            </template>
+                            <span>Signaler du contenu</span>
+                            </v-tooltip>
+                        </div>
 
-                </v-card-text>
-                <v-divider></v-divider>
+                        </v-card-text>
+                        <v-divider></v-divider>
                 
-                    
+                    </v-card>
                 </div>
            </div>
         
@@ -84,7 +84,7 @@
                 </template>
                 <span>Créer ma publication GroupoDiscute!</span>    
             </v-tooltip>
-        </v-card>
+        
         <foot/>
     </v-container>
 </template>
@@ -250,7 +250,6 @@ export default {
     justify-content: space-between;
     align-content: center;
     padding: 0.5rem 1rem;
-    margin-bottom: 1rem;
 }
 .hoverTime:hover:before {
     color: darkred;
@@ -263,5 +262,8 @@ export default {
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
    bottom: 100px;
    right: 47%
+}
+.v-card:not(.v-sheet--tile):not(.v-card--shaped) {
+    margin: 2rem 0rem;
 }
 </style>

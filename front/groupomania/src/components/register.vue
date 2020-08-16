@@ -33,9 +33,11 @@
                 label="Mot de Passe"
                 class="ma-2"
                 required
-                type="password"
+                :type="passwordFieldType"
                 prepend-icon="lock"
               ></v-text-field>
+              <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow"><v-icon>mdi-eye</v-icon></v-btn>
+              <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow"><v-icon>mdi-eye-off</v-icon></v-btn>
             </v-row>
              <v-row>
               <v-text-field
@@ -43,9 +45,11 @@
                 label="Confirmation du Mot de Passe"
                 class="ma-2"
                 required
-                type="password"
+                :type="passwordFieldTypeConf"
                 prepend-icon="lock"
               ></v-text-field>
+              <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShowConf"><v-icon>mdi-eye</v-icon></v-btn>
+              <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShowConf"><v-icon>mdi-eye-off</v-icon></v-btn>
             </v-row>
             <v-row justify="center">
               <v-btn type="submit" value="Submit" class="mt-4" outlined color="green" :disabled='isComplete'>Valider</v-btn>
@@ -73,7 +77,9 @@ const registerUrl = 'http://localhost:3000/register'
       username: '',
       email: '',
       password: "",
-      passwordConf:''
+      passwordConf:'',
+      passwordFieldType: 'password',
+      passwordFieldTypeConf: 'password',
     }),
     methods: {
           formSubmit(e) {
@@ -98,6 +104,12 @@ const registerUrl = 'http://localhost:3000/register'
           } else {
             swal('Mots de passe différents !','Merci de bien vouloir renseigner deux mots de passe identiques', 'error')
           }
+          },
+           toggleShow() {
+          this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+          },
+           toggleShowConf() {
+          this.passwordFieldTypeConf = this.passwordFieldTypeConf === 'password' ? 'text' : 'password';
           },
           validate () {
         this.$refs.form.validate()

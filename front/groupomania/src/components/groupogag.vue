@@ -1,10 +1,38 @@
 <template>
     <v-container>
         <mainhead/>
-        <v-card>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                    fixed
+                    dark
+                    fab
+                    justify-center
+                    color="red"
+                    class="hoverTime"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="gagpost = true"
+                    >
+                        <v-icon color="white">mdi-pencil</v-icon>
+                    </v-btn>
+                    <gagpost v-model="gagpost" />
+                </template>
+                <span>Créer ma publication GroupoGag !</span>    
+            </v-tooltip>
+
+
             <div v-if="posts.length > 0">
-                <div class="content" v-for="eachpost in eachPosts" :key="eachpost.id">
-                        <div @click="goToPost(eachpost.id)">
+                <paginate
+                v-if="shown"
+                name="eachPosts"
+                :hide-single-page="true"
+                :list="eachPosts"
+                :per="5"
+                >
+                <li v-for="eachpost in paginated('eachPosts')" :key="eachpost.id">
+                    <v-card my-2 class="text-center">
+                    <div @click="goToPost(eachpost.id)">
                         <v-card-title background-color="lightgrey">{{ eachpost.title }}</v-card-title>
                         <v-divider></v-divider>
                         <v-img
@@ -62,33 +90,17 @@
                             <span>Signaler du contenu</span>
                             </v-tooltip>
                         </div>
-
                     </v-card-text>
                     <v-divider></v-divider>
-
-                </div>
+                    </v-card>
+                </li>
+                </paginate>
             </div>
-        </v-card> 
-
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    fixed
-                    dark
-                    fab
-                    justify-center
-                    color="red"
-                    class="hoverTime"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="gagpost = true"
-                    >
-                        <v-icon color="white">mdi-pencil</v-icon>
-                    </v-btn>
-                    <gagpost v-model="gagpost" />
-                </template>
-                <span>Créer ma publication GroupoGag !</span>    
-            </v-tooltip>
+            <paginate-links :async="true" class="stylePagination" for="eachPosts" :show-step-links="true"
+            :step-links="{
+            next: '>',
+            prev: '<'
+        }"></paginate-links>
             
         <foot/>
     </v-container>
@@ -123,8 +135,9 @@ export default {
         id: '',
         gagpost: false,
         userIsMe: userId,
-
-    }},      
+        paginate: ['eachPosts'],
+        shown: false,
+    }},
      mounted() {
           this.axios.get(apiUrl,
            {
@@ -147,7 +160,10 @@ export default {
                 console.log(res)
                 })
             }
-          })
+          }),
+                    setTimeout(() => {
+                this.shown = true
+                }, 1000)
         },
         methods: {
         goToPost(postId) {
@@ -254,7 +270,6 @@ export default {
     justify-content: space-between;
     align-content: center;
     padding: 0.5rem 1rem;
-    margin-bottom: 1rem;
 }
 .hoverTime:hover:before {
     color: darkred;
@@ -267,5 +282,39 @@ export default {
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined){
    bottom: 100px;
    right: 47%
+}
+.v-card:not(.v-sheet--tile):not(.v-card--shaped) {
+    margin: 2rem 0rem;
+}
+li {
+    list-style: none;
+}
+ul {
+    padding-left: 0rem;
+}
+.stylePagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style: none;
+}
+</style>
+
+<style>
+.stylePagination a {
+    color:rgba(0, 0, 0, 0.8);
+    margin: 0rem 1rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+.stylePagination .active a {
+    color: rgb(79, 212, 79);
+    text-decoration: underline;
+}
+.stylePagination .left-arrow a {
+    color: black;
+}
+.stylePagination .right-arrow a {
+    color: black;
 }
 </style>
