@@ -1,5 +1,8 @@
 <template>
     <v-container>
+        <div v-if="confirmedAdmin == 0">
+        </div>
+        <div v-else>
         <v-tabs show-arrows grow class="elevation-2 mb-2" background-color="white">
             <v-tab @click="toggleFlags()">Posts signalés</v-tab>
             <v-tab @click='toggleAdminHistory()'>Historique d'administration</v-tab>
@@ -326,7 +329,7 @@
             </div>
         </div>
     </div>
-                            
+        </div> 
         <modifiedfoot />
     </v-container>
 </template>
@@ -334,8 +337,20 @@
 <script>
 import modifiedfoot from '../modifiedfoot'
 import swal from 'sweetalert'
+import jwt_decode from 'jwt-decode'
+
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
+
+if(tokenFetch) {
+    var decoded = jwt_decode(tokenFetch);
+}
+
+let userId
+
+if(decoded != undefined) {
+userId = decoded.userId
+}
 
 const redditUrl = 'http://localhost:3000/reddit/';
 const gagUrl = 'http://localhost:3000/gag/';
@@ -373,84 +388,129 @@ export default {
             moderatedGags: [],
             moderatedUsers: [],
             moderatedComments: [],
+            userIsMe: userId,
+            user: '',
+            isAdmin: '',
+            confirmedAdmin: '',
         }
     },
+    beforeRouteUpdate (to, from, next) {
+            this.fetchUser(userId)
+            next()
+        },
+        created () {
+            this.fetchUser(userId)
+        },
     mounted() {
-        this.axios.get(redditFlag,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.reddits = res.data.Reddit
-                console.log(this.reddits)
-          })
-        this.axios.get(gagFlag,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.gags = res.data.Gag
-                console.log(this.gags)
-          }),
-          this.axios.get(userFlag,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.users = res.data.data
-                console.log(this.users)
-          }),
-          this.axios.get(commentFlag,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.comments = res.data.Comment
-                console.log(this.comments)
-          }),
-          this.axios.get(moderatedReddit,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.moderatedReddits = res.data.reddit
-                console.log(res)
-                console.log(this.moderatedReddits)
-          })
-          this.axios.get(moderatedGag,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.moderatedGags = res.data.gag
-                console.log(this.moderatedGags)
-          })
-          this.axios.get(moderatedUser,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.moderatedUsers = res.data.user
-                console.log(this.moderatedUsers)
-          })
-          this.axios.get(moderatedComment,
-          {
-            headers: {
-             Authorization: `Bearer ${tokenFetch}`
-            }
-            }).then(res => {
-                this.moderatedComments = res.data.comment
-                console.log(this.moderatedComments)
-          })
     },
     methods: {
+        fetchUser () {
+                this.axios
+                    .get(`http://localhost:3000/user/` + userId, {
+                        headers: {
+                            Authorization: `Bearer ${tokenFetch}`
+                        }
+                    })
+                    .then(response => {
+                        this.user = response.data.user
+                        this.isAdmin = this.user.isAdmin
+                        if(this.isAdmin == true) {
+                            this.fetchAdmin(userId)
+                        } else {
+                            swal('Accès interdit!', "Vous n'avez pas le droit d'accéder à cette page", "error")
+                            setTimeout(function(){ }, 5000);
+                            this.$router.push({name:'home'})
+                        }
+                    })  
+            },
+            fetchAdmin() {
+                this.axios.get(`http://localhost:3000/admin/` + userId, {
+                    headers: {
+                            Authorization: `Bearer ${tokenFetch}`
+                        }
+                }).then(response => {
+                    this.confirmedAdmin = response.data.user.isAdmin
+                    this.fetchAdminInfo()
+                    console.log(this.confirmedAdmin)
+                })
+            },
+            fetchAdminInfo() {
+                if(this.confirmedAdmin == true) {
+                    this.axios.get(redditFlag,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.reddits = res.data.Reddit
+                            console.log(this.reddits)
+                    })
+                    this.axios.get(gagFlag,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.gags = res.data.Gag
+                            console.log(this.gags)
+                    }),
+                    this.axios.get(userFlag,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.users = res.data.data
+                            console.log(this.users)
+                    }),
+                    this.axios.get(commentFlag,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.comments = res.data.Comment
+                            console.log(this.comments)
+                    }),
+                    this.axios.get(moderatedReddit,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.moderatedReddits = res.data.reddit
+                            console.log(res)
+                            console.log(this.moderatedReddits)
+                    })
+                    this.axios.get(moderatedGag,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.moderatedGags = res.data.gag
+                            console.log(this.moderatedGags)
+                    })
+                    this.axios.get(moderatedUser,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.moderatedUsers = res.data.user
+                            console.log(this.moderatedUsers)
+                    })
+                    this.axios.get(moderatedComment,
+                    {
+                        headers: {
+                        Authorization: `Bearer ${tokenFetch}`
+                        }
+                        }).then(res => {
+                            this.moderatedComments = res.data.comment
+                            console.log(this.moderatedComments)
+                    })
+                }
+            },
         deleteGag(gagId) {
             swal({
             title: "Voulez-vous vraiment supprimer la publication ?",

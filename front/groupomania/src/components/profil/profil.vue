@@ -180,15 +180,23 @@
                     </v-col>
                 </v-row>
                 <v-row no-gutters>
-                    <v-col cols="11">
-                        <v-text-field type="password" placeholder="Nouveau mot de passe" v-model="updatePass">
+                    <v-col cols="12">
+                        <v-row no-gutters>
+                        <v-text-field :type="passwordFieldType" placeholder="Nouveau mot de passe" v-model="updatePass">
                         </v-text-field>
+                        <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow"><v-icon>mdi-eye</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow"><v-icon>mdi-eye-off</v-icon></v-btn>
+                        </v-row>
                     </v-col>
                 </v-row>
                 <v-row no-gutters>
-                    <v-col cols="11">
-                        <v-text-field type="password" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
+                    <v-col cols="12">
+                        <v-row no-gutters>
+                        <v-text-field :type="passwordFieldTypeConf" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
                         </v-text-field>
+                        <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf"><v-icon>mdi-eye</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf"><v-icon>mdi-eye-off</v-icon></v-btn>
+                        </v-row>
                     </v-col>
                 </v-row>
                 <v-card
@@ -240,10 +248,10 @@
         </div>
 
         <div v-if="showHistory == true">
-             <v-tabs grow class="elevation-2" background-color="white">
-                <v-tab v-if="toggleGag == false" @click="toggleGags()">Gags</v-tab>
-                <v-tab v-if="toggleReddit == false" @click='toggleReddits()'>Discutes</v-tab>
-                <v-tab v-if="toggleComment == false" @click='toggleComments()'>Commentaires</v-tab>
+             <v-tabs show-arrows grow class="elevation-2" background-color="white">
+                <v-tab @click="toggleGags()">Gags</v-tab>
+                <v-tab @click='toggleReddits()'>Discutes</v-tab>
+                <v-tab @click='toggleComments()'>Commentaires</v-tab>
             </v-tabs>
 
             <div class="gags" v-show="toggleGag" v-for="gag in gags" :key="gag.id">
@@ -267,7 +275,6 @@
                 <v-card-text>Posté {{ reddit.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
             </div>
-
 
             <div class="comments" v-show="toggleComment">
              <div v-for="gagComment in gagComments" :key="gagComment.gagId + Math.random()">
@@ -319,7 +326,6 @@ userId = decoded.userId
 }
 
 console.log(userId)
-
 
 export default {
     data() {
@@ -380,10 +386,8 @@ export default {
         toggleComment: false,
         isAdmin: '',
         confirmedAdmin: '',
-        // imageURL: `${this.results.secure_url}`,
-        // darkMode: '',
-        // password: '',
-        // passwordConf: '',
+        passwordFieldType: 'password',
+        passwordFieldTypeConf: 'password',
         }
     },
         beforeRouteEnter (to, from, next) {
@@ -395,6 +399,8 @@ export default {
         },
         created () {
             this.fetchUser(this.$route.params.id)
+        },
+        mounted () {
         },
         computed: {
             hasImage () {
@@ -435,6 +441,12 @@ export default {
                             this.fetchAdmin(this.$route.params.id)
                             }
                     })  
+            },
+            toggleShow() {
+                this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+            },
+            toggleShowConf() {
+                this.passwordFieldTypeConf = this.passwordFieldTypeConf === 'password' ? 'text' : 'password';
             },
             fetchAdmin() {
                 this.axios.get(`http://localhost:3000/admin/${this.$route.params.id}`, {
@@ -683,7 +695,7 @@ export default {
                                 }
                         }).then(response => {
                         this.gags = response.data.data
-                        console.log(this.gags)
+                        
                         })
                     },
                     fetchReddits() {

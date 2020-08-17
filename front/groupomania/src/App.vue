@@ -27,6 +27,5 @@ export default {
   text-decoration: none;
   color: rgba(0, 0, 0, 0.8)
 }
-
 .clear { clear: both; height: 150px; }
 </style>

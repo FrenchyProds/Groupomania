@@ -48,8 +48,8 @@
                 :type="passwordFieldTypeConf"
                 prepend-icon="lock"
               ></v-text-field>
-              <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShowConf"><v-icon>mdi-eye</v-icon></v-btn>
-              <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShowConf"><v-icon>mdi-eye-off</v-icon></v-btn>
+              <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf"><v-icon>mdi-eye</v-icon></v-btn>
+              <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf"><v-icon>mdi-eye-off</v-icon></v-btn>
             </v-row>
             <v-row justify="center">
               <v-btn type="submit" value="Submit" class="mt-4" outlined color="green" :disabled='isComplete'>Valider</v-btn>

@@ -17,6 +17,7 @@
     "timeago.js": "^4.0.2",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
+    "vue-infinite-scroll": "^2.0.2",
     "vue-jwt-decode": "^0.1.0",
     "vue-moment": "^4.1.0",
     "vue-paginate": "^3.6.0",

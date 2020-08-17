@@ -188,7 +188,13 @@
                 Aucun commentaire n'a été posté pour l'instant !
             </div>
             <div v-else>
-            <div class="comments" v-for="(comment,index) in eachComment" :key="index">
+                <paginate
+                v-if="shown"
+                name="eachComment"
+                :list="eachComment"
+                :per="10"
+                >
+                <li class="comments my-2" v-for="(comment,index) in paginated('eachComment')" :key="index">
                 <v-card>
                     <v-card-text>
                         <v-row class="justify-space-between mx-1">
@@ -251,7 +257,14 @@
 
                     </v-card-text>
                 </v-card> 
-            </div>
+            </li>
+            </paginate>
+            <paginate-links :hide-single-page="true" :async="true" class="stylePagination mt-4" for="eachComment" :show-step-links="true"
+                :step-links="{
+                next: '>',
+                prev: '<'
+                }">
+            </paginate-links>
             </div>
             
         <modifiedfoot/>
@@ -293,10 +306,15 @@ export default {
         isFlagged: '',
         commentContent:'',
         eachComment: [],
-        isAdmin: ''
+        isAdmin: '',
+        paginate: ['eachComment'],
+        shown: false,
     }},      
      mounted() {
          this.asyncData();
+          setTimeout(() => {
+                this.shown = true
+                }, 1000)
         },
     computed: {
         commentHasContent () {
@@ -761,5 +779,29 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
 }
+</style>
 
+<style>
+li {
+    list-style: none;
+}
+.stylePagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style: none;
+}
+.v-application ul, .v-application ol {
+    padding-left: 0rem;
+}
+.stylePagination li a {
+    color:rgba(0, 0, 0, 0.8);
+    margin: 0rem 1rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+.stylePagination .active a {
+    color: rgb(79, 212, 79);
+    text-decoration: underline;
+}
 </style>

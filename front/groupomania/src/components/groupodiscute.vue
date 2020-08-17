@@ -1,8 +1,15 @@
 <template>
     <v-container>
         <mainhead/>
+        <v-card-title class="justify-center text-uppercase font-weight-bold"> Les publications Groupodiscute</v-card-title>
            <div v-if="posts.length > 0">
-                <div class="content" v-for="eachpost in eachPosts" :key="eachpost.id">
+                <paginate
+                v-if="shown"
+                name="eachPosts"
+                :list="eachPosts"
+                :per="8"
+                >
+                <li class="content" v-for="eachpost in paginated('eachPosts')" :key="eachpost.id">
                     <v-card my-2 class="text-center">
                         <div @click="goToPost(eachpost.id)">
                             <v-card-title pt-2 class="justify-center" background-color="lightgrey">{{ eachpost.title }}</v-card-title>
@@ -62,8 +69,15 @@
                         <v-divider></v-divider>
                 
                     </v-card>
-                </div>
+                </li>
+                </paginate>
            </div>
+           <paginate-links :hide-single-page="true" :async="true" class="stylePagination" for="eachPosts" :show-step-links="true"
+            :step-links="{
+            next: '>',
+            prev: '<'
+            }">
+            </paginate-links>
         
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -119,6 +133,8 @@ export default {
       eachPosts: [],
       user: [],
       userIsMe: userId,
+      paginate: ['eachPosts'],
+      shown: false,
     }
   },
   mounted() {
@@ -143,7 +159,10 @@ export default {
                 console.log(res)
                 })
             }
-          })
+          }),
+          setTimeout(() => {
+                this.shown = true
+                }, 1000)
         },
     methods: {
         goToPost(postId) {
@@ -265,5 +284,30 @@ export default {
 }
 .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
     margin: 2rem 0rem;
+}
+</style>
+
+<style>
+li {
+    list-style: none;
+}
+.stylePagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style: none;
+}
+.v-application ul, .v-application ol {
+    padding-left: 0rem;
+}
+.stylePagination li a {
+    color:rgba(0, 0, 0, 0.8);
+    margin: 0rem 1rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+.stylePagination .active a {
+    color: rgb(79, 212, 79);
+    text-decoration: underline;
 }
 </style>

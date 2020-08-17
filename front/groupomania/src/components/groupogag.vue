@@ -21,12 +21,12 @@
                 <span>Créer ma publication GroupoGag !</span>    
             </v-tooltip>
 
+            <v-card-title class="justify-center text-uppercase font-weight-bold"> Les publications Groupogag</v-card-title>
 
             <div v-if="posts.length > 0">
                 <paginate
                 v-if="shown"
                 name="eachPosts"
-                :hide-single-page="true"
                 :list="eachPosts"
                 :per="5"
                 >
@@ -96,11 +96,12 @@
                 </li>
                 </paginate>
             </div>
-            <paginate-links :async="true" class="stylePagination" for="eachPosts" :show-step-links="true"
+            <paginate-links :hide-single-page="true" :async="true" class="stylePagination" for="eachPosts" :show-step-links="true"
             :step-links="{
             next: '>',
             prev: '<'
-        }"></paginate-links>
+            }">
+            </paginate-links>
             
         <foot/>
     </v-container>
@@ -286,11 +287,11 @@ export default {
 .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
     margin: 2rem 0rem;
 }
+</style>
+
+<style>
 li {
     list-style: none;
-}
-ul {
-    padding-left: 0rem;
 }
 .stylePagination {
     display: flex;
@@ -298,10 +299,10 @@ ul {
     justify-content: center;
     list-style: none;
 }
-</style>
-
-<style>
-.stylePagination a {
+.v-application ul, .v-application ol {
+    padding-left: 0rem;
+}
+.stylePagination li a {
     color:rgba(0, 0, 0, 0.8);
     margin: 0rem 1rem;
     font-weight: 500;
@@ -310,11 +311,5 @@ ul {
 .stylePagination .active a {
     color: rgb(79, 212, 79);
     text-decoration: underline;
-}
-.stylePagination .left-arrow a {
-    color: black;
-}
-.stylePagination .right-arrow a {
-    color: black;
 }
 </style>
