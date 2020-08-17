@@ -254,7 +254,8 @@
                 <v-tab @click='toggleComments()'>Commentaires</v-tab>
             </v-tabs>
 
-            <div class="gags" v-show="toggleGag" v-for="gag in gags" :key="gag.id">
+            <div v-if="gags.length > 0"  v-show="toggleGag">
+            <div class="gags" v-for="gag in gags" :key="gag.id">
                 <div @click="goToGag(gag.id)">
                     <v-card-title class="centered-text">{{gag.title}}</v-card-title>
                     <v-img
@@ -266,8 +267,14 @@
                 <v-card-text>Posté {{ gag.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
             </div>
+            </div>
+            <div v-else class="text-center mt-4"  v-show="toggleGag">
+                <v-card-title class="justify-center">Vous n'avez pas encore publié de Gag !</v-card-title>
+                <v-card-text @click="goToGroupogag()">Cliquez ici pour créer votre publication</v-card-text>
+            </div>
 
-            <div class="reddits" v-show="toggleReddit" v-for="reddit in reddits" :key="reddit.id">
+            <div v-if="reddits.length > 0" v-show="toggleReddit">
+            <div class="reddits" v-for="reddit in reddits" :key="reddit.id">
                 <div @click="goToReddit(reddit.id)">
                     <v-card-title class="centered-text">{{reddit.title}}</v-card-title>
                     <v-card-text>{{reddit.content}}</v-card-text>
@@ -275,6 +282,12 @@
                 <v-card-text>Posté {{ reddit.createdAt | moment("from") }}</v-card-text>
                 <v-divider></v-divider>
             </div>
+            </div>
+            <div v-else class="text-center mt-4" v-show="toggleReddit">
+                <v-card-title class="justify-center">Vous n'avez pas encore publié de Discute !</v-card-title>
+                <v-card-text @click="goToGroupodiscute()">Cliquez ici pour créer votre publication</v-card-text>
+            </div>
+            
 
             <div class="comments" v-show="toggleComment">
              <div v-for="gagComment in gagComments" :key="gagComment.gagId + Math.random()">
@@ -324,8 +337,6 @@ let userId
 if(decoded != undefined) {
 userId = decoded.userId
 }
-
-console.log(userId)
 
 export default {
     data() {
@@ -436,7 +447,6 @@ export default {
                         this.fetchReddits();
                         this.fetchGagComments();
                         this.fetchRedditComments();
-                        console.log(this.user)
                         if(this.isAdmin == true) {
                             this.fetchAdmin(this.$route.params.id)
                             }
@@ -448,6 +458,12 @@ export default {
             toggleShowConf() {
                 this.passwordFieldTypeConf = this.passwordFieldTypeConf === 'password' ? 'text' : 'password';
             },
+            goToGroupogag() {
+                this.$router.push({ name: 'groupogag' })
+            },
+            goToGroupodiscute() {
+                this.$router.push({ name: 'groupodiscute' })
+            },
             fetchAdmin() {
                 this.axios.get(`http://localhost:3000/admin/${this.$route.params.id}`, {
                     headers: {
@@ -455,13 +471,11 @@ export default {
                         }
                 }).then(response => {
                     this.confirmedAdmin = response.data.user.isAdmin
-                    console.log(this.confirmedAdmin)
                 })
             },
             // function to handle file info obtained from local
             // file system and set the file state
             handleFileChange: function(event) {
-            console.log("handlefilechange", event.target.files);
             //returns an array of files even though multiple not used
             this.file = event.target.files[0];
             this.filesSelected = event.target.files.length;
@@ -482,7 +496,6 @@ export default {
             else {
                 this.errors = [];
             }
-            console.log("upload", this.file.name);
             let reader = new FileReader();
             // attach listener to be called when data from file
             reader.addEventListener(
@@ -508,11 +521,9 @@ export default {
                     .then(response => {
                     this.results = response.data;
                     this.avatar = response.data.secure_url
-                    console.log("public_id", this.results.public_id);
                     })
                     .catch(error => {
                     this.errors.push(error);
-                    console.log(this.error);
                     })
                     .finally(() => {
                     setTimeout(
@@ -532,7 +543,6 @@ export default {
         },
             depSubmit(e) {
                 e.preventDefault();
-                console.log(this.department)
                 this.axios
                     .put(
                         `http://localhost:3000/user/${this.$route.params.id}`,
@@ -562,8 +572,6 @@ export default {
             },
             nameSubmit(e) {
                 e.preventDefault();
-                console.log(this.firstName)
-                console.log(this.lastName)
                 this.axios
                     .put(
                         `http://localhost:3000/user/${this.$route.params.id}`,
@@ -618,7 +626,6 @@ export default {
                 },
                 passwordSubmit(e) {
                 e.preventDefault();
-                console.log(this.password)
                 if(this.updatePass == this.confPass) {
                 this.axios
                     .put(
@@ -705,7 +712,6 @@ export default {
                                         }
                                 }).then(response => {
                                 this.reddits = response.data.data
-                                console.log(this.reddits)
                                 })
                     },
                     fetchGagComments() {
@@ -715,7 +721,6 @@ export default {
                                         }
                                 }).then(response => {
                                 this.gagComments = response.data.data
-                                console.log(this.gagComments)
                                 })
                     },
                     fetchRedditComments() {
@@ -725,7 +730,6 @@ export default {
                                         }
                                 }).then(response => {
                                 this.redditComments = response.data.data
-                                console.log(this.redditComments)
                                 })
                     },
                     toggleOptions() {

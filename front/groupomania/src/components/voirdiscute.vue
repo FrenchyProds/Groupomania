@@ -18,10 +18,10 @@
                                         </v-btn>
                                     </template>
                                     <v-card>
-                                        <v-card-title>
+                                        <v-card-title class="justify-center">
                                         <span class="headline" >Modifier ma publication</span>
                                         </v-card-title>
-                                        <v-container>
+                                        <v-container class="text-center">
                                             <v-card-text class="align-center">
                                             <v-row>
                                             <v-col cols="12" sm="6" md="4">
@@ -37,7 +37,7 @@
                                         <v-spacer></v-spacer>
                                         <v-row d-flex class="justify-content-space-between">
                                         <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
-                                        <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
+                                        <v-btn color="green darken-1" text @click="updatePost">Confirmer</v-btn>
                                         </v-row>
                                         </v-card-actions>
                                         </v-container>
@@ -66,7 +66,7 @@
                                     
 
                             <div v-if="this.isAdmin == true">
-                                <v-dialog v-model="modalDialog" max-width="600px">
+                                <v-dialog v-model="modalAdmin" max-width="600px">
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn
                                         color="white"
@@ -78,10 +78,10 @@
                                         </v-btn>
                                     </template>
                                     <v-card>
-                                        <v-card-title>
+                                        <v-card-title class="justify-center">
                                             <span class="headline" >Modérer la publication</span>
                                         </v-card-title>
-                                        <v-container>
+                                        <v-container class="text-center">
                                             <v-card-text class="align-center">
                                                 <v-row>
                                                     <v-col cols="12" sm="6" md="4">
@@ -95,8 +95,8 @@
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
                                                     <v-row d-flex class="justify-content-space-between">
-                                                        <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
-                                                        <v-btn color="blue darken-1" text @click="moderatePost()">Confirmer</v-btn>
+                                                        <v-btn color="red darken-1" text @click="modalAdmin = false">Annuler</v-btn>
+                                                        <v-btn color="green" text @click="moderatePost()">Confirmer</v-btn>
                                                     </v-row>
                                             </v-card-actions>
                                         </v-container>
@@ -301,6 +301,7 @@ export default {
         comments: [],
         userIsMe: userId,
         modalDialog: false,
+        modalAdmin: false,
         updateTitle: '',
         updateContent: '',
         isFlagged: '',
@@ -327,7 +328,6 @@ export default {
                 Authorization: `Bearer ${tokenFetch}`
             }
         }).then(res => {
-            console.log(res)
             this.isAdmin = res.data.user.isAdmin
         })
     },
@@ -343,7 +343,6 @@ export default {
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
                 this.fetchComments();
-                console.log(res)
                 })
             },
                 async fetchComments() {
@@ -355,7 +354,6 @@ export default {
                     })
                         .then(res => {
                             this.comments = res.data.Comment
-                            console.log(this.comments)
                             this.fetchEachComment()
                 })
             },
@@ -369,7 +367,6 @@ export default {
                 })
                     .then(res => {
                         this.eachComment.push(res.data.Comment)
-                        console.log(res.data)
                     }) 
                
                 }
@@ -494,7 +491,6 @@ export default {
                         .then(response => {
                         // Handle success.
                         console.log(response)
-                        console.log(this.content)
                         swal('Commentaire publié !', '', 'success')
                         window.location.reload();
                         })

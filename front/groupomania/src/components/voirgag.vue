@@ -17,11 +17,12 @@
                                     </v-btn>
                                 </template>
                                 <v-card>
-                                    <v-card-title>
+                                    <v-card-title class="justify-center">
                                     <span class="headline" >Modifier ma publication</span>
                                     </v-card-title>
                                     <v-card-text>
-                                    <v-container>
+                                    <v-card-text class="red--text text-center">Merci de bien vouloir ré-héberger votre image même si vous ne souhaitez pas la changer !</v-card-text>
+                                    <v-container class="text-center">
                                         
                                         <v-col cols="12">
                                             <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
@@ -67,7 +68,7 @@
                                     <v-spacer></v-spacer>
                                     <v-row d-flex class="justify-content-space-between">
                                     <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
-                                    <v-btn color="blue darken-1" text @click="updatePost">Confirmer</v-btn>
+                                    <v-btn color="green darken-1" text @click="updatePost">Confirmer</v-btn>
                                     </v-row>
                                     </v-card-actions>
 
@@ -94,7 +95,7 @@
                     </div>
 
                         <div v-if="this.isAdmin == true">
-                            <v-dialog v-model="modalDialog" max-width="600px">
+                            <v-dialog v-model="modalAdmin" max-width="600px">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn
                                 color="white"
@@ -106,11 +107,12 @@
                                 </v-btn>
                             </template>
                             <v-card>
-                                <v-card-title>
+                                <v-card-title class="justify-center">
                                 <span class="headline" >Modérer la publication</span>
                                 </v-card-title>
+                                 <v-card-text class="red--text text-center">Merci de bien vouloir ré-héberger l'image même si vous ne souhaitez pas la modérer !</v-card-text>
                                 <v-card-text>
-                                <v-container>
+                                <v-container class="text-center">
                                     
                                     <v-col cols="12">
                                         <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
@@ -155,8 +157,8 @@
                                 <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-row d-flex class="justify-content-space-between">
-                                <v-btn color="red darken-1" text @click="modalDialog = false">Annuler</v-btn>
-                                <v-btn color="blue darken-1" text @click="moderatePost()">Confirmer</v-btn>
+                                <v-btn color="red darken-1" text @click="modalAdmin = false">Annuler</v-btn>
+                                <v-btn color="green darken-1" text @click="moderatePost()">Confirmer</v-btn>
                                 </v-row>
                                 </v-card-actions>
 
@@ -406,6 +408,7 @@ export default {
         secure_url: '',
         userIsMe: userId,
         modalDialog: false,
+        modalAdmin: false,
         updateTitle: '',
         updateContent: '',
         isFlagged: '',
@@ -428,7 +431,6 @@ export default {
                 Authorization: `Bearer ${tokenFetch}`
             }
         }).then(res => {
-            console.log(res)
             this.isAdmin = res.data.user.isAdmin
         })
     },
@@ -448,7 +450,6 @@ export default {
                 this.post = res.data.data
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
-                console.log(res.data.data)
           })
           await this.axios.get(gagUrl + this.$route.params.id + '/comments',
                 {
@@ -457,8 +458,7 @@ export default {
                         }
                         })
                         .then(res => {
-                            this.comments = res.data.data
-                            console.log(this.comments)  
+                            this.comments = res.data.data 
                             this.fetchEachComment();     
                 })
             },
@@ -473,15 +473,11 @@ export default {
                     .then(res => {
                         this.eachComment.push(res.data.Comment)
                         this.commentIsFlag = this.eachComment.isFlag
-                        console.log(this.userIsMe)
-                        console.log(res.data.Comment.User.id)
-                        console.log(res.data)
                     }) 
                
                 }
             },
             handleFileChange: function(event) {
-        console.log("handlefilechange", event.target.files);
         //returns an array of files even though multiple not used
         this.file = event.target.files[0];
         this.filesSelected = event.target.files.length;
@@ -502,7 +498,6 @@ export default {
         else {
             this.errors = [];
         }
-        console.log("upload", this.file.name);
         let reader = new FileReader();
         // attach listener to be called when data from file
         reader.addEventListener(
@@ -516,11 +511,9 @@ export default {
                 method: "POST",
                 data: this.formData,
                 onUploadProgress: function(progressEvent) {
-                console.log("progress", progressEvent);
                 this.progress = Math.round(
                     (progressEvent.loaded * 100.0) / progressEvent.total
                 );
-                console.log(this.progress);
                 //bind "this" to access vue state during callback
                 }.bind(this)
             };
@@ -530,12 +523,9 @@ export default {
                 .then(response => {
                 this.results = response.data;
                 this.secure_url = this.results.secure_url
-                console.log(this.results);
-                console.log("public_id", this.results.public_id);
                 })
                 .catch(error => {
                 this.errors.push(error);
-                console.log(this.error);
                 })
                 .finally(() => {
                 setTimeout(
@@ -668,7 +658,6 @@ export default {
                         .then(response => {
                         // Handle success.
                         console.log(response)
-                        console.log(this.content)
                         swal('Commentaire publié !', '', 'success')
                         window.location.reload();
                         })
@@ -730,10 +719,6 @@ export default {
                                 }
                             })
                         },
-                    
-                forceRerender() {
-                    this.componentKey += 1;
-                },
                  dislikePost() {
                     this.axios.get(gagUrl + this.$route.params.id + '/dislike',
                     {

@@ -79,8 +79,6 @@ if(decoded != undefined) {
 userId = decoded.userId
 }
 
-console.log(userId)
-
 export default {
     data: () => ({
       icons: [
@@ -106,7 +104,6 @@ export default {
       },
       logoff() {
           localStorage.clear();
-          sessionStorage.clear();
           delete this.axios.defaults.headers.common["Authorization"];
           this.$router.push('/');
       },

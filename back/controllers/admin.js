@@ -76,7 +76,6 @@ exports.moderateReddit = async (req, res) => {
     await db.Reddit.update({ isFlag: false}, { where: { id: req.params.id }})
     await db.Reddit.update({ hasBeenModerated: true}, { where: { id: req.params.id }})
     res.status(200).json({ data: reddit });
-    console.log(reddit)
     return reddit;
 };
 
@@ -93,7 +92,6 @@ exports.moderateGag = async (req, res) => {
     await db.Gag.update({ isFlag: false }, { where: { id: req.params.id}})
     await db.Gag.update({ hasBeenModerated: true}, { where: { id: req.params.id }})
     res.status(200).json({ data: gag });
-    console.log(gag)
     return gag;
 };
 

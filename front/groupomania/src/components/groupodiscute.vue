@@ -145,9 +145,7 @@ export default {
             }
             }).then(res => {
                 this.posts = res.data.data
-                console.log(this.posts)
                 for(let i = 0; i < this.posts.length; i++) {
-                console.log(this.posts[i].id)
                 this.axios.get(apiUrl + '/' + this.posts[i].id,
                 {
                 headers: {
@@ -155,8 +153,6 @@ export default {
                         }
                     }).then(res => {
                 this.eachPosts.push(res.data.data)
-                console.log(this.eachPosts)
-                console.log(res)
                 })
             }
           }),
@@ -172,7 +168,6 @@ export default {
             this.$router.push({name:'user', params:{username:username}})
         },
         likePost(redditId) {
-            console.log(redditId)
                     this.axios.get(apiUrl + '/' + redditId + '/like',
                     {
                         headers: {

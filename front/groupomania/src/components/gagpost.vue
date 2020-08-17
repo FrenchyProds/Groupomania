@@ -82,9 +82,6 @@ if(decoded != undefined) {
 userId = decoded.userId
 }
 
-console.log(userId)
-
-
 const gagURL = 'http://localhost:3000/gag/post'
 
 export default {
@@ -153,7 +150,6 @@ export default {
         else {
             this.errors = [];
         }
-        console.log("upload", this.file.name);
         let reader = new FileReader();
         // attach listener to be called when data from file
         reader.addEventListener(
@@ -167,11 +163,9 @@ export default {
                 method: "POST",
                 data: this.formData,
                 onUploadProgress: function(progressEvent) {
-                console.log("progress", progressEvent);
                 this.progress = Math.round(
                     (progressEvent.loaded * 100.0) / progressEvent.total
                 );
-                console.log(this.progress);
                 //bind "this" to access vue state during callback
                 }.bind(this)
             };
@@ -181,12 +175,9 @@ export default {
                 .then(response => {
                 this.results = response.data;
                 this.secure_url = this.results.secure_url
-                console.log(this.results);
-                console.log("public_id", this.results.public_id);
                 })
                 .catch(error => {
                 this.errors.push(error);
-                console.log(this.error);
                 })
                 .finally(() => {
                 setTimeout(

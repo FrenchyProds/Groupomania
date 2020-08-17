@@ -81,7 +81,6 @@ import swal from 'sweetalert'
   .then(response => {
     // Handle success.
     localStorage.setItem('jwt', JSON.stringify(response.data.token))
-    console.log(response)
     this.$router.push('/mainPage')
   })
   .catch(error => {

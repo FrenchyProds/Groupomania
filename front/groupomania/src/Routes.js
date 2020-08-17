@@ -153,6 +153,14 @@ export default [
         name: 'admin',
         component: admin,
         requiresAuth: true,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('jwt') == null) {
+                next ({ name: 'index' })
+                swal('ACCES INTERDIT', "Merci de vous authentifier avant de tenter d'accéder à cette page", 'error')
+            } else {
+                next()
+            } next()
+        } 
     },
     {
         path: '/user/:username',

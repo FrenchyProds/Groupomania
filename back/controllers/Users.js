@@ -138,7 +138,6 @@ exports.login = async (req, res, next) => {
         await db.User.findOne({ where: { username: req.params.username }})
           .then(user => {
             if(!user) {
-                console.log(req.params.id)
                 return res.status(404).json({ error: 'Utilisateur inconnu !'})
               } else {
               db.User.update( { isFlag: true }, { where: { username: req.params.username }})

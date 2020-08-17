@@ -77,8 +77,6 @@ const gagURL = 'http://localhost:3000/gag'
 
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
-console.log(localStorage)
-
 
 export default {
     data: () => ({
@@ -100,7 +98,6 @@ export default {
                ]).then(res => {
                    for (let i= 0; i < res.length; i++) {
                     this.posts.push(res[i].data.data)
-                    console.log(this.posts)
                    }
           })
           if (localStorage.getItem('reloaded')) {

@@ -431,7 +431,6 @@ export default {
                 }).then(response => {
                     this.confirmedAdmin = response.data.user.isAdmin
                     this.fetchAdminInfo()
-                    console.log(this.confirmedAdmin)
                 })
             },
             fetchAdminInfo() {
@@ -443,7 +442,6 @@ export default {
                         }
                         }).then(res => {
                             this.reddits = res.data.Reddit
-                            console.log(this.reddits)
                     })
                     this.axios.get(gagFlag,
                     {
@@ -452,7 +450,6 @@ export default {
                         }
                         }).then(res => {
                             this.gags = res.data.Gag
-                            console.log(this.gags)
                     }),
                     this.axios.get(userFlag,
                     {
@@ -461,7 +458,6 @@ export default {
                         }
                         }).then(res => {
                             this.users = res.data.data
-                            console.log(this.users)
                     }),
                     this.axios.get(commentFlag,
                     {
@@ -470,7 +466,6 @@ export default {
                         }
                         }).then(res => {
                             this.comments = res.data.Comment
-                            console.log(this.comments)
                     }),
                     this.axios.get(moderatedReddit,
                     {
@@ -479,8 +474,6 @@ export default {
                         }
                         }).then(res => {
                             this.moderatedReddits = res.data.reddit
-                            console.log(res)
-                            console.log(this.moderatedReddits)
                     })
                     this.axios.get(moderatedGag,
                     {
@@ -489,7 +482,6 @@ export default {
                         }
                         }).then(res => {
                             this.moderatedGags = res.data.gag
-                            console.log(this.moderatedGags)
                     })
                     this.axios.get(moderatedUser,
                     {
@@ -498,7 +490,6 @@ export default {
                         }
                         }).then(res => {
                             this.moderatedUsers = res.data.user
-                            console.log(this.moderatedUsers)
                     })
                     this.axios.get(moderatedComment,
                     {
@@ -507,7 +498,6 @@ export default {
                         }
                         }).then(res => {
                             this.moderatedComments = res.data.comment
-                            console.log(this.moderatedComments)
                     })
                 }
             },

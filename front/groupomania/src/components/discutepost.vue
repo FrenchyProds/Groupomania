@@ -78,8 +78,6 @@ export default {
           .then(response => {
             // Handle success.
             console.log(response)
-            console.log(this.title)
-            console.log(this.content)
             swal('Discute publié !', 'Votre publication a été mise en ligne', 'success')
             window.location.reload();
           })

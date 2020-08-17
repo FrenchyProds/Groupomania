@@ -77,7 +77,6 @@ export default {
       },
       logoff() {
           localStorage.clear();
-          sessionStorage.clear();
           delete this.axios.defaults.headers.common["Authorization"];
           this.$router.push('/');
       },

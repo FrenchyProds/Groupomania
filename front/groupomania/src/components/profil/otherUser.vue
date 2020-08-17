@@ -55,7 +55,7 @@
         </v-tabs>
 
         <div mt-2 class="moderate" v-show="toggleModeration">
-            <v-form @submit="moderateUser(user.username)">
+            <v-form @submit="moderateUser(user.id)">
                 <v-card-text>Pour la modération de l'avatar merci de bien vouloir remplacer l'avatar existant par un url picsum</v-card-text>
                 <v-card-text>Si vous modifiez le username, il vous faudra taper le nouveau username dans l'url afin d'accéder au profil (petit souci de routing)</v-card-text>
                 <v-text-field  v-model="username" label="Modérer le nom d'utilisateur"></v-text-field>
@@ -195,7 +195,6 @@ export default {
         },
     created () {
             this.fetchUser(this.$route.params.username)
-            console.log(this.$route.params.username)
         },
     beforeMount() {
         this.axios.get('http://localhost:3000/user/' + userId, {
@@ -203,7 +202,6 @@ export default {
                 Authorization: `Bearer ${tokenFetch}`
             }
         }).then(res => {
-            console.log(res)
             this.isAdmin = res.data.user.isAdmin
         })
     },
@@ -218,7 +216,6 @@ export default {
                         }
                     })
                     .then(response => {
-                        console.log(response)
                         this.user = response.data.user
                         this.id = this.user.id
                         this.username = this.user.username
@@ -234,8 +231,8 @@ export default {
                         this.fetchRedditComments();
                     })  
             },
-            moderateUser(username) {
-                this.axios.put('http://localhost:3000/user/' + this.id + '/admin',
+            moderateUser(userId) {
+                this.axios.put('http://localhost:3000/user/' + userId + '/admin',
                         {
                             username: this.username,
                             firstName: this.firstName,
@@ -255,7 +252,7 @@ export default {
                           type: 'success'
                         })     
                         swal("Utilisateur modéré !","","success")
-                        this.$router.push({name:'user', params:{username:username}})                   
+                        this.$router.push('/mainPage')                  
                     })
                     .catch(error => {
                             // Handle error.
@@ -304,7 +301,6 @@ export default {
                                 }
                         }).then(response => {
                         this.gags = response.data.data
-                        console.log(this.gags)
                         })
             },
             fetchReddits() {
@@ -314,7 +310,6 @@ export default {
                                 }
                         }).then(response => {
                         this.reddits = response.data.data
-                        console.log(this.reddits)
                         })
             },
             fetchGagComments() {
@@ -324,7 +319,6 @@ export default {
                                         }
                                 }).then(response => {
                                 this.gagComments = response.data.data
-                                console.log(this.comments)
                                 })
             },
             fetchRedditComments() {
@@ -334,7 +328,6 @@ export default {
                                         }
                                 }).then(response => {
                                 this.redditComments = response.data.data
-                                console.log(this.comments)
                                 })
             },
             reportContent() {
