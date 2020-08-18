@@ -9,31 +9,38 @@
         <v-form ref="form" @submit="formSubmit">
           <v-container>
             <v-col>
+              <div v-if="submitted && $v.email.$error" class="invalid-feedback">
+                  <span class="red--text" v-if="!$v.email.required">Adresse email requise</span>
+                  <span class="red--text" v-if="!$v.email.email">Adresse email invalide</span>
+              </div>
               <v-row>
                 <v-text-field
-                v-model="email"
-                :rules="emailRules"
+                   v-model="email"
                   label="Adresse Email"
                   name="Email"
                   prepend-icon="email"
-                  type="text"
+                  type="email"
                   class="ma-2"
+                  :class="{ 'is-invalid': submitted && $v.email.$error }"
                   required
                 ></v-text-field>
               </v-row>
+              <div v-if="submitted && $v.password.$error" class="invalid-feedback">
+              <span class="red--text" v-if="!$v.password.required">Mot de passe requis</span>
+              </div>
               <v-row>
                 <v-text-field
                 v-model="password"
-                :rules="passwordRules"
                   label="Mot de Passe"
                   name="password"
                   class="ma-2"
+                  :class="{ 'is-invalid': submitted && $v.password.$error }"
                   prepend-icon="lock"
                   required  
                   :type="passwordFieldType"
                 ></v-text-field>
-                <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow"><v-icon>mdi-eye</v-icon></v-btn>
-                <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow"><v-icon>mdi-eye-off</v-icon></v-btn>
+                <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
+                <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
               </v-row>
               <v-row justify="center">
                 <v-btn class="mt-4" outlined color="green" type="submit" value="Submit">Se connecter</v-btn>
@@ -52,28 +59,32 @@
 </template>
 
 <script>
-import indexhead from './indexhead'
+import indexhead from '../headers/indexhead'
 import swal from 'sweetalert'
+import { required, email } from "vuelidate/lib/validators";
 
 
   export default {
-    data: () => ({
-      email: '',
-      emailRules: [
-        v => !!v || 'Adresse email requise !',
-        v => /.+@.+\..+/.test(v) || 'Merci de bien vouloir renseigner une adresse email valide',
-      ],
-      password: '',
-      passwordRules: [
-        v => !!v || 'Mot de passe requis !',
-      ],
-      hidePassword: true,
-      toggleShowPass: false,
-      passwordFieldType: 'password'
-    }),
+    data() {
+      return {
+        email: '',
+        password: '',
+        submitted: false,
+        passwordFieldType: 'password',
+      }
+    },
+    validations: {
+                email: { required, email },
+                password: { required },
+        },
     methods: {
     formSubmit(e) {
     e.preventDefault();
+    this.submitted = true;
+    this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
     this.axios.post('http://localhost:3000/login', {
     email: this.email,
     password: this.password,
@@ -107,5 +118,11 @@ import swal from 'sweetalert'
 h1 {
   text-align: center;
   margin-bottom: 3rem;
+}
+</style>
+
+<style>
+.invalid-feedback {
+  text-align: center
 }
 </style>

@@ -135,9 +135,6 @@
                             </div>
                         </v-card-text>
                          </div>
-                        <div v-else>
-                        <v-card-text>Utilisateur Supprimé - {{ post.createdAt | moment("from") }}</v-card-text>
-                        </div>
                          </div>
                         <v-divider></v-divider>
                         
@@ -206,12 +203,6 @@
                         <div v-if="comment.User !== null">
                         <p class="justify-center" @click="goToUser(comment.User.username)">{{ comment.User.username }} - {{ comment.createdAt | moment("from") }}</p>
                         </div>
-                        <div v-else>
-                        <p>Utilisateur Supprimé - {{ comment.createdAt | moment("from") }}</p>
-                        </div>
-                        <div v-if="comment.createdAt != comment.updatedAt">
-                            Modifié {{ comment.updatedAt | moment("from") }}
-                        </div>
                     </v-card-text>
                     <v-card-text class="text-truncate" background-color="grey">
                         <div class="likes">
@@ -272,8 +263,8 @@
 </template>
 
 <script>
-import modifiedfoot from './modifiedfoot'
-import mainhead from './mainhead'
+import modifiedfoot from '../footers/modifiedfoot'
+import mainhead from '../headers/mainhead'
 import jwt_decode from 'jwt-decode'
 import swal from 'sweetalert'
 

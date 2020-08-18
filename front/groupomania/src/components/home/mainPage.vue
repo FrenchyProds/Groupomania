@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import foot from './foot'
-import mainhead from './mainhead'
+import foot from '../footers/foot'
+import mainhead from '../headers/mainhead'
 
 const redditURL = 'http://localhost:3000/reddit';
 const gagURL = 'http://localhost:3000/gag'

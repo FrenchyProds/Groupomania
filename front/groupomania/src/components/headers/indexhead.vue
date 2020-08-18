@@ -3,7 +3,7 @@
   <v-row class="text-center">
       <v-col cols="12">
         <v-img
-          src='../assets/icon-left-font-monochrome-black.png'
+          src='../../assets/icon-left-font-monochrome-black.png'
           class="my-1"
           contain
           height="150"

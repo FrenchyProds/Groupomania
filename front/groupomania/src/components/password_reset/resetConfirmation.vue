@@ -3,7 +3,7 @@
         <v-row class="text-center">
       <v-col cols="12">
         <v-img
-          src='../assets/icon-left-font-monochrome-black.png'
+          src='../../assets/icon-left-font-monochrome-black.png'
           class="my-1"
           contain
           height="200"
@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
         <v-row class="text-center">
-            <p class="ma-5">Nous avons envoyé un nouveau mot de passe à l'adresse email<br/> test@groupomania.com<!--{{ email }}!--></p>
+            <p class="ma-5">Nous avons envoyé un nouveau mot de passe à l'adresse email <span class="blue--text">{{this.email}}</span></p>
             <p class="ma-5">Merci de le modifier au plus vite et de vous assurer que votre nouveau mot de passe
                 soit sécurisé.
             </p>
@@ -25,6 +25,14 @@
 <script>
 
 export default {
+    data: () => ({
+        email: ''
+    }),
+    mounted() {
+    if(localStorage) {
+        this.email = JSON.parse(localStorage.getItem('email'))
+        }
+    },
     name: 'resetConfirmation',
 }
 </script>

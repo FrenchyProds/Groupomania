@@ -43,7 +43,7 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field placeholder="Modifier" input="text" v-model="department">
+                        <v-text-field prepend-icon="work" placeholder="Modifier" input="text" v-model="department">
                         </v-text-field>
                     </v-col>
                 </v-row>
@@ -84,7 +84,7 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field placeholder="Modifier" input="text" v-model="firstName">
+                        <v-text-field prepend-icon="person" placeholder="Modifier" input="text" v-model="firstName">
                         </v-text-field>
                     </v-col>
                 </v-row>
@@ -98,7 +98,7 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field placeholder="Modifier" input="text" v-model="lastName">
+                        <v-text-field prepend-icon="person" placeholder="Modifier" input="text" v-model="lastName">
                         </v-text-field>
                     </v-col>
                 </v-row>
@@ -182,20 +182,20 @@
                 <v-row no-gutters>
                     <v-col cols="12">
                         <v-row no-gutters>
-                        <v-text-field :type="passwordFieldType" placeholder="Nouveau mot de passe" v-model="updatePass">
+                        <v-text-field prepend-icon="lock" :type="passwordFieldType" placeholder="Nouveau mot de passe" v-model="updatePass">
                         </v-text-field>
-                        <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow"><v-icon>mdi-eye</v-icon></v-btn>
-                        <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow"><v-icon>mdi-eye-off</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
                         </v-row>
                     </v-col>
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="12">
                         <v-row no-gutters>
-                        <v-text-field :type="passwordFieldTypeConf" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
+                        <v-text-field prepend-icon="lock" :type="passwordFieldTypeConf" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
                         </v-text-field>
-                        <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf"><v-icon>mdi-eye</v-icon></v-btn>
-                        <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf"><v-icon>mdi-eye-off</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
+                        <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
                         </v-row>
                     </v-col>
                 </v-row>
@@ -320,7 +320,7 @@
 </template>
 
 <script>
-import foot from '../modifiedfoot'
+import foot from '../footers/modifiedfoot'
 import axios from "axios";
 import swal from 'sweetalert';
 import ProgressBar from "vuejs-progress-bar";

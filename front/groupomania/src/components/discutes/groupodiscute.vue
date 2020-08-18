@@ -19,9 +19,6 @@
                         <div v-if="eachpost.User !== null">
                             <v-card-text @click="goToUser(eachpost.User.username)">Crée par {{ eachpost.User.username }} - {{ eachpost.createdAt | moment("from") }}</v-card-text>
                         </div>
-                        <div v-else>
-                            <v-card-text>Utilisateur Supprimé - {{ eachpost.createdAt | moment("from") }}</v-card-text>
-                        </div>
                         <v-divider></v-divider>
                         <v-card-text class="text-truncate" background-color="grey">
 
@@ -104,8 +101,8 @@
 </template>
 
 <script>
-import foot from './foot'
-import mainhead from './mainhead'
+import foot from '../footers/foot'
+import mainhead from '../headers/mainhead'
 import discute from './discutepost'
 import swal from 'sweetalert'
 import jwt_decode from 'jwt-decode'

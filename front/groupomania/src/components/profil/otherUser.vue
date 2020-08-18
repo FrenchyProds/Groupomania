@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import modifiedfoot from '../modifiedfoot'
+import modifiedfoot from '../footers/modifiedfoot'
 import jwt_decode from 'jwt-decode'
 import swal from 'sweetalert'
 

@@ -140,8 +140,8 @@
 
 <script>
 
-import indexhead from './indexhead'
-import modifiedfoot from './modifiedfoot'
+import indexhead from '../headers/indexhead'
+import modifiedfoot from '../footers/modifiedfoot'
 
 export default {
     components: {
