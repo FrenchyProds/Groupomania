@@ -1,0 +1,32 @@
+# Groupomania
+Répo du P7 - Groupomania
+
+STACK USED :
+
+BACK-END
+
+Node.js
+MySQL
+Sequelize
+Xampp && phpMyAdmin
+
+FRONT-END
+
+Vue.js
+Vuetify
+
+HOW TO START THE PROJECT
+
+1) Clone the repository
+
+2) Launch Xampp, start both Apache and MySQL servers
+
+3) Make sure you are connected to the database : -u user -p   database name : GROUPOMANIA
+
+4) Import the phpMyAdmin file into phpMyAdmin
+
+5) Launch the back-end server by typing "nodemon server" in your command terminal with CD : GroupoRepo\Groupomania\back
+
+6) Launch the front-end server by typing "npm run serve" in your command terminal with CD : GroupoRepo\Groupomania\front\groupomania
+
+7) If Vue doesn't automatically launch the application, open your browser and go to http://localhost:8080
