@@ -43,8 +43,18 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field prepend-icon="work" placeholder="Modifier" input="text" v-model="department">
-                        </v-text-field>
+                        <div v-if="submittedDep && $v.department.$error" class="invalid-feedback">
+                            <span v-if="!$v.department.minLength">Minimum 3 lettres</span>
+                            <span v-if="!$v.department.maxLength">Maximum 20 lettres</span>
+                        </div>
+                        <v-text-field
+                        prepend-icon="work"
+                        placeholder="Modifier"
+                        input="text"
+                        v-model="department"
+                        :class="{ 'is-invalid': submittedDep && $v.department.$error }"
+                        hint="Entre 3 et 20 lettres"
+                        ></v-text-field>
                     </v-col>
                 </v-row>
                     <v-card
@@ -84,8 +94,18 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field prepend-icon="person" placeholder="Modifier" input="text" v-model="firstName">
-                        </v-text-field>
+                        <div v-if="submittedName && $v.firstName.$error" class="invalid-feedback">
+                            <span v-if="!$v.firstName.minLength">Minimum 3 lettres</span>
+                            <span v-if="!$v.firstName.maxLength">Maximum 20 lettres</span>
+                        </div>
+                        <v-text-field
+                        prepend-icon="person"
+                        placeholder="Modifier"
+                        input="text"
+                        v-model="firstName"
+                        :class="{ 'is-invalid': submittedName && $v.firstName.$error }"
+                        hint="Entre 3 et 20 lettres"
+                        ></v-text-field>
                     </v-col>
                 </v-row>
                 <v-row class="text-center ml-1">
@@ -98,8 +118,18 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <v-text-field prepend-icon="person" placeholder="Modifier" input="text" v-model="lastName">
-                        </v-text-field>
+                        <div v-if="submittedName && $v.lastName.$error" class="invalid-feedback">
+                            <span v-if="!$v.lastName.minLength">Minimum 3 lettres</span>
+                            <span v-if="!$v.lastName.maxLength">Maximum 20 lettres</span>
+                        </div>
+                        <v-text-field
+                        prepend-icon="person"
+                        placeholder="Modifier"
+                        input="text"
+                        v-model="lastName"
+                        :class="{ 'is-invalid': submittedName && $v.lastName.$error }"
+                        hint="Entre 3 et 20 lettres"
+                        ></v-text-field>
                     </v-col>
                 </v-row>
                 <v-card
@@ -181,9 +211,18 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="12">
+                        <div v-if="submittedPass && $v.updatePass.$error" class="invalid-feedback">
+                            <span v-if="!$v.updatePass.minLength">Votre mot de passe doit faire au moins 8 caractères</span>
+                        </div>
                         <v-row no-gutters>
-                        <v-text-field prepend-icon="lock" :type="passwordFieldType" placeholder="Nouveau mot de passe" v-model="updatePass">
-                        </v-text-field>
+                        <v-text-field
+                            prepend-icon="lock"
+                            :type="passwordFieldType"
+                            placeholder="Nouveau mot de passe"
+                            v-model="updatePass"
+                            hint="Votre mot de passe doit faire au moins 8 caractères de long"
+                            :class="{ 'is-invalid': submittedPass && $v.updatePass.$error }"
+                        ></v-text-field>
                         <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
                         <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
                         </v-row>
@@ -191,9 +230,18 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="12">
+                        <div v-if="submittedPass && $v.confPass.$error" class="invalid-feedback">
+                            <span v-if="!$v.confPass.sameAsPassword">Les mots de passe doivent être identiques</span>
+                        </div>
                         <v-row no-gutters>
-                        <v-text-field prepend-icon="lock" :type="passwordFieldTypeConf" placeholder="Confirmer le nouveau mot de passe" v-model="confPass">
-                        </v-text-field>
+                        <v-text-field
+                        prepend-icon="lock"
+                        :type="passwordFieldTypeConf" 
+                        placeholder="Confirmer le nouveau mot de passe" 
+                        v-model="confPass"
+                        hint="La confirmation doit être identique que le mot de passe renseigné ci-dessus"
+                        :class="{ 'is-invalid': submittedPass && $v.confPass.$error }"
+                        ></v-text-field>
                         <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
                         <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
                         </v-row>
@@ -325,6 +373,7 @@ import axios from "axios";
 import swal from 'sweetalert';
 import ProgressBar from "vuejs-progress-bar";
 import jwt_decode from 'jwt-decode'
+import { minLength, sameAs, maxLength } from "vuelidate/lib/validators";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
@@ -399,6 +448,9 @@ export default {
         confirmedAdmin: '',
         passwordFieldType: 'password',
         passwordFieldTypeConf: 'password',
+        submittedName: false,
+        submittedPass: false,
+        submittedDep: false,
         }
     },
         beforeRouteEnter (to, from, next) {
@@ -423,6 +475,13 @@ export default {
             hasName () {
                 return !this.firstName || !this.lastName
             }
+        },
+        validations: {
+            department: { minLength: minLength(3), maxLength: maxLength(20) },
+            firstName: { minLength: minLength(3), maxLength: maxLength(20) },
+            lastName: { minLength: minLength(3), maxLength: maxLength(30) },
+            updatePass: { minLength: minLength(8) },
+            confPass: { sameAsPassword: sameAs('updatePass') }
         },
          methods: {
              fetchUser () {
@@ -543,6 +602,11 @@ export default {
         },
             depSubmit(e) {
                 e.preventDefault();
+                this.submittedDep = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
                 this.axios
                     .put(
                         `http://localhost:3000/user/${this.$route.params.id}`,
@@ -572,6 +636,11 @@ export default {
             },
             nameSubmit(e) {
                 e.preventDefault();
+                this.submittedName = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
                 this.axios
                     .put(
                         `http://localhost:3000/user/${this.$route.params.id}`,
@@ -626,6 +695,11 @@ export default {
                 },
                 passwordSubmit(e) {
                 e.preventDefault();
+                this.submittedPass = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
                 if(this.updatePass == this.confPass) {
                 this.axios
                     .put(

@@ -11,7 +11,8 @@
           <v-col>
             <div v-if="submitted && $v.username.$error" class="invalid-feedback">
                 <span v-if="!$v.username.required">Nom d'utilisateur requis</span>
-                <span v-if="!$v.username.minLength">Votre nom d'utilisateur doit faire au moins 4 caractères de long</span>
+                <span v-if="!$v.username.minLength">Votre nom d'utilisateur doit faire au moins 4 caractères de long et ne peut contenir que des chiffres et des lettres</span>
+                <span v-if="!$v.username.maxLength">Votre nom d'utilisateur doit faire moins de 20 caractères de long et ne peut contenir que des chiffres et des lettres</span>
             </div>
             <v-row>
               <v-text-field
@@ -21,6 +22,7 @@
                 class="ma-2"
                 :class="{ 'is-invalid': submitted && $v.username.$error }"
                 required
+                hint="Votre nom d'utilisateur doit faire entre 4 et 20 caractères de long, uniquement chiffres et lettres !"
               ></v-text-field>
             </v-row>
             <div v-if="submitted && $v.email.$error" class="invalid-feedback">
@@ -35,6 +37,7 @@
                 :class="{ 'is-invalid': submitted && $v.username.$error }"
                 required
                 prepend-icon="email"
+                hint="Merci de bien vouloir renseigner une adresse email valide"
               ></v-text-field>
             </v-row>
             <div v-if="submitted && $v.password.$error" class="invalid-feedback">
@@ -50,6 +53,7 @@
                 required
                 :type="passwordFieldType"
                 prepend-icon="lock"
+                hint="Votre mot de passe doit faire entre 8 et 20 caractères de long"
               ></v-text-field>
               <v-btn icon v-if="passwordFieldType === 'password'" @click="toggleShow" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
               <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
@@ -67,6 +71,7 @@
                 required
                 :type="passwordFieldTypeConf"
                 prepend-icon="lock"
+                hint="Votre confirmation de mot de passe doit être identique au mot de passe renseigné au dessus"
               ></v-text-field>
               <v-btn icon v-if="passwordFieldTypeConf === 'password'" @click="toggleShowConf" class="green--text"><v-icon>mdi-eye</v-icon></v-btn>
               <v-btn icon v-if="passwordFieldTypeConf != 'password'" @click="toggleShowConf" class="red--text"><v-icon red>mdi-eye-off</v-icon></v-btn>
@@ -88,7 +93,7 @@
 
 import indexhead from '../headers/indexhead'
 import swal from 'sweetalert'
-import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
+import { required, email, minLength, sameAs, maxLength } from "vuelidate/lib/validators";
 
 const registerUrl = 'http://localhost:3000/register'
 
@@ -104,11 +109,11 @@ const registerUrl = 'http://localhost:3000/register'
       submitted: false,
     }),
     validations: {
-                username: { required, minLength: minLength(4) },
-                email: { required, email },
-                password: { required, minLength: minLength(8) },
-                passwordConf: { required, sameAsPassword: sameAs('password') }
-        },
+      username: { required, minLength: minLength(4), maxLength: maxLength(20) },
+      email: { required, email },
+      password: { required, minLength: minLength(8) },
+      passwordConf: { required, sameAsPassword: sameAs('password') }
+    },
     methods: {
           formSubmit(e) {
           e.preventDefault();

@@ -10,8 +10,18 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
-    title: DataTypes.STRING,
-    content: DataTypes.STRING,
+    title: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [3, 50]
+      }
+    },
+    content: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [3, 250]
+      }
+    },
     postType:{ 
       type: DataTypes.STRING,
       default: 'reddit',
@@ -29,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   Reddit.associate = (models) => {
     Reddit.hasMany(models.Comment, { foreignKey: 'commentId', sourceKey: 'id' }),
-    Reddit.belongsTo(models.User, { foreignKey: 'userId', sourceKey:'id' }),
+    Reddit.belongsTo(models.User, { onDelete: 'CASCADE', foreignKey: 'userId', sourceKey:'id' }),
     Reddit.hasMany(models.Like, { foreignKey: 'likeId', sourceKey: 'id' })
 };
   return Reddit;

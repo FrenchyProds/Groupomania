@@ -24,12 +24,28 @@
                                         <v-container class="text-center">
                                             <v-card-text class="align-center">
                                             <v-row>
+                                                <div v-if="submittedUpdate && $v.title.$error" class="invalid-feedback">
+                                                    <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+                                                    <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+                                                </div>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                                <v-text-field label="Titre de la publication" 
+                                                v-model="title"
+                                                :class="{ 'is-invalid': submittedUpdate && $v.title.$error }"
+                                                hint="Entre 3 et 50 caractères"
+                                                ></v-text-field>
                                             </v-col>
                                             </v-row>
+                                                <div v-if="submittedUpdate && $v.content.$error" class="invalid-feedback">
+                                                    <span v-if="!$v.content.minLength">Le contenu doit faire au moins 3 caractères de long</span>
+                                                    <span v-if="!$v.content.maxLength">Le contenu doit faire moins de 250 caractères de long</span>
+                                                </div>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
+                                                <v-textarea  label="Contenu de la publication" 
+                                                v-model="content"
+                                                :class="{ 'is-invalid': submittedUpdate && $v.content.$error }"
+                                                hint="Entre 3 et 250 caractères"
+                                                ></v-textarea>
                                             </v-col>
                                             
                                         </v-card-text>
@@ -84,12 +100,28 @@
                                         <v-container class="text-center">
                                             <v-card-text class="align-center">
                                                 <v-row>
+                                                    <div v-if="submittedModerate && $v.title.$error" class="invalid-feedback">
+                                                        <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+                                                        <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+                                                    </div>
                                                     <v-col cols="12" sm="6" md="4">
-                                                        <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                                        <v-text-field label="Titre de la publication" 
+                                                        v-model="title"
+                                                        hint="Entre 3 et 50 caractères"
+                                                        :class="{ 'is-invalid': submittedModerate && $v.title.$error }"
+                                                        ></v-text-field>
                                                     </v-col>
                                                 </v-row>
+                                                <div v-if="submittedModerate && $v.content.$error" class="invalid-feedback">
+                                                    <span v-if="!$v.content.minLength">Le contenu doit faire au moins 3 caractères de long</span>
+                                                    <span v-if="!$v.content.maxLength">Le contenu doit faire moins de 250 caractères de long</span>
+                                                </div>
                                                 <v-col cols="12" sm="6" md="4">
-                                                    <v-textarea  label="Contenu de la publication" v-model="post.content"></v-textarea>
+                                                    <v-textarea  label="Contenu de la publication" 
+                                                    v-model="content"
+                                                    hint="Entre 3 et 250 caractères"
+                                                    :class="{ 'is-invalid': submittedModerate && $v.content.$error }"
+                                                    ></v-textarea>
                                                 </v-col>   
                                             </v-card-text>
                                             <v-card-actions>
@@ -176,8 +208,17 @@
                 Commentaires : {{ comments.length }}
             </v-card-title>
 
+            <div v-if="submittedComment && $v.commentContent.$error" class="invalid-feedback">
+                <span v-if="!$v.commentContent.minLength">Le commentaire doit faire au moins 3 caractères de long</span>
+                <span v-if="!$v.commentContent.maxLength">Le commentaire doit faire moins de 200 caractères de long</span>
+            </div>
             <v-row class="align-center">
-                <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
+                <v-textarea label="Poster un commentaire !" 
+                v-model="commentContent" 
+                class="px-2"
+                :class="{ 'is-invalid': submittedComment && $v.commentContent.$error }"
+                hint="Entre 3 et 200 caractères"
+                ></v-textarea>
                 <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon color="green">mdi-arrow-right</v-icon></v-btn>
             </v-row>
 
@@ -206,42 +247,42 @@
                     </v-card-text>
                     <v-card-text class="text-truncate" background-color="grey">
                         <div class="likes">
-                                <v-tooltip top>
+                            <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="likeComment(comment.id)" class="green--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-up-bold</v-icon>
-                                <div v-if="comment.likesCount > comment.dislikesCount">{{comment.likesCount}}</div></v-btn>
+                                    <v-btn @click="likeComment(comment.id)" class="green--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-up-bold</v-icon>
+                                    <div v-if="comment.likesCount > comment.dislikesCount">{{comment.likesCount}}</div></v-btn>
                                 </template>
                                 <span>J'aime !</span>
-                                </v-tooltip>
-                            </div>
+                            </v-tooltip>
+                        </div>
 
                             <div v-if="isAdmin == true">
                                 <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="adminComment(comment.id)" v-bind="attrs" v-on="on" class="red--text">Modérer<v-icon>mdi-delete-circle</v-icon>
-                                </v-btn>
-                                </template>
-                                <span>Modérer le commentaire</span>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn @click="adminComment(comment.id)" v-bind="attrs" v-on="on" class="red--text">Modérer<v-icon>mdi-delete-circle</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>Modérer le commentaire</span>
                                 </v-tooltip>
                             </div>
 
                             <div class="dislikes">
                                 <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="dislikeComment(comment.id)" class="red--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon>
-                                <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
-                                </template>
-                                <span>J'aime pas !</span>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn @click="dislikeComment(comment.id)" class="red--text" v-bind="attrs" v-on="on"><v-icon>mdi-arrow-down-bold</v-icon>
+                                        <div v-if="comment.dislikesCount > comment.likesCount">{{comment.dislikesCount}}</div></v-btn>
+                                    </template>
+                                    <span>J'aime pas !</span>
                                 </v-tooltip>
                             </div>
 
                         <div v-if="userIsMe != comment.User.id">
                             <div v-if="comment.isFlag != true">
                                 <v-tooltip top>
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-btn class="orange--text" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
-                                </template>
-                                <span>Signaler du contenu</span>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn class="orange--text" @click="reportComment(comment.id)" v-bind="attrs" v-on="on"><v-icon>mdi-flag</v-icon></v-btn>
+                                    </template>
+                                    <span>Signaler du contenu</span>
                                 </v-tooltip>
                             </div>
                         </div>
@@ -267,6 +308,7 @@ import modifiedfoot from '../footers/modifiedfoot'
 import mainhead from '../headers/mainhead'
 import jwt_decode from 'jwt-decode'
 import swal from 'sweetalert'
+import { minLength, maxLength } from "vuelidate/lib/validators";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
 
@@ -289,6 +331,7 @@ export default {
         user: [],
         url: [],
         title: '',
+        content: '',
         comments: [],
         userIsMe: userId,
         modalDialog: false,
@@ -301,6 +344,9 @@ export default {
         isAdmin: '',
         paginate: ['eachComment'],
         shown: false,
+        submittedComment: false,
+        submittedUpdate: false,
+        submittedModerate: false,
     }},      
      mounted() {
          this.asyncData();
@@ -322,6 +368,11 @@ export default {
             this.isAdmin = res.data.user.isAdmin
         })
     },
+    validations: {
+      commentContent: {  minLength: minLength(3), maxLength: maxLength(200) },
+      title: { minLength: minLength(3), maxLength: maxLength(50) },
+      content: { minLength: minLength(3), maxLength: maxLength(250) },
+    },
         methods: {
             async asyncData() {
                  await this.axios.get(redditUrl + this.$route.params.id,
@@ -333,6 +384,8 @@ export default {
                 this.post = res.data.data
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
+                this.title = this.post.title
+                this.content = this.post.content
                 this.fetchComments();
                 })
             },
@@ -363,6 +416,11 @@ export default {
                 }
             },
             updatePost() {
+                this.submittedUpdate = true;
+                    this.$v.$touch();
+                    if (this.$v.$invalid) {
+                        return;
+                    }
                  this.axios.put(redditUrl + this.$route.params.id, {
                     title: this.post.title,
                     content: this.post.content,
@@ -470,6 +528,11 @@ export default {
                     }
                 },
                 postComment() {
+                    this.submittedComment = true;
+                        this.$v.$touch();
+                        if (this.$v.$invalid) {
+                            return;
+                        }
                     this.axios.post(redditUrl + this.$route.params.id + '/comment',
                     {
                         content: this.commentContent,
@@ -629,6 +692,11 @@ export default {
                                     })
                                 },
                                 moderatePost() {
+                                    this.submittedModerate = true;
+                                        this.$v.$touch();
+                                        if (this.$v.$invalid) {
+                                            return;
+                                        }
                                     this.axios.put(redditUrl + this.$route.params.id + '/admin', {
                                         title: this.post.title,
                                         content: this.post.content,

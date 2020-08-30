@@ -19,8 +19,6 @@ module.exports = (sequelize, DataTypes) => {
 models.User.belongsToMany(models.Reddit, { through: Like, foreignKey: "userId" });
 models.User.belongsToMany(models.Gag, { through: Like, foreignKey: "userId" });
 models.User.belongsToMany(models.Comment, { through: Like, foreignKey: "userId" });
-// models.Reddit.belongsToMany(models.User, { through: Like, foreignKey: "redditId" });
-// models.Gag.belongsToMany(models.User, { through: Like, foreignKey: "gagId" });
   }
   return Like;
 }

@@ -10,12 +10,25 @@ module.exports = (sequelize, DataTypes) => {
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
         },
-        firstName : DataTypes.STRING,
-        lastName : DataTypes.STRING,
+        firstName : {
+          type: DataTypes.STRING,
+          validate: {
+            len: [3, 20]
+          }
+        },
+        lastName : { 
+          type: DataTypes.STRING,
+          validate: {
+            len: [3, 30]
+          }
+        },
         email : { 
           type: DataTypes.STRING,
           allowNull: false,
-          unique: true
+          unique: true,
+          validate: {
+            isEmail: true
+          }
         },
         password : {
           type: DataTypes.STRING,
@@ -24,10 +37,24 @@ module.exports = (sequelize, DataTypes) => {
         username : { 
           type: DataTypes.STRING,
           allowNull: false,
-          unique: true
+          unique: true,
+          validate: {
+            len: [4, 20],
+            isAlphanumeric: true,
+          }
         },
-        avatar : DataTypes.STRING,
-        department : DataTypes.STRING,
+        avatar : { 
+          type: DataTypes.STRING,
+          validate: {
+            isUrl: true
+          }
+        },
+        department : { 
+          type: DataTypes.STRING,
+          validate: {
+            len: [3, 20]
+          }
+        },
         isAdmin: {
           type: DataTypes.BOOLEAN,
           allowNull: false,

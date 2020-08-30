@@ -25,7 +25,15 @@
                                     <v-container class="text-center">
                                         
                                         <v-col cols="12">
-                                            <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                            <div v-if="submittedUpdate && $v.title.$error" class="invalid-feedback">
+                                                <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+                                                <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+                                            </div>
+                                            <v-text-field label="Titre de la publication" 
+                                            v-model="title"
+                                            :class="{ 'is-invalid': submittedUpdate && $v.title.$error }"
+                                            hint="Entre 3 et 50 caractères"
+                                            ></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
                                             <div v-show="showProgress">
@@ -115,7 +123,15 @@
                                 <v-container class="text-center">
                                     
                                     <v-col cols="12">
-                                        <v-text-field label="Titre de la publication" v-model="post.title"></v-text-field>
+                                        <div v-if="submittedModerate && $v.title.$error" class="invalid-feedback">
+                                            <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+                                            <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+                                        </div>
+                                        <v-text-field label="Titre de la publication" 
+                                        v-model="title"
+                                        :class="{ 'is-invalid': submittedModerate && $v.title.$error }"
+                                        hint="Entre 3 et 50 caractères"
+                                        ></v-text-field>
                                     </v-col>
                                     <v-col cols="12">
                                         <div v-show="showProgress">
@@ -245,8 +261,18 @@
                 Commentaires : {{ post.commentsCount }}
             </v-card-title>
 
+            <div v-if="submittedComment && $v.commentContent.$error" class="invalid-feedback">
+                <span v-if="!$v.commentContent.minLength">Le commentaire doit faire au moins 3 caractères de long</span>
+                <span v-if="!$v.commentContent.maxLength">Le commentaire doit faire moins de 200 caractères de long</span>
+            </div>
             <v-row class="align-center">
-                <v-textarea label="Poster un commentaire !" v-model="commentContent" class="px-2"></v-textarea>
+                <v-textarea
+                label="Poster un commentaire !" 
+                v-model="commentContent" 
+                class="px-2"
+                :class="{ 'is-invalid': submittedComment && $v.commentContent.$error }"
+                hint="Entre 3 et 200 caractères"
+                ></v-textarea>
                 <v-btn x-small fill-height tile class="mr-2" :disabled="commentHasContent" @click="postComment()"><v-icon color="green">mdi-arrow-right</v-icon></v-btn>
             </v-row>
 
@@ -338,6 +364,7 @@ import swal from 'sweetalert'
 import ProgressBar from "vuejs-progress-bar";
 import axios from "axios";
 import jwt_decode from 'jwt-decode'
+import { minLength, maxLength } from "vuelidate/lib/validators";
 
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'))
@@ -396,6 +423,7 @@ export default {
         options: progressBarOptions,
         fileContents: null,
         formData: null,
+        title: '',
         secure_url: '',
         userIsMe: userId,
         modalDialog: false,
@@ -409,6 +437,9 @@ export default {
         commentIsFlag: '',
         paginate: ['eachComment'],
         shown: false,
+        submittedComment: false,
+        submittedUpdate: false,
+        submittedModerate: false,
     }},      
      mounted() {
          this.asyncData();
@@ -430,6 +461,10 @@ export default {
             return !this.commentContent
         }
      },
+     validations: {
+      commentContent: {  minLength: minLength(3), maxLength: maxLength(200) },
+      title: { minLength: minLength(3), maxLength: maxLength(50) },
+    },
         methods: {
             async asyncData() {
                  await this.axios.get(gagUrl + this.$route.params.id,
@@ -441,6 +476,7 @@ export default {
                 this.post = res.data.data
                 this.user = this.post.User
                 this.isFlagged = this.post.isFlag
+                this.title = this.post.title
           })
           await this.axios.get(gagUrl + this.$route.params.id + '/comments',
                 {
@@ -535,6 +571,11 @@ export default {
         }
         },
         updatePost() {
+            this.submittedUpdate = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
                  this.axios.put(gagUrl + this.$route.params.id, {
                     title: this.post.title,
                     content: this.secure_url,
@@ -637,6 +678,11 @@ export default {
                     }
                 },
                 postComment() {
+                     this.submittedComment = true;
+                        this.$v.$touch();
+                        if (this.$v.$invalid) {
+                            return;
+                        }
                     this.axios.post(gagUrl + this.$route.params.id + '/comment',
                     {
                         content: this.commentContent,
@@ -796,6 +842,11 @@ export default {
                                 })
                             },
                             moderatePost() {
+                                this.submittedModerate = true;
+                                    this.$v.$touch();
+                                    if (this.$v.$invalid) {
+                                        return;
+                                    }
                                 this.axios.put(gagUrl + this.$route.params.id + '/admin', {
                                     title: this.post.title,
                                     content: this.secure_url,

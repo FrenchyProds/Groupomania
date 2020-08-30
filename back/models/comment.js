@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         content: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: { notEmpty: true }
+            validate: { 
+                notEmpty: true,
+                len: [3, 200] 
+            }
         },
         userId: {
             type: DataTypes.UUID,

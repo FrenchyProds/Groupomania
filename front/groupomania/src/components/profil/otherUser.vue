@@ -58,11 +58,51 @@
             <v-form @submit="moderateUser(user.id)">
                 <v-card-text>Pour la modération de l'avatar merci de bien vouloir remplacer l'avatar existant par un url picsum</v-card-text>
                 <v-card-text>Si vous modifiez le username, il vous faudra taper le nouveau username dans l'url afin d'accéder au profil (petit souci de routing)</v-card-text>
-                <v-text-field  v-model="username" label="Modérer le nom d'utilisateur"></v-text-field>
-                <v-text-field  v-model="firstName" label="Modérer le prénom"></v-text-field>
-                <v-text-field  v-model="lastName" label="Modérer le nom"></v-text-field>
-                <v-text-field  v-model="avatar" label="Modérer l'avatar"></v-text-field>
-                <v-text-field  v-model="department" label="Modérer le département"></v-text-field>
+                <div v-if="submitted && $v.username.$error" class="invalid-feedback">
+                    <span v-if="!$v.username.required">Nom d'utilisateur requis</span>
+                    <span v-if="!$v.username.minLength">Le nom d'utilisateur doit faire au moins 4 caractères de long et ne peut contenir que des chiffres et des lettres</span>
+                    <span v-if="!$v.username.maxLength">Le nom d'utilisateur doit faire moins de 20 caractères de long et ne peut contenir que des chiffres et des lettres</span>
+                </div>
+                <v-text-field  
+                    v-model="username" 
+                    label="Modérer le nom d'utilisateur"
+                    :class="{ 'is-invalid': submitted && $v.username.$error }"
+                    hint="Entre 4 et 20 chiffres et lettres de long"
+                ></v-text-field>
+                <div v-if="submitted && $v.firstName.$error" class="invalid-feedback">
+                    <span v-if="!$v.firstName.minLength">Minimum 3 caractères</span>
+                    <span v-if="!$v.firstName.maxLength">Maximum 20 caractères</span>
+                </div>
+                <v-text-field  
+                    v-model="firstName" 
+                    label="Modérer le prénom"
+                    :class="{ 'is-invalid': submitted && $v.firstName.$error }"
+                    hint="Entre 3 et 20 caractères"
+                ></v-text-field>
+                <div v-if="submitted && $v.lastName.$error" class="invalid-feedback">
+                    <span v-if="!$v.lastName.minLength">Minimum 3 caractères</span>
+                    <span v-if="!$v.lastName.maxLength">Maximum 30 caractères</span>
+                </div>
+                <v-text-field  
+                    v-model="lastName" 
+                    label="Modérer le nom"
+                    :class="{ 'is-invalid': submitted && $v.lastName.$error }"
+                    hint="Entre 3 et 20 caractères"
+                ></v-text-field>
+                <v-text-field  
+                    v-model="avatar" 
+                    label="Modérer l'avatar"
+                ></v-text-field>
+                <div v-if="submitted && $v.department.$error" class="invalid-feedback">
+                    <span v-if="!$v.department.minLength">Minimum 3 caractères</span>
+                    <span v-if="!$v.department.maxLength">Maximum 20 caractères</span>
+                </div>
+                <v-text-field  
+                v-model="department" 
+                label="Modérer le département"
+                :class="{ 'is-invalid': submitted && $v.department.$error }"
+                hint="Entre 3 et 20 caractères"
+                ></v-text-field>
                 <v-card
                     flat
                     tile
@@ -144,6 +184,7 @@
 import modifiedfoot from '../footers/modifiedfoot'
 import jwt_decode from 'jwt-decode'
 import swal from 'sweetalert'
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
@@ -180,13 +221,7 @@ export default {
         userIsMe: userId,
         isFlagged: '',
         isAdmin: '',
-    }
-    },
-    watch: {
-    $route(to, from) {
-       if (to !== from) {
-           this.fetchUser(this.username)
-       }
+        submitted: false,
     }
     },
     beforeRouteUpdate (to, from, next) {
@@ -207,6 +242,12 @@ export default {
     },
     mounted () {
     },
+    validations: {
+            username: { required, minLength: minLength(4), maxLength: maxLength(20) },
+            department: { minLength: minLength(3), maxLength: maxLength(20) },
+            firstName: { minLength: minLength(3), maxLength: maxLength(20) },
+            lastName: { minLength: minLength(3), maxLength: maxLength(30) },
+        },
     methods: {
         fetchUser() {
             this.axios
@@ -232,6 +273,11 @@ export default {
                     })  
             },
             moderateUser(userId) {
+                this.submitted = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
                 this.axios.put('http://localhost:3000/user/' + userId + '/admin',
                         {
                             username: this.username,

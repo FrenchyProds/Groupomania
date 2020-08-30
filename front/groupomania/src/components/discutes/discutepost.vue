@@ -5,22 +5,36 @@
       lazy-validation @submit="formSubmit">
         <v-container>
           <v-col>
+            <div v-if="submitted && $v.title.$error" class="invalid-feedback">
+                <span v-if="!$v.title.required">Un titre est requis</span>
+                <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+                <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+            </div>
             <v-row>
               <v-text-field
-              v-model="title"
-              prepend-icon="fa-pen"
+                v-model="title"
+                prepend-icon="fa-pen"
+                :class="{ 'is-invalid': submitted && $v.title.$error }"
                 label="Titre"
                 class="ma-2"
                 required
+                hint="Entre 3 et 50 caractères"
               ></v-text-field>
               </v-row>
+              <div v-if="submitted && $v.content.$error" class="invalid-feedback">
+                <span v-if="!$v.content.required">Du contenu est requis</span>
+                <span v-if="!$v.content.minLength">Le contenu doit faire au moins 3 caractères de long</span>
+                <span v-if="!$v.content.maxLength">Le contenu doit faire moins de 250 caractères de long</span>
+              </div>
               <v-row>
               <v-textarea
-              v-model="content"
-              prepend-icon="fa-pen"
+                v-model="content"
+                prepend-icon="fa-pen"
+                :class="{ 'is-invalid': submitted && $v.content.$error }"
                 label="Contenu"
                 class="ma-2"
                 required
+                hint="Entre 3 et 250 caractères"
               ></v-textarea>
               </v-row>
             
@@ -38,6 +52,7 @@
 <script>
 import swal from 'sweetalert'
 import jwt_decode from 'jwt-decode'
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 const redditURL = 'http://localhost:3000/reddit/post'
 
@@ -59,11 +74,21 @@ export default {
   },
   data: () => ({
       title: '',
-      content: ''
+      content: '',
+      submitted: false,
     }),
+    validations: {
+      title: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      content: { required, minLength: minLength(3), maxLength: maxLength(250) }
+    },
     methods: {
           formSubmit(e) {
           e.preventDefault();
+          this.submitted = true;
+            this.$v.$touch();
+            if (this.$v.$invalid) {
+                return;
+            }
           this.axios.post(redditURL
           , 
           {
@@ -94,7 +119,7 @@ export default {
   computed: {
     isComplete () {
     return !this.title || !this.content;
-    }
+    },
   },
   components: {
   }

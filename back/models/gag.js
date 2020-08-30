@@ -11,12 +11,22 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
-    title: DataTypes.STRING,
+    title: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [3, 50]
+      }
+    },
     postType:{ 
       type: DataTypes.STRING,
       default: 'gag',
     },
-    content: DataTypes.STRING,
+    content: {
+      type: DataTypes.STRING,
+      validate: {
+        isUrl: true,
+      }
+    },
     isFlag: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -18,6 +18,7 @@
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "express-bouncer": "^0.2.0",
+    "express-validator": "^6.6.1",
     "helmet": "^3.22.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",

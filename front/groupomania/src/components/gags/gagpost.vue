@@ -2,17 +2,22 @@
 
 <v-dialog :value="value" @input="$emit('input')" max-width="800px" ma-1>
     <v-form ref="postForm">
-  <v-card class="text-center my-2">
+      <v-card class="text-center my-2">
+        <div v-if="submitted && $v.title.$error" class="invalid-feedback">
+          <span v-if="!$v.title.required">Un titre est requis</span>
+          <span v-if="!$v.title.minLength">Le titre doit faire au moins 3 caractères de long</span>
+          <span v-if="!$v.title.maxLength">Le titre doit faire moins de 50 caractères de long</span>
+        </div>
         <v-row class="align-center">
-            
               <v-text-field
-              v-model="title"
-              prepend-icon="fa-pen"
+                v-model="title"
+                prepend-icon="fa-pen"
                 label="Titre"
                 class="pa-2"
                 required
+                hint="Entre 3 et 50 caractères"
+                :class="{ 'is-invalid': submitted && $v.title.$error }"
               ></v-text-field>
-            
         </v-row>
         <div v-show="showProgress">
             <progress-bar :options="options" :value="progress" />
@@ -29,6 +34,7 @@
                     type="file"
                     accept="image/png, image/jpeg"
                     @change="handleFileChange($event)"
+                    hint="Merci de bien vouloir sélectionner une image"
                 />
                 </v-row>
                 <!-- submit button is disabled until a file is selected -->
@@ -58,8 +64,7 @@
             </template>
             <span>Confirmer</span>
         </v-tooltip>
-    </v-card>
-    
+      </v-card>
     </v-form>
     </v-dialog>
 </template>
@@ -69,6 +74,7 @@ import swal from 'sweetalert'
 import ProgressBar from "vuejs-progress-bar";
 import axios from "axios";
 import jwt_decode from 'jwt-decode'
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 let tokenFetch = JSON.parse(localStorage.getItem('jwt'));
 
@@ -124,7 +130,11 @@ export default {
       formData: null,
       secure_url: '',
       isDisabled: true,
+      submitted: false,
     }},
+    validations: {
+      title: { required, minLength: minLength(3), maxLength: maxLength(50) },
+    },
     methods: {
             // function to handle file info obtained from local
         // file system and set the file state
@@ -196,32 +206,37 @@ export default {
         }
         },
           formSubmit() {
-          this.axios.post(gagURL
-          ,{
-           title: this.title,
-           content: this.secure_url,
-           userId: userId },
-           {
+            this.submitted = true;
+            this.$v.$touch();
+            if (this.$v.$invalid) {
+                return;
+            }
+            this.axios.post(gagURL
+            ,{
+            title: this.title,
+            content: this.secure_url,
+            userId: userId },
+            {
                 headers: {
                     Authorization: `Bearer ${tokenFetch}`
                         }
                     })           
-          .then(response => {
-            // Handle success.
-            console.log(response)
-            swal('Gag publié !', 'Votre publication a été mise en ligne', 'success')
-            window.location.reload();
-          })
-          .catch(error => {
-            // Handle error.
-            console.log('An error occurred:', error.response);
-            swal("Quelque chose n'a pas fonctionné", "", "error")
-          })
+            .then(response => {
+              // Handle success.
+              console.log(response)
+              swal('Gag publié !', 'Votre publication a été mise en ligne', 'success')
+              window.location.reload();
+            })
+            .catch(error => {
+              // Handle error.
+              console.log('An error occurred:', error.response);
+              swal("Quelque chose n'a pas fonctionné", "", "error")
+            })
+            },
+            validate () {
+              this.$refs.form.validate()
+            },
           },
-          validate () {
-        this.$refs.form.validate()
-      },
-        },
   computed: {
   isComplete () {
     return !this.title || !this.secure_url;
