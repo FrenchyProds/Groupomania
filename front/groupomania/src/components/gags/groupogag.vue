@@ -51,7 +51,7 @@
                          <div class="likes">
                             <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                            <v-btn @click="likePost(eachpost.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon color="green">mdi-arrow-up-bold</v-icon>
+                            <v-btn @click="likePost(eachpost.id)" v-bind="attrs" v-on="on" class="green--text"><v-icon color="#1C7D1F">mdi-arrow-up-bold</v-icon>
                             <div v-if="eachpost.likesCount > eachpost.dislikesCount">{{eachpost.likesCount}}</div>
                             </v-btn>
                             </template>

@@ -43,7 +43,7 @@
                 <v-btn icon v-if="passwordFieldType != 'password'" @click="toggleShow" class="red--text"><v-icon>mdi-eye-off</v-icon></v-btn>
               </v-row>
               <v-row justify="center">
-                <v-btn class="mt-4" outlined color="green" type="submit" value="Submit">Se connecter</v-btn>
+                <v-btn class="mt-4" outlined color="#067A47" type="submit" value="Submit">Se connecter</v-btn>
               </v-row>
             </v-col>
           </v-container>
@@ -51,7 +51,7 @@
 
         <v-row justify="center">
       <div class="mt-8">
-      <v-btn text color="error" to="./recover">Impossible de se connecter ?</v-btn>
+      <v-btn text color="#C43F17" to="./recover">Impossible de se connecter ?</v-btn>
       </div>
       </v-row>
   </v-container>

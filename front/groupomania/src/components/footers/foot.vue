@@ -10,7 +10,7 @@
             flat
             tile
             width="100%"
-            class="red text-center">
+            class="text-center" color="#CD2418">
             <v-card-text class="d-flex justify-space-around">
 
                 <v-tooltip top>

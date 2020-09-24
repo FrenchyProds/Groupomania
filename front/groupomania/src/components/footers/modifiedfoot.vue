@@ -8,12 +8,12 @@
             flat
             tile
             width="100%"
-            class="red text-center">
+            class="text-center" color="#CD2418">
             <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn color="white" class="red--text" @click="goBack()" v-bind="attrs"
                     v-on="on">
-                    <v-icon size="30px" color="red">mdi-arrow-left</v-icon>
+                    <v-icon size="30px" color="#CD2418">mdi-arrow-left</v-icon>
                     Retour en arrière
                 </v-btn>
                 </template>

@@ -151,7 +151,6 @@ export default {
 
 .Four {
     margin-top: 2rem !important;
-    text-decoration: underline;
     margin: auto;
     box-shadow: none;
 }
